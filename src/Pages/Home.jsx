@@ -213,7 +213,7 @@ const Home = () => {
         </div>
 
         {/* Right Side - Orange Background with Circular Graphic */}
-        <div className="flex-1 bg-gradient-to-br from-orange-400 to-yellow-400 relative min-h-[60vh] lg:min-h-screen">
+        <div className="flex-1 mt-[-100px] bg-gradient-to-br from-orange-400 to-yellow-400 relative min-h-[20vh] sm:min-h-[30vh] lg:min-h-screen">
           {/* Large Circular Graphic */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse">
             <div className="relative">
