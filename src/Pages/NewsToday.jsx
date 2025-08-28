@@ -91,7 +91,7 @@ const NewsToday = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="relative bg-white text-gray-800 py-20 overflow-hidden">
+      <div className="relative bg-white text-gray-800 py-10 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -101,8 +101,8 @@ const NewsToday = () => {
         
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className="text-center animate-fade-in">
-            <h1 className="text-5xl font-bold mb-6 animate-fade-in-delay text-blue-500">News Today</h1>
-            <p className="text-xl mb-8 max-w-3xl mx-auto animate-fade-in-delay" style={{animationDelay: '0.2s'}}>
+            <h1 className="text-5xl font-bold mb-3 animate-fade-in-delay text-blue-500">News Today</h1>
+            <p className="text-xl mb-4 max-w-3xl mx-auto animate-fade-in-delay" style={{animationDelay: '0.2s'}}>
               Stay updated with the latest news, industry insights, and success stories from the business world.
             </p>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 animate-fade-in-delay" style={{animationDelay: '0.4s'}}>
@@ -118,7 +118,7 @@ const NewsToday = () => {
       </div>
 
       {/* Newsletter Signup */}
-      <div className="py-8 bg-white border-b">
+      <div className="py-4 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
             <div className="flex-1 max-w-md">
@@ -140,7 +140,7 @@ const NewsToday = () => {
       </div>
 
       {/* Category Filters */}
-      <div className="py-8 bg-gray-100">
+      <div className="py-4 bg-gray-100">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-wrap justify-center gap-4">
             {categories.map((category) => (
@@ -162,9 +162,9 @@ const NewsToday = () => {
 
       {/* Featured Article */}
       {featuredArticle && (
-        <div className="py-16 bg-white">
+        <div className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-12">
+            <div className="text-center mb-6">
               <h2 className="text-4xl font-bold mb-4 animate-fade-in">Featured Story</h2>
               <p className="text-xl text-gray-600 animate-fade-in-delay">Today's top story</p>
             </div>
@@ -177,13 +177,13 @@ const NewsToday = () => {
                     className="w-full h-64 md:h-full object-cover"
                   />
                 </div>
-                <div className="md:w-1/2 p-8">
-                  <div className="flex items-center mb-4">
+                <div className="md:w-1/2 p-4">
+                  <div className="flex items-center mb-2">
                     <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">{featuredArticle.category}</span>
                     <span className="text-gray-500 text-sm ml-4">{featuredArticle.readTime}</span>
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">{featuredArticle.title}</h3>
-                  <p className="text-gray-600 mb-6">{featuredArticle.excerpt}</p>
+                  <h3 className="text-2xl font-bold mb-2">{featuredArticle.title}</h3>
+                  <p className="text-gray-600 mb-3">{featuredArticle.excerpt}</p>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
@@ -206,9 +206,9 @@ const NewsToday = () => {
       )}
 
       {/* News Grid */}
-      <div className="py-16 bg-gray-50">
+      <div className="py-8 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6">
             <h2 className="text-4xl font-bold mb-4 animate-fade-in">Latest News</h2>
             <p className="text-xl text-gray-600 animate-fade-in-delay">
               Stay informed with the latest updates and insights
@@ -228,14 +228,14 @@ const NewsToday = () => {
                     <span className="bg-blue-500 text-white text-xs px-3 py-1 rounded-full">{article.category}</span>
                   </div>
                 </div>
-                <div className="p-6">
-                  <div className="flex items-center mb-3">
+                <div className="p-4">
+                  <div className="flex items-center mb-2">
                     <span className="text-gray-500 text-sm">{article.readTime}</span>
                     <span className="text-gray-400 mx-2">•</span>
                     <span className="text-gray-500 text-sm">{new Date(article.date).toLocaleDateString()}</span>
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 line-clamp-2">{article.title}</h3>
-                  <p className="text-gray-600 mb-4 line-clamp-3">{article.excerpt}</p>
+                  <h3 className="text-xl font-semibold mb-2 line-clamp-2">{article.title}</h3>
+                  <p className="text-gray-600 mb-2 line-clamp-3">{article.excerpt}</p>
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -256,9 +256,9 @@ const NewsToday = () => {
       </div>
 
       {/* Industry Stats */}
-      <div className="py-16 bg-white">
+      <div className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6">
             <h2 className="text-4xl font-bold mb-4 animate-fade-in">Industry Insights</h2>
             <p className="text-xl text-gray-600 animate-fade-in-delay">Key statistics and trends</p>
           </div>
@@ -284,10 +284,10 @@ const NewsToday = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="py-16 bg-gradient-to-r from-blue-400 to-blue-600 text-white">
+      <div className="py-8 bg-gradient-to-r from-blue-400 to-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-4 animate-fade-in">Share Your Story</h2>
-          <p className="text-xl mb-8 animate-fade-in-delay">Have a success story or industry insight? We'd love to hear from you!</p>
+          <p className="text-xl mb-4 animate-fade-in-delay">Have a success story or industry insight? We'd love to hear from you!</p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 animate-fade-in-delay" style={{animationDelay: '0.2s'}}>
             <button className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition transform hover:scale-105 shadow-lg">
               Submit Article

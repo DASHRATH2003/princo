@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import logo from '../assets/printo.jpg'
 
 const Footer = () => {
   return (
@@ -9,14 +10,11 @@ const Footer = () => {
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 border-2 border-orange-300 rounded-full flex items-center justify-center bg-white relative overflow-hidden">
-                <div className="text-amber-700 font-bold text-lg">P</div>
-                <div className="absolute right-1 top-1/2 transform -translate-y-1/2 w-0.5 h-2 bg-red-500"></div>
-                <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs">
-                  <span className="text-blue-300">ce.</span>
-                  <span className="text-green-300 ml-0.5">20</span>
-                </div>
-              </div>
+              <img 
+                  src={logo} 
+                  alt="Printo Logo" 
+                  className="w-12 h-12 object-contain"
+                />
               <div className="text-2xl font-bold">printco</div>
             </div>
             <p className="text-gray-400 mb-4 max-w-md">

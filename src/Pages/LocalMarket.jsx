@@ -152,7 +152,7 @@ const LocalMarket = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className={`relative bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 py-20 overflow-hidden transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+      <section className={`relative bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 py-10 overflow-hidden transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-green-200/30 to-emerald-300/30 rounded-full blur-3xl animate-pulse"></div>
@@ -193,19 +193,19 @@ const LocalMarket = () => {
               <span className="text-green-700 font-medium">Supporting Local Businesses</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-3 leading-tight">
               Discover Your
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600"> Local</span>
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">Community</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 mb-4 max-w-3xl mx-auto leading-relaxed">
               Connect with trusted local vendors and discover unique products from your neighborhood. 
               Support your community while finding exactly what you need, delivered fresh and fast.
             </p>
             
             {/* Enhanced Search Bar */}
-            <div className="max-w-4xl mx-auto mb-8">
+            <div className="max-w-4xl mx-auto mb-4">
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-2 shadow-2xl border border-white/20">
                 <div className="flex flex-col md:flex-row gap-2">
                   <div className="flex-1 relative">
@@ -268,7 +268,7 @@ const LocalMarket = () => {
       </section>
 
       {/* Search & Location */}
-      <div className="py-8 bg-white border-b">
+      <div className="py-4 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
             <div className="relative flex-1 max-w-md">
@@ -300,12 +300,12 @@ const LocalMarket = () => {
       </div>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-to-r from-white via-green-50/30 to-emerald-50/30">
+      <section className="py-10 bg-gradient-to-r from-white via-green-50/30 to-emerald-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Empowering Local Communities</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">Join thousands of customers supporting local businesses and building stronger communities together.</p>
-          </div>
+          <div className="text-center mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Empowering Local Communities</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">Join thousands of customers supporting local businesses and building stronger communities together.</p>
+            </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="group text-center p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-green-100">
@@ -377,15 +377,15 @@ const LocalMarket = () => {
       </section>
 
       {/* Category Filters */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-green-50/30">
+      <section className="py-10 bg-gradient-to-br from-gray-50 to-green-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Explore Local Categories</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">Discover amazing products and services from local businesses in your area</p>
           </div>
           
           {/* Filter Controls */}
-          <div className="flex flex-col lg:flex-row justify-between items-center mb-12 gap-6">
+          <div className="flex flex-col lg:flex-row justify-between items-center mb-4 gap-6">
             <div className="flex flex-wrap justify-center gap-3">
               {categories.map((category) => {
                 const categoryIcons = {
@@ -461,7 +461,7 @@ const LocalMarket = () => {
           </div>
           
           {/* Price Range Filter */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-8 shadow-lg border border-gray-200">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-4 shadow-lg border border-gray-200">
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="flex items-center gap-4">
                 <label className="text-gray-700 font-medium whitespace-nowrap">Price Range:</label>
@@ -508,10 +508,10 @@ const LocalMarket = () => {
       </section>
 
       {/* Products Grid */}
-      <div className="py-16 bg-gray-50">
+      <div className="py-8 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 animate-fade-in">Local Products</h2>
+          <div className="text-center mb-6">
+              <h2 className="text-4xl font-bold mb-2 animate-fade-in">Local Products</h2>
             <p className="text-xl text-gray-600 animate-fade-in-delay">
               Quality products from trusted local vendors in your area
             </p>
@@ -542,12 +542,12 @@ const LocalMarket = () => {
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                  <p className="text-gray-600 mb-4">{product.description}</p>
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold mb-1">{product.name}</h3>
+                  <p className="text-gray-600 mb-2">{product.description}</p>
                   
                   {/* Vendor Info */}
-                  <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="mb-2 p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium text-gray-800">{product.vendor}</p>
@@ -576,10 +576,10 @@ const LocalMarket = () => {
       </div>
 
       {/* Become a Vendor Section */}
-      <div className="py-16 bg-white">
+      <div className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 animate-fade-in">Become a Local Vendor</h2>
+          <div className="text-center mb-6">
+            <h2 className="text-4xl font-bold mb-2 animate-fade-in">Become a Local Vendor</h2>
             <p className="text-xl text-gray-600 animate-fade-in-delay">
               Join our platform and reach more customers in your area
             </p>

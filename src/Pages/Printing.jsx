@@ -142,7 +142,7 @@ const Printing = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section with Interactive Elements */}
-      <div className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white py-24 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white py-12 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-black opacity-20"></div>
@@ -157,16 +157,16 @@ const Printing = () => {
         
         <div className="max-w-7xl mx-auto px-4 relative z-10">
           <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="inline-flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
+            <div className="inline-flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full px-6 py-2 mb-3">
               <span className="text-sm font-medium">🎨 Premium Printing Solutions</span>
             </div>
-            <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            <h1 className="text-6xl md:text-7xl font-bold mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Print Your
               <span className="block text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text">
                 Vision
               </span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto text-gray-200 leading-relaxed">
+            <p className="text-xl md:text-2xl mb-4 max-w-4xl mx-auto text-gray-200 leading-relaxed">
               Transform your ideas into stunning printed materials with our cutting-edge technology and premium quality services.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -192,10 +192,10 @@ const Printing = () => {
       </div>
 
       {/* Interactive Tabs Section */}
-      <div className="py-16 bg-white">
+      <div className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <div className="text-center mb-6">
+            <h2 className="text-4xl font-bold mb-2 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
               Explore Our Services
             </h2>
             <p className="text-xl text-gray-600">
@@ -204,7 +204,7 @@ const Printing = () => {
           </div>
           
           {/* Tab Navigation */}
-          <div className="flex flex-wrap justify-center mb-12 bg-gray-100 rounded-2xl p-2 max-w-4xl mx-auto">
+          <div className="flex flex-wrap justify-center mb-6 bg-gray-100 rounded-2xl p-2 max-w-4xl mx-auto">
             {['services', 'popular', 'process'].map((tab) => (
               <button
                 key={tab}
@@ -224,7 +224,7 @@ const Printing = () => {
           {activeTab === 'services' && (
             <div className="animate-fade-in">
               {/* Category Filters */}
-              <div className="flex flex-wrap justify-center gap-4 mb-12">
+              <div className="flex flex-wrap justify-center gap-4 mb-6">
                 {categories.map((category) => (
                   <button
                     key={category.id}
@@ -244,7 +244,7 @@ const Printing = () => {
           )}
 
           {activeTab === 'popular' && (
-            <div className="text-center mb-8 animate-fade-in">
+            <div className="text-center mb-4 animate-fade-in">
               <div className="inline-flex items-center bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-6 py-3">
                 <span className="text-2xl mr-2">🔥</span>
                 <span className="font-semibold text-gray-800">Most Popular Services</span>
@@ -261,7 +261,7 @@ const Printing = () => {
                 { step: '04', title: 'Get Delivered', desc: 'Receive your prints at your doorstep', icon: '🚚' }
               ].map((item, index) => (
                 <div key={index} className="text-center group">
-                  <div className="relative mb-6">
+                  <div className="relative mb-3">
                     <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                       <span className="text-2xl">{item.icon}</span>
                     </div>
@@ -279,7 +279,7 @@ const Printing = () => {
       </div>
 
       {/* Services Grid */}
-      <div className="py-16 bg-gradient-to-br from-gray-50 to-purple-50">
+      <div className="py-8 bg-gradient-to-br from-gray-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4">
           {(activeTab === 'services' || activeTab === 'popular') && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -323,7 +323,7 @@ const Printing = () => {
                   </div>
                   
                   <div className="p-6">
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between mb-2">
                       <h3 className="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition-colors duration-300">
                         {service.name}
                       </h3>
@@ -336,9 +336,9 @@ const Printing = () => {
                       </div>
                     </div>
                     
-                    <p className="text-gray-600 mb-4 text-sm leading-relaxed">{service.description}</p>
+                    <p className="text-gray-600 mb-2 text-sm leading-relaxed">{service.description}</p>
                     
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                           {service.price}
@@ -355,7 +355,7 @@ const Printing = () => {
                       </div>
                     </div>
                     
-                    <div className="space-y-2 mb-6">
+                    <div className="space-y-1 mb-3">
                       {service.features.slice(0, 3).map((feature, idx) => (
                         <div key={idx} className="flex items-center text-sm text-gray-600">
                           <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-3 flex-shrink-0" />
@@ -383,10 +383,10 @@ const Printing = () => {
       </div>
 
       {/* Process Section */}
-      <div className="py-16 bg-white">
+      <div className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 animate-fade-in">How It Works</h2>
+          <div className="text-center mb-6">
+            <h2 className="text-4xl font-bold mb-2 animate-fade-in">How It Works</h2>
             <p className="text-xl text-gray-600 animate-fade-in-delay">Simple 4-step process to get your prints</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -397,10 +397,10 @@ const Printing = () => {
               { step: "4", title: "Get Delivery", desc: "Receive your prints at your doorstep" }
             ].map((item, index) => (
               <div key={index} className="text-center animate-fade-in-delay" style={{animationDelay: `${index * 0.1}s`}}>
-                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold">
+                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-2 text-white text-xl font-bold">
                   {item.step}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                <h3 className="text-lg font-semibold mb-1">{item.title}</h3>
                 <p className="text-gray-600">{item.desc}</p>
               </div>
             ))}
@@ -409,10 +409,10 @@ const Printing = () => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="py-16 bg-gradient-to-br from-purple-50 to-pink-50">
+      <div className="py-8 bg-gradient-to-br from-purple-50 to-pink-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <div className="text-center mb-6">
+            <h2 className="text-4xl font-bold mb-2 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
               What Our Customers Say
             </h2>
             <p className="text-xl text-gray-600">
@@ -427,7 +427,7 @@ const Printing = () => {
                 className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 animate-fade-in-delay"
                 style={{animationDelay: `${index * 0.1}s`}}
               >
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-2">
                   <img 
                     src={testimonial.avatar} 
                     alt={testimonial.name}
@@ -439,7 +439,7 @@ const Printing = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-center mb-3">
+                <div className="flex items-center mb-2">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <svg key={i} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
                       <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
@@ -457,7 +457,7 @@ const Printing = () => {
       </div>
 
       {/* Enhanced CTA Section */}
-      <div className="py-20 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white relative overflow-hidden">
+      <div className="py-10 bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -467,23 +467,23 @@ const Printing = () => {
         
         <div className="max-w-7xl mx-auto px-4 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
+            <div className="inline-flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full px-6 py-2 mb-3">
               <span className="text-sm font-medium">🚀 Start Your Print Journey</span>
             </div>
             
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            <h2 className="text-5xl md:text-6xl font-bold mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Ready to Print Your
               <span className="block text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text">
                 Success Story?
               </span>
             </h2>
             
-            <p className="text-xl md:text-2xl mb-10 text-gray-200 leading-relaxed">
+            <p className="text-xl md:text-2xl mb-5 text-gray-200 leading-relaxed">
               Join thousands of satisfied customers who trust us with their printing needs. 
               Get professional quality prints delivered to your doorstep.
             </p>
             
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12">
+            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-6">
               <button className="group bg-gradient-to-r from-pink-500 to-purple-600 text-white px-12 py-4 rounded-full font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-pink-500/25">
                 <span className="flex items-center">
                   Start Your Order
@@ -506,19 +506,19 @@ const Printing = () => {
             {/* Trust Indicators */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div className="group">
-                <div className="text-3xl font-bold mb-1 group-hover:scale-110 transition-transform duration-300">10K+</div>
+                <div className="text-3xl font-bold mb-0 group-hover:scale-110 transition-transform duration-300">10K+</div>
                 <div className="text-sm text-gray-300">Happy Customers</div>
               </div>
               <div className="group">
-                <div className="text-3xl font-bold mb-1 group-hover:scale-110 transition-transform duration-300">24/7</div>
+                <div className="text-3xl font-bold mb-0 group-hover:scale-110 transition-transform duration-300">24/7</div>
                 <div className="text-sm text-gray-300">Support Available</div>
               </div>
               <div className="group">
-                <div className="text-3xl font-bold mb-1 group-hover:scale-110 transition-transform duration-300">2-3</div>
+                <div className="text-3xl font-bold mb-0 group-hover:scale-110 transition-transform duration-300">2-3</div>
                 <div className="text-sm text-gray-300">Days Delivery</div>
               </div>
               <div className="group">
-                <div className="text-3xl font-bold mb-1 group-hover:scale-110 transition-transform duration-300">100%</div>
+                <div className="text-3xl font-bold mb-0 group-hover:scale-110 transition-transform duration-300">100%</div>
                 <div className="text-sm text-gray-300">Quality Guarantee</div>
               </div>
             </div>

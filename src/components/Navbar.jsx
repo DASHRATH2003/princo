@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import logo from '../assets/newlogo.png'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -12,25 +13,13 @@ const Navbar = () => {
           {/* Logo and Brand */}
           <div className="flex items-center space-x-3">
             <div className="relative">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-orange-300 rounded-full flex items-center justify-center bg-white relative overflow-hidden">
-                {/* Main P letter in brown */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-amber-700 font-bold text-sm sm:text-lg">P</div>
-                </div>
-                {/* Light purple shape to the right of P */}
-                <div className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2">
-                  <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-purple-300 rounded-full"></div>
-                </div>
-                {/* Red vertical rectangle (like 'I') to the right */}
-                <div className="absolute right-0.5 sm:right-1 top-1/2 transform -translate-y-1/2 w-0.5 h-1.5 sm:h-2 bg-red-500"></div>
-                {/* Light blue and green text below - "ce. 20" */}
-                <div className="absolute bottom-0.5 sm:bottom-1 left-1/2 transform -translate-x-1/2 text-xs">
-                  <span className="text-blue-300">ce.</span>
-                  <span className="text-green-300 ml-0.5">20</span>
-                </div>
-              </div>
+              <img 
+                  src={logo} 
+                  alt="Printo Logo" 
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+                />
             </div>
-            <div className="text-lg sm:text-2xl font-bold text-purple-800">printco</div>
+            
           </div>
 
           {/* Contact and Icons - Hidden on mobile */}

@@ -84,7 +84,7 @@ const EMarket = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Enhanced Hero Section */}
-      <div className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white py-24 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white py-12 overflow-hidden">
         {/* Animated Background */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-black opacity-20"></div>
@@ -102,18 +102,18 @@ const EMarket = () => {
             <div className="inline-flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
               <span className="text-sm font-medium">🚀 Digital Services Marketplace</span>
             </div>
-            <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            <h1 className="text-6xl md:text-7xl font-bold mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Find Your
               <span className="block text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text">
                 Perfect Service
               </span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto text-gray-200 leading-relaxed">
+            <p className="text-xl md:text-2xl mb-4 max-w-4xl mx-auto text-gray-200 leading-relaxed">
               Connect with top-rated professionals and get your projects done with quality and precision. From web development to digital marketing.
             </p>
             
             {/* Enhanced Search Bar */}
-            <div className="max-w-4xl mx-auto mb-8">
+            <div className="max-w-4xl mx-auto mb-4">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
                   <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,10 +158,10 @@ const EMarket = () => {
       </div>
 
       {/* Enhanced Stats Section */}
-      <div className="bg-white py-20 relative overflow-hidden">
+      <div className="bg-white py-10 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50"></div>
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Trusted by Thousands</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">Join our growing community of satisfied clients and talented professionals</p>
           </div>
@@ -215,15 +215,15 @@ const EMarket = () => {
       </div>
 
       {/* Enhanced Category Filters */}
-      <div className="bg-gray-50 py-20">
+      <div className="bg-gray-50 py-10">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">Explore Services by Category</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">Find the perfect service for your needs from our comprehensive categories</p>
           </div>
           
           {/* Category Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-6">
             {categories.map((category, index) => (
               <button
                 key={category.id}
@@ -325,9 +325,9 @@ const EMarket = () => {
       </div>
 
       {/* Enhanced Services Grid */}
-      <div className="bg-white py-20">
+      <div className="bg-white py-10">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">Featured Services</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">Discover top-rated services from verified professionals</p>
           </div>
@@ -364,9 +364,9 @@ const EMarket = () => {
                   </div>
                 </div>
                 
-                <div className={`p-6 flex-1 ${viewMode === 'list' ? 'flex flex-col justify-between' : ''}`}>
+                <div className={`p-4 flex-1 ${viewMode === 'list' ? 'flex flex-col justify-between' : ''}`}>
                   <div>
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2">
                       <h3 className="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition-colors duration-300">
                         {service.name}
                       </h3>
@@ -379,10 +379,10 @@ const EMarket = () => {
                       </div>
                     </div>
                     
-                    <p className="text-gray-600 mb-4 line-clamp-2">{service.description}</p>
+                    <p className="text-gray-600 mb-2 line-clamp-2">{service.description}</p>
                     
                     {/* Features */}
-                    <div className="mb-4">
+                    <div className="mb-2">
                       {service.features.map((feature, idx) => (
                         <div key={idx} className="flex items-center mb-2">
                           <svg className="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -416,7 +416,7 @@ const EMarket = () => {
           </div>
           
           {/* Load More Button */}
-          <div className="text-center mt-12">
+          <div className="text-center mt-6">
             <button className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-8 py-4 rounded-xl font-semibold hover:from-gray-200 hover:to-gray-300 transition-all duration-300 transform hover:scale-105 border border-gray-300">
               Load More Services
             </button>
@@ -425,9 +425,9 @@ const EMarket = () => {
       </div>
 
       {/* Process Section */}
-      <div className="py-16 bg-white">
+      <div className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-6">
             <h2 className="text-4xl font-bold mb-4 animate-fade-in">How We Work</h2>
             <p className="text-xl text-gray-600 animate-fade-in-delay">Simple process to get your digital project done</p>
           </div>
@@ -451,7 +451,7 @@ const EMarket = () => {
       </div>
 
       {/* Enhanced CTA Section */}
-      <div className="relative bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white py-24 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white py-12 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-black opacity-20"></div>
