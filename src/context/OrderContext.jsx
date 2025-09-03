@@ -29,15 +29,7 @@ const orderReducer = (state, action) => {
         orders: action.payload
       };
     
-    case ORDER_ACTIONS.UPDATE_ORDER_STATUS:
-      return {
-        ...state,
-        orders: state.orders.map(order =>
-          order.id === action.payload.orderId
-            ? { ...order, status: action.payload.status, trackingSteps: action.payload.trackingSteps }
-            : order
-        )
-      };
+
     
     default:
       return state;
@@ -88,14 +80,7 @@ export const OrderProvider = ({ children }) => {
       total: orderData.amount,
       amount: orderData.amount, // Add amount property for AdminDashboard compatibility
       customerName: orderData.customerName || 'Guest Customer', // Add customerName
-      trackingSteps: [
-        { step: 'Order Placed', completed: true, date: new Date().toLocaleString() },
-        { step: 'Payment Confirmed', completed: true, date: new Date().toLocaleString() },
-        { step: 'In Production', completed: false, date: '' },
-        { step: 'Quality Check', completed: false, date: '' },
-        { step: 'Shipped', completed: false, date: '' },
-        { step: 'Delivered', completed: false, date: '' }
-      ]
+
     };
     
     console.log('OrderContext: Created new order:', newOrder);
@@ -119,19 +104,13 @@ export const OrderProvider = ({ children }) => {
     return state.orders;
   };
 
-  const updateOrderStatus = (orderId, status, trackingSteps) => {
-    dispatch({ 
-      type: ORDER_ACTIONS.UPDATE_ORDER_STATUS, 
-      payload: { orderId, status, trackingSteps } 
-    });
-  };
+
 
   const value = {
     orders: state.orders,
     addOrder,
     getOrderById,
-    getAllOrders,
-    updateOrderStatus
+    getAllOrders
   };
 
   return (

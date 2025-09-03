@@ -18,7 +18,10 @@ import UserRegister from './Pages/UserRegister'
 import Cart from './Pages/Cart'
 import Checkout from './Pages/Checkout'
 import OrderSuccess from './Pages/OrderSuccess'
-
+import TermsOfService from './Pages/TermsOfService'
+import PrivacyPolicy from './Pages/PrivacyPolicy'
+import CookiePolicy from './Pages/CookiePolicy'
+import FileDownloads from './Pages/FileDownloads'
 import NotFound from './Pages/NotFound'
 
 const App = () => {
@@ -70,6 +73,10 @@ const App = () => {
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/order-success" element={<OrderSuccess />} />
+                    <Route path="/terms-of-service" element={<TermsOfService />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/cookie-policy" element={<CookiePolicy />} />
+                    <Route path="/file-downloads" element={<FileDownloads />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>

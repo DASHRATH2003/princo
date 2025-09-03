@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import logo from '../assets/printo.jpg'
+import logo from '../assets/newlogo.png'
 
 const Footer = () => {
   return (
@@ -13,9 +13,9 @@ const Footer = () => {
               <img 
                   src={logo} 
                   alt="Printo Logo" 
-                  className="w-12 h-12 object-contain"
+                  className="w-26 h-24 object-contain"
                 />
-              <div className="text-2xl font-bold">printco</div>
+             
             </div>
             <p className="text-gray-400 mb-4 max-w-md">
               Your trusted partner for all printing needs, office supplies, and digital solutions. 
@@ -90,11 +90,11 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
-            <p>&copy; 2024 PrintCo. All rights reserved. | Since 2001</p>
+            <p>&copy; 2024 PrintCo. All rights reserved. | Since 2025</p>
             <div className="flex space-x-4 text-sm">
-              <a href="#" className="hover:text-white transition">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition">Terms of Service</a>
-              <a href="#" className="hover:text-white transition">Cookie Policy</a>
+              <Link to="/privacy-policy" className="hover:text-white transition">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="hover:text-white transition">Terms of Service</Link>
+              <Link to="/cookie-policy" className="hover:text-white transition">Cookie Policy</Link>
             </div>
           </div>
         </div>

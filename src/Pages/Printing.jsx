@@ -168,6 +168,7 @@ const Printing = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('Featured')
   const [priceRange, setPriceRange] = useState([99, 25000])
+  const [showFilters, setShowFilters] = useState(false)
 
   const categories = [
     'All Products',
@@ -289,7 +290,7 @@ const Printing = () => {
       id: 9,
       name: 'A1 Large Poster',
       price: 299,
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      image: 'https://m.media-amazon.com/images/I/71LiV1XNphL._UF894,1000_QL80_.jpg',
       category: 'Posters & Banners',
       isNew: false,
       onSale: false,
@@ -401,15 +402,15 @@ const Printing = () => {
       {/* Header with Search Bar */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 max-w-2xl">
+          <div className="flex flex-col md:flex-row md:items-center gap-4">
+            <div className="flex-1">
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search for printing services, business cards, brochures..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -419,13 +420,13 @@ const Printing = () => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-4 ml-6">
+            <div className="flex items-center justify-between md:justify-end">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Sort By:</span>
+                <span className="text-sm text-gray-600 whitespace-nowrap">Sort By:</span>
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="text-sm border-none focus:outline-none focus:ring-0 bg-transparent"
+                  className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
                   <option>Featured</option>
                   <option>Price: Low to High</option>
@@ -433,9 +434,6 @@ const Printing = () => {
                   <option>Newest</option>
                   <option>Best Rating</option>
                 </select>
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
               </div>
             </div>
           </div>
@@ -443,9 +441,22 @@ const Printing = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Mobile Filter Toggle */}
+          <div className="lg:hidden mb-4">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+              </svg>
+              Filters
+            </button>
+          </div>
+          
           {/* Sidebar */}
-          <div className="w-64 flex-shrink-0">
+          <div className={`w-full lg:w-64 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Categories */}
             <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
               <h3 className="font-semibold text-gray-800 mb-4">Categories</h3>

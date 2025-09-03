@@ -9,6 +9,7 @@ const LocalMarket = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('Popular')
   const [priceRange, setPriceRange] = useState([0, 1000])
+  const [showFilters, setShowFilters] = useState(false)
 
   // Categories for local market
   const categories = [
@@ -29,7 +30,7 @@ const LocalMarket = () => {
       category: 'Vegetables',
       price: 40,
       originalPrice: 50,
-      image: 'https://images.unsplash.com/photo-1546470427-e5d491d121f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
+      image: 'https://t4.ftcdn.net/jpg/00/69/28/27/360_F_69282769_nnGX7SidAFQs8SwUgmZFx5Zlz6sXRkl4.jpg',
       freshness: 'Fresh Today',
       delivery: 'Same Day',
       rating: 4.8,
@@ -249,8 +250,21 @@ const LocalMarket = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
+          {/* Mobile Filter Toggle */}
+          <div className="lg:hidden mb-4">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+              </svg>
+              Filters
+            </button>
+          </div>
+          
           {/* Sidebar Filters */}
-          <div className="lg:w-64 space-y-6">
+          <div className={`w-full lg:w-64 space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Categories */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>

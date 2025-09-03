@@ -428,11 +428,11 @@ const Home = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
             {/* Logo Design */}
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
                   alt="Logo Design" 
-                  className="w-12 h-12 rounded-full object-cover shadow-md"
+                  className="w-20 h-20 rounded-full object-cover shadow-md"
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Logo Design</h3>
@@ -440,11 +440,11 @@ const Home = () => {
 
             {/* Web Design */}
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
                   alt="Web Design" 
-                  className="w-12 h-12 rounded-full object-cover shadow-md"
+                  className="w-20 h-20 rounded-full object-cover shadow-md"
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Web Design</h3>
@@ -452,11 +452,11 @@ const Home = () => {
 
             {/* T-shirt Design */}
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
                   alt="T-shirt Design" 
-                  className="w-12 h-12 rounded-full object-cover shadow-md"
+                  className="w-20 h-20 rounded-full object-cover shadow-md"
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">T-shirt Design</h3>
@@ -464,11 +464,11 @@ const Home = () => {
 
             {/* Flyer Design */}
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-20 h-20 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
                   alt="Flyer Design" 
-                  className="w-12 h-12 rounded-full object-cover shadow-md"
+                  className="w-20 h-20 rounded-full object-cover shadow-md"
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Flyer Design</h3>
@@ -476,11 +476,11 @@ const Home = () => {
 
             {/* Brochure Design */}
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-20 h-20 bg-gradient-to-br from-pink-100 to-pink-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-pink-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
                   alt="Brochure Design" 
-                  className="w-12 h-12 rounded-full object-cover shadow-md"
+                  className="w-20 h-20 rounded-full object-cover shadow-md"
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Brochure Design</h3>
@@ -488,11 +488,11 @@ const Home = () => {
 
             {/* Business Card Design */}
             <div className="flex flex-col items-center group cursor-pointer">
-              <div className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
                   alt="Business Card Design" 
-                  className="w-12 h-12 rounded-full object-cover shadow-md"
+                  className="w-20 h-20 rounded-full object-cover shadow-md"
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Business Card Design</h3>

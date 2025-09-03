@@ -9,6 +9,7 @@ const EMarket = () => {
   const [sortBy, setSortBy] = useState('Featured')
   const [priceRange, setPriceRange] = useState([999, 332500])
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
   const { items: cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart()
 
   // Get cart item quantity for a specific product
@@ -117,7 +118,7 @@ const EMarket = () => {
       id: 9,
       name: 'A1 Large Poster',
       price: 2949,
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      image: 'https://m.media-amazon.com/images/I/71LiV1XNphL._UF894,1000_QL80_.jpg',
       category: 'Posters',
       isNew: true,
       onSale: false
@@ -155,7 +156,7 @@ const EMarket = () => {
       id: 13,
       name: 'Vinyl Banner Printing',
       price: 10385,
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      image: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQFtOF-6TGnt0I1uruUVy1kMsk9YsvUdSQMERFebE0iHQZk4x8d8CbbzsYjP9qElLWeRURuCx8JDAbiWic-fz60xR6vVDPxmwTg0OSuM2ESCsQsdGRtEtg-Yg',
       category: 'Banners',
       isNew: false,
       onSale: false
@@ -220,7 +221,7 @@ const EMarket = () => {
       id: 20,
       name: 'Die-cut Stickers',
       price: 1578,
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      image: 'https://www.tradeprint.co.uk/dam/jcr:a7fcbe27-b906-447f-a05e-5174f335948b/Stickers%20-%20Die%20Cut.webp',
       category: 'Stickers',
       isNew: true,
       onSale: false
@@ -276,26 +277,21 @@ const EMarket = () => {
       {/* Header with Search Bar */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 max-w-2xl">
+          <div className="flex flex-col md:flex-row md:items-center gap-4">
+            <div className="flex-1">
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search for printing services, business cards, brochures..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
-                <button className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </button>
               </div>
             </div>
             
@@ -307,21 +303,19 @@ const EMarket = () => {
                 </svg>
               </div>
               
+            <div className="flex items-center justify-between md:justify-end gap-4">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Sort By:</span>
+                <span className="text-sm text-gray-600 whitespace-nowrap">Sort By:</span>
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="text-sm border-none focus:outline-none focus:ring-0 bg-transparent"
+                  className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option>Featured</option>
                   <option>Price: Low to High</option>
                   <option>Price: High to Low</option>
                   <option>Newest</option>
                 </select>
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
               </div>
 
               {/* Cart Icon */}
@@ -339,18 +333,32 @@ const EMarket = () => {
                 )}
               </button>
             </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Mobile Filter Toggle */}
+          <div className="lg:hidden mb-4">
+            <button 
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+              </svg>
+              Filters
+            </button>
+          </div>
+          
           {/* Sidebar */}
-          <div className="w-64 flex-shrink-0">
+          <div className={`w-full lg:w-64 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Categories */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Categories</h3>
-              <div className="space-y-2">
+            <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4 mb-4 lg:mb-6">
+              <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Categories</h3>
+              <div className="space-y-1 lg:space-y-2">
                 {categories.map((category) => (
                   <div key={category} className="flex items-center">
                     <input
@@ -359,13 +367,13 @@ const EMarket = () => {
                       name="category"
                       checked={selectedCategory === category}
                       onChange={() => setSelectedCategory(category)}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      className="h-3 w-3 lg:h-4 lg:w-4 text-blue-600 focus:ring-blue-500 border-gray-300 flex-shrink-0"
                     />
-                    <label htmlFor={category} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor={category} className="ml-2 text-xs lg:text-sm text-gray-700 cursor-pointer truncate">
                       {category}
                     </label>
                     {category !== 'All Products' && (
-                      <svg className="h-4 w-4 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-3 w-3 lg:h-4 lg:w-4 text-gray-400 ml-auto flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     )}
@@ -375,17 +383,17 @@ const EMarket = () => {
             </div>
 
             {/* Service Type Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Service Type</h3>
-              <div className="space-y-2">
+            <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4 mb-4 lg:mb-6">
+              <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Service Type</h3>
+              <div className="space-y-1 lg:space-y-2">
                 {['Design Only', 'Print Only', 'Design + Print', 'Rush Service'].map((type) => (
                   <div key={type} className="flex items-center">
                     <input
                       type="checkbox"
                       id={type}
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                      className="h-3 w-3 lg:h-4 lg:w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded flex-shrink-0"
                     />
-                    <label htmlFor={type} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor={type} className="ml-2 text-xs lg:text-sm text-gray-700 cursor-pointer truncate">
                       {type}
                     </label>
                   </div>
@@ -394,17 +402,17 @@ const EMarket = () => {
             </div>
 
             {/* Delivery Time Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Delivery Time</h3>
-              <div className="space-y-2">
+            <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4 mb-4 lg:mb-6">
+              <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Delivery Time</h3>
+              <div className="space-y-1 lg:space-y-2">
                 {['Same Day', '1-2 days', '3-5 days', '1 week', '2+ weeks'].map((delivery) => (
                   <div key={delivery} className="flex items-center">
                     <input
                       type="checkbox"
                       id={delivery}
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                      className="h-3 w-3 lg:h-4 lg:w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded flex-shrink-0"
                     />
-                    <label htmlFor={delivery} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor={delivery} className="ml-2 text-xs lg:text-sm text-gray-700 cursor-pointer truncate">
                       {delivery}
                     </label>
                   </div>
@@ -413,10 +421,10 @@ const EMarket = () => {
             </div>
 
             {/* Price Range */}
-            <div className="bg-white rounded-lg shadow-sm p-4">
-              <h3 className="font-semibold text-gray-800 mb-4">Price Range</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-sm text-gray-600">
+            <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4">
+              <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Price Range</h3>
+              <div className="space-y-3 lg:space-y-4">
+                <div className="flex items-center justify-between text-xs lg:text-sm text-gray-600">
                   <span>₹ {priceRange[0]}</span>
                   <span>₹ {priceRange[1]}.00</span>
                 </div>
@@ -427,7 +435,7 @@ const EMarket = () => {
                     max="332500"
                     value={priceRange[1]}
                     onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                    className="w-full h-1 lg:h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                   />
                 </div>
               </div>
@@ -437,36 +445,39 @@ const EMarket = () => {
           {/* Main Content */}
           <div className="flex-1">
             {/* Category Tabs */}
-            <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
-              {['Services', 'Business Cards', 'Brochures', 'Posters', 'Flyers', 'Banners'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setSelectedCategory(tab)}
-                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                    selectedCategory === tab
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-6 h-6 bg-purple-300 rounded flex items-center justify-center">
-                      <div className="w-3 h-3 bg-purple-600 rounded"></div>
+            <div className="mb-4 lg:mb-6">
+              <div className="flex overflow-x-auto space-x-1 bg-gray-100 p-1 rounded-lg scrollbar-hide">
+                {['Services', 'Business Cards', 'Brochures', 'Posters', 'Flyers', 'Banners'].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setSelectedCategory(tab)}
+                    className={`flex-shrink-0 px-3 lg:px-4 py-2 text-xs lg:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+                      selectedCategory === tab
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center space-x-1 lg:space-x-2">
+                      <div className="w-4 h-4 lg:w-6 lg:h-6 bg-purple-300 rounded flex items-center justify-center">
+                        <div className="w-2 h-2 lg:w-3 lg:h-3 bg-purple-600 rounded"></div>
+                      </div>
+                      <span className="hidden sm:inline">{tab}</span>
+                      <span className="sm:hidden">{tab.split(' ')[0]}</span>
                     </div>
-                    <span>{tab}</span>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
               {filteredProducts.map((product) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative">
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-40 lg:h-48 object-cover"
                     />
                     {product.isNew && (
                       <span className="absolute top-2 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded">
@@ -479,9 +490,9 @@ const EMarket = () => {
                       </span>
                     )}
                   </div>
-                  <div className="p-4">
-                    <h3 className="font-medium text-gray-900 mb-2">{product.name}</h3>
-                    <p className="text-lg font-semibold text-gray-900 mb-3">₹ {product.price}</p>
+                  <div className="p-3 lg:p-4">
+                    <h3 className="font-medium text-gray-900 mb-2 text-sm lg:text-base line-clamp-2">{product.name}</h3>
+                    <p className="text-base lg:text-lg font-semibold text-gray-900 mb-3">₹ {product.price}</p>
                     
                     {/* Add to Cart Section */}
                     <div className="flex items-center justify-between">
@@ -489,18 +500,18 @@ const EMarket = () => {
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => updateQuantity(product.id, getProductQuantity(product.id) - 1)}
-                            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+                            className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                             </svg>
                           </button>
-                          <span className="w-8 text-center font-medium">{getProductQuantity(product.id)}</span>
+                          <span className="w-6 lg:w-8 text-center font-medium text-sm lg:text-base">{getProductQuantity(product.id)}</span>
                           <button
                             onClick={() => updateQuantity(product.id, getProductQuantity(product.id) + 1)}
-                            className="w-8 h-8 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
+                            className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                           </button>
@@ -508,12 +519,13 @@ const EMarket = () => {
                       ) : (
                         <button
                           onClick={() => addToCart(product)}
-                          className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                          className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-base"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                           </svg>
-                          <span>Add to Cart</span>
+                          <span className="hidden sm:inline">Add to Cart</span>
+                          <span className="sm:hidden">Add</span>
                         </button>
                       )}
                       
