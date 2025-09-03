@@ -1,555 +1,642 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import { useCart } from '../context/CartContext'
 
 const EMarket = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const pageTitle = "Printing Services"
+  const pageDescription = "Professional printing and design services for your business needs"
+  const [selectedCategory, setSelectedCategory] = useState('All Products')
   const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('popular')
-  const [viewMode, setViewMode] = useState('grid')
-  const [hoveredService, setHoveredService] = useState(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const [sortBy, setSortBy] = useState('Featured')
+  const [priceRange, setPriceRange] = useState([999, 332500])
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const { items: cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart()
 
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
+  // Get cart item quantity for a specific product
+  const getProductQuantity = (productId) => {
+    const item = cart.find(item => item.id === productId)
+    return item ? item.quantity : 0
+  }
 
-  const digitalServices = [
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0)
+  }
+
+  const categories = [
+    'All Products',
+    'Services',
+    'Business Cards',
+    'Brochures',
+    'Posters',
+    'Flyers',
+    'Banners',
+    'Logo Design',
+    'Stickers',
+    'Booklets'
+  ]
+
+  const legs = ['Steel', 'Aluminium', 'Custom', 'Wood']
+  const durations = ['-', '1-3 days', '1 week', '2 weeks', '1 month']
+
+  const products = [
+    // Business Cards
     {
       id: 1,
-      name: "Website Design",
-      description: "Professional website design and development",
-      price: "₹15,999",
-      category: "Web Development",
-      imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      features: ["Responsive Design", "SEO Optimized", "CMS Integration"]
+      name: 'Premium Business Cards',
+      price: 2159,
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Business Cards',
+      isNew: true,
+      onSale: false
     },
     {
       id: 2,
-      name: "Digital Marketing",
-      description: "Complete digital marketing solutions",
-      price: "₹4,999",
-      category: "Marketing",
-      imageUrl: "https://images.unsplash.com/photo-1557838923-2985c318be48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      features: ["Social Media", "Google Ads", "Analytics"]
+      name: 'Matte Finish Business Cards',
+      price: 2491,
+      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Business Cards',
+      isNew: false,
+      onSale: true
     },
     {
       id: 3,
-      name: "Logo Design",
-      description: "Custom logo design for your brand",
-      price: "₹2,999",
-      category: "Design",
-      imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      features: ["Multiple Concepts", "Vector Files", "Brand Guidelines"]
+      name: 'Glossy Business Cards',
+      price: 1909,
+      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Business Cards',
+      isNew: false,
+      onSale: false
     },
+    // Brochures
     {
       id: 4,
-      name: "E-commerce Setup",
-      description: "Complete e-commerce website setup",
-      price: "₹12,999",
-      category: "Web Development",
-      imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      features: ["Payment Gateway", "Inventory Management", "Mobile App"]
+      name: 'Tri-fold Brochures',
+      price: 7474,
+      image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Brochures',
+      isNew: false,
+      onSale: true
     },
     {
       id: 5,
-      name: "Content Writing",
-      description: "Professional content writing services",
-      price: "₹1,999",
-      category: "Content",
-      imageUrl: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      features: ["SEO Content", "Blog Posts", "Product Descriptions"]
+      name: 'Bi-fold Brochures',
+      price: 6643,
+      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Brochures',
+      isNew: false,
+      onSale: false
     },
     {
       id: 6,
-      name: "Social Media Management",
-      description: "Monthly social media management",
-      price: "₹4,999",
-      category: "Marketing",
-      imageUrl: "https://images.unsplash.com/photo-1557838923-2985c318be48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      features: ["Daily Posts", "Engagement", "Analytics Reports"]
+      name: 'Z-fold Brochures',
+      price: 7972,
+      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Brochures',
+      isNew: true,
+      onSale: false
+    },
+    // Posters
+    {
+      id: 7,
+      name: 'A3 Poster Printing',
+      price: 1287,
+      image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Posters',
+      isNew: false,
+      onSale: false
+    },
+    {
+      id: 8,
+      name: 'A2 Poster Printing',
+      price: 2118,
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Posters',
+      isNew: false,
+      onSale: true
+    },
+    {
+      id: 9,
+      name: 'A1 Large Poster',
+      price: 2949,
+      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Posters',
+      isNew: true,
+      onSale: false
+    },
+    // Flyers
+    {
+      id: 10,
+      name: 'A5 Flyer Design',
+      price: 2908,
+      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Flyers',
+      isNew: false,
+      onSale: true
+    },
+    {
+      id: 11,
+      name: 'A4 Flyer Printing',
+      price: 3739,
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Flyers',
+      isNew: false,
+      onSale: false
+    },
+    {
+      id: 12,
+      name: 'Double-sided Flyers',
+      price: 4570,
+      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Flyers',
+      isNew: true,
+      onSale: false
+    },
+    // Banners
+    {
+      id: 13,
+      name: 'Vinyl Banner Printing',
+      price: 10385,
+      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Banners',
+      isNew: false,
+      onSale: false
+    },
+    {
+      id: 14,
+      name: 'Fabric Banner',
+      price: 12047,
+      image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Banners',
+      isNew: true,
+      onSale: false
+    },
+    {
+      id: 15,
+      name: 'Mesh Banner',
+      price: 11216,
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Banners',
+      isNew: false,
+      onSale: true
+    },
+    // Logo Design
+    {
+      id: 16,
+      name: 'Professional Logo Design',
+      price: 16614,
+      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Logo Design',
+      isNew: true,
+      onSale: false
+    },
+    {
+      id: 17,
+      name: 'Logo + Brand Identity',
+      price: 24922,
+      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Logo Design',
+      isNew: false,
+      onSale: true
+    },
+    {
+      id: 18,
+      name: 'Logo Redesign',
+      price: 12461,
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Logo Design',
+      isNew: false,
+      onSale: false
+    },
+    // Stickers
+    {
+      id: 19,
+      name: 'Vinyl Stickers',
+      price: 1079,
+      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Stickers',
+      isNew: false,
+      onSale: false
+    },
+    {
+      id: 20,
+      name: 'Die-cut Stickers',
+      price: 1578,
+      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Stickers',
+      isNew: true,
+      onSale: false
+    },
+    {
+      id: 21,
+      name: 'Transparent Stickers',
+      price: 1328,
+      image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Stickers',
+      isNew: false,
+      onSale: true
+    },
+    // Booklets
+    {
+      id: 22,
+      name: 'Saddle-stitched Booklet',
+      price: 3739,
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Booklets',
+      isNew: false,
+      onSale: true
+    },
+    {
+      id: 23,
+      name: 'Perfect Bound Booklet',
+      price: 5401,
+      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Booklets',
+      isNew: true,
+      onSale: false
+    },
+    {
+      id: 24,
+      name: 'Spiral Bound Booklet',
+      price: 4570,
+      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+      category: 'Booklets',
+      isNew: false,
+      onSale: false
     }
   ]
 
-  const categories = [
-    { id: 'all', name: 'All Services' },
-    { id: 'Web Development', name: 'Web Development' },
-    { id: 'Marketing', name: 'Digital Marketing' },
-    { id: 'Design', name: 'Design' },
-    { id: 'Content', name: 'Content' }
-  ]
-
-  const filteredServices = selectedCategory === 'all' 
-    ? digitalServices 
-    : digitalServices.filter(service => service.category === selectedCategory)
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory === 'All Products' || product.category === selectedCategory
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
+    return matchesCategory && matchesSearch && matchesPrice
+  })
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Enhanced Hero Section */}
-      <div className="relative bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 text-white py-12 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-black opacity-20"></div>
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
-          {/* Floating Elements */}
-          <div className="absolute top-20 left-10 w-20 h-20 bg-white opacity-5 rounded-full animate-float"></div>
-          <div className="absolute top-40 right-20 w-16 h-16 bg-white opacity-5 rounded-full animate-float-delayed"></div>
-          <div className="absolute bottom-20 left-1/4 w-12 h-12 bg-white opacity-5 rounded-full animate-float"></div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="inline-flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
-              <span className="text-sm font-medium">🚀 Digital Services Marketplace</span>
-            </div>
-            <h1 className="text-6xl md:text-7xl font-bold mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Find Your
-              <span className="block text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text">
-                Perfect Service
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl mb-4 max-w-4xl mx-auto text-gray-200 leading-relaxed">
-              Connect with top-rated professionals and get your projects done with quality and precision. From web development to digital marketing.
-            </p>
-            
-            {/* Enhanced Search Bar */}
-            <div className="max-w-4xl mx-auto mb-4">
+      {/* Header with Search Bar */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 max-w-2xl">
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                  <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <input
+                  type="text"
+                  placeholder="Search for printing services, business cards, brochures..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Search for services, providers, or skills..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-14 pr-6 py-4 text-lg bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all duration-300"
-                />
-                <div className="absolute inset-y-0 right-0 pr-2 flex items-center">
-                  <button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-2 rounded-xl font-medium hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
-                    Search
-                  </button>
-                </div>
+                <button className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
               </div>
             </div>
             
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-              <button className="group bg-gradient-to-r from-pink-500 to-purple-600 text-white px-10 py-4 rounded-full font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-pink-500/25">
-                <span className="flex items-center">
-                  Browse Services
-                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </span>
-              </button>
-              <button className="group border-2 border-white text-white px-10 py-4 rounded-full font-semibold hover:bg-white hover:text-purple-900 transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
-                <span className="flex items-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  Become a Seller
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+            <div className="flex items-center space-x-4 ml-6">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Benelux</span>
+                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">Sort By:</span>
+                <select 
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="text-sm border-none focus:outline-none focus:ring-0 bg-transparent"
+                >
+                  <option>Featured</option>
+                  <option>Price: Low to High</option>
+                  <option>Price: High to Low</option>
+                  <option>Newest</option>
+                </select>
+                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
 
-      {/* Enhanced Stats Section */}
-      <div className="bg-white py-10 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50"></div>
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Trusted by Thousands</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Join our growing community of satisfied clients and talented professionals</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className={`text-center group transition-all duration-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                </div>
-                <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">500+</div>
-                <div className="text-gray-600 font-medium">Projects Completed</div>
-              </div>
-            </div>
-            <div className={`text-center group transition-all duration-500 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <div className="text-4xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent mb-2">50+</div>
-                <div className="text-gray-600 font-medium">Expert Developers</div>
-              </div>
-            </div>
-            <div className={`text-center group transition-all duration-500 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="text-4xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-2">98%</div>
-                <div className="text-gray-600 font-medium">Client Satisfaction</div>
-              </div>
-            </div>
-            <div className={`text-center group transition-all duration-500 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-                <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 109.75 9.75c0-5.385-4.365-9.75-9.75-9.75z" />
-                  </svg>
-                </div>
-                <div className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-red-600 bg-clip-text text-transparent mb-2">24/7</div>
-                <div className="text-gray-600 font-medium">Support Available</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Enhanced Category Filters */}
-      <div className="bg-gray-50 py-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Explore Services by Category</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">Find the perfect service for your needs from our comprehensive categories</p>
-          </div>
-          
-          {/* Category Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-6">
-            {categories.map((category, index) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`group relative p-6 rounded-2xl transition-all duration-300 transform hover:-translate-y-2 ${
-                  selectedCategory === category.id
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-2xl scale-105'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow-lg hover:shadow-xl'
-                }`}
+              {/* Cart Icon */}
+              <button 
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 text-gray-600 hover:text-purple-600 transition-colors"
               >
-                <div className={`w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? 'bg-white bg-opacity-20'
-                    : 'bg-gradient-to-r from-purple-100 to-pink-100 group-hover:from-purple-200 group-hover:to-pink-200'
-                }`}>
-                  {/* Category Icons */}
-                  {category.id === 'all' && (
-                    <svg className={`w-6 h-6 ${selectedCategory === category.id ? 'text-white' : 'text-purple-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                  )}
-                  {category.id === 'Web Development' && (
-                    <svg className={`w-6 h-6 ${selectedCategory === category.id ? 'text-white' : 'text-purple-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                    </svg>
-                  )}
-                  {category.id === 'Marketing' && (
-                    <svg className={`w-6 h-6 ${selectedCategory === category.id ? 'text-white' : 'text-purple-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  )}
-                  {category.id === 'Design' && (
-                    <svg className={`w-6 h-6 ${selectedCategory === category.id ? 'text-white' : 'text-purple-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM7 3H5a2 2 0 00-2 2v12a4 4 0 004 4h2" />
-                    </svg>
-                  )}
-                  {category.id === 'Content' && (
-                    <svg className={`w-6 h-6 ${selectedCategory === category.id ? 'text-white' : 'text-purple-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                  )}
-                </div>
-                <div className="font-semibold text-sm">{category.name}</div>
-                {selectedCategory === category.id && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                </svg>
+                {getTotalItems() > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {getTotalItems()}
+                  </span>
                 )}
               </button>
-            ))}
-          </div>
-          
-          {/* Filter Controls */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600 font-medium">Sort by:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              >
-                <option value="popular">Most Popular</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Highest Rated</option>
-                <option value="newest">Newest First</option>
-              </select>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600 font-medium">View:</span>
-              <div className="flex bg-gray-200 rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode('grid')}
-                  className={`px-3 py-1 rounded-md transition-all duration-200 ${
-                    viewMode === 'grid' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-600'
-                  }`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setViewMode('list')}
-                  className={`px-3 py-1 rounded-md transition-all duration-200 ${
-                    viewMode === 'list' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-600'
-                  }`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Enhanced Services Grid */}
-      <div className="bg-white py-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Featured Services</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">Discover top-rated services from verified professionals</p>
-          </div>
-          
-          <div className={`grid gap-8 ${
-            viewMode === 'grid' 
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-              : 'grid-cols-1 max-w-4xl mx-auto'
-          }`}>
-            {filteredServices.map((service, index) => (
-              <div
-                key={service.id}
-                className={`group bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border border-gray-100 ${
-                  viewMode === 'list' ? 'flex' : ''
-                } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                style={{ transitionDelay: `${index * 100}ms` }}
-                onMouseEnter={() => setHoveredService(service.id)}
-                onMouseLeave={() => setHoveredService(null)}
-              >
-                <div className={`relative ${viewMode === 'list' ? 'w-1/3' : ''}`}>
-                  <img
-                    src={service.imageUrl}
-                    alt={service.name}
-                    className={`object-cover group-hover:scale-110 transition-transform duration-500 ${
-                      viewMode === 'list' ? 'w-full h-full' : 'w-full h-56'
-                    }`}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex gap-6">
+          {/* Sidebar */}
+          <div className="w-64 flex-shrink-0">
+            {/* Categories */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+              <h3 className="font-semibold text-gray-800 mb-4">Categories</h3>
+              <div className="space-y-2">
+                {categories.map((category) => (
+                  <div key={category} className="flex items-center">
+                    <input
+                      type="radio"
+                      id={category}
+                      name="category"
+                      checked={selectedCategory === category}
+                      onChange={() => setSelectedCategory(category)}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
+                    <label htmlFor={category} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                      {category}
+                    </label>
+                    {category !== 'All Products' && (
+                      <svg className="h-4 w-4 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Service Type Filter */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+              <h3 className="font-semibold text-gray-800 mb-4">Service Type</h3>
+              <div className="space-y-2">
+                {['Design Only', 'Print Only', 'Design + Print', 'Rush Service'].map((type) => (
+                  <div key={type} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={type}
+                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor={type} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                      {type}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Delivery Time Filter */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+              <h3 className="font-semibold text-gray-800 mb-4">Delivery Time</h3>
+              <div className="space-y-2">
+                {['Same Day', '1-2 days', '3-5 days', '1 week', '2+ weeks'].map((delivery) => (
+                  <div key={delivery} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={delivery}
+                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor={delivery} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                      {delivery}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Range */}
+            <div className="bg-white rounded-lg shadow-sm p-4">
+              <h3 className="font-semibold text-gray-800 mb-4">Price Range</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <span>₹ {priceRange[0]}</span>
+                  <span>₹ {priceRange[1]}.00</span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="range"
+                    min="999"
+                    max="332500"
+                    value={priceRange[1]}
+                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-white bg-opacity-90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {service.category}
-                    </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1">
+            {/* Category Tabs */}
+            <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
+              {['Services', 'Business Cards', 'Brochures', 'Posters', 'Flyers', 'Banners'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSelectedCategory(tab)}
+                  className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    selectedCategory === tab
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-6 h-6 bg-purple-300 rounded flex items-center justify-center">
+                      <div className="w-3 h-3 bg-purple-600 rounded"></div>
+                    </div>
+                    <span>{tab}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product) => (
+                <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                  <div className="relative">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-48 object-cover"
+                    />
+                    {product.isNew && (
+                      <span className="absolute top-2 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded">
+                        New!
+                      </span>
+                    )}
+                    {product.onSale && (
+                      <span className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded">
+                        Sale
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-medium text-gray-900 mb-2">{product.name}</h3>
+                    <p className="text-lg font-semibold text-gray-900 mb-3">₹ {product.price}</p>
+                    
+                    {/* Add to Cart Section */}
+                    <div className="flex items-center justify-between">
+                      {getProductQuantity(product.id) > 0 ? (
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => updateQuantity(product.id, getProductQuantity(product.id) - 1)}
+                            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                            </svg>
+                          </button>
+                          <span className="w-8 text-center font-medium">{getProductQuantity(product.id)}</span>
+                          <button
+                            onClick={() => updateQuantity(product.id, getProductQuantity(product.id) + 1)}
+                            className="w-8 h-8 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                          </svg>
+                          <span>Add to Cart</span>
+                        </button>
+                      )}
+                      
+                      {/* Quick View Button */}
+                      <button className="ml-2 p-2 text-gray-400 hover:text-purple-600 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
-                
-                <div className={`p-4 flex-1 ${viewMode === 'list' ? 'flex flex-col justify-between' : ''}`}>
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-bold text-gray-800 group-hover:text-purple-600 transition-colors duration-300">
-                        {service.name}
-                      </h3>
-                      <div className="flex items-center space-x-1">
-                        <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                        <span className="text-sm font-medium text-gray-700">4.9</span>
-                        <span className="text-sm text-gray-500">(127)</span>
-                      </div>
-                    </div>
-                    
-                    <p className="text-gray-600 mb-2 line-clamp-2">{service.description}</p>
-                    
-                    {/* Features */}
-                    <div className="mb-2">
-                      {service.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center mb-2">
-                          <svg className="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span className="text-sm text-gray-600">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Cart Sidebar */}
+      {isCartOpen && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsCartOpen(false)}></div>
+          <div className="absolute right-0 top-0 h-full w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
+            <div className="flex flex-col h-full">
+              {/* Cart Header */}
+              <div className="flex items-center justify-between p-4 border-b">
+                <h2 className="text-lg font-semibold text-gray-900">Shopping Cart ({getTotalItems()})</h2>
+                <button 
+                  onClick={() => setIsCartOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Cart Items */}
+              <div className="flex-1 overflow-y-auto p-4">
+                {cart.length === 0 ? (
+                  <div className="text-center py-8">
+                    <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                    </svg>
+                    <p className="text-gray-500 mb-4">Your cart is empty</p>
+                    <button 
+                      onClick={() => setIsCartOpen(false)}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors"
+                    >
+                      Continue Shopping
+                    </button>
                   </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        {service.price}
-                      </span>
-                    </div>
-                    
-                    <button className="group bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25">
-                      <span className="flex items-center">
-                        Order Now
-                        <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </span>
+                ) : (
+                  <div className="space-y-4">
+                    {cart.map((item) => (
+                      <div key={item.id} className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
+                        <img 
+                          src={item.image} 
+                          alt={item.name}
+                          className="w-16 h-16 object-cover rounded-md"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900 text-sm">{item.name}</h3>
+                          <p className="text-purple-600 font-semibold">₹ {item.price}</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                            </svg>
+                          </button>
+                          <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            className="w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                          </button>
+                        </div>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Cart Footer */}
+              {cart.length > 0 && (
+                <div className="border-t p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-semibold text-gray-900">Total:</span>
+                    <span className="text-xl font-bold text-purple-600">₹ {getCartTotal().toLocaleString()}</span>
+                  </div>
+                  <div className="space-y-2">
+                    <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors">
+                      Proceed to Checkout
+                    </button>
+                    <button 
+                      onClick={() => setIsCartOpen(false)}
+                      className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg font-medium transition-colors"
+                    >
+                      Continue Shopping
                     </button>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Load More Button */}
-          <div className="text-center mt-6">
-            <button className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 px-8 py-4 rounded-xl font-semibold hover:from-gray-200 hover:to-gray-300 transition-all duration-300 transform hover:scale-105 border border-gray-300">
-              Load More Services
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Process Section */}
-      <div className="py-8 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-6">
-            <h2 className="text-4xl font-bold mb-4 animate-fade-in">How We Work</h2>
-            <p className="text-xl text-gray-600 animate-fade-in-delay">Simple process to get your digital project done</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { step: "1", title: "Consultation", desc: "Discuss your requirements and goals" },
-              { step: "2", title: "Planning", desc: "Create detailed project plan and timeline" },
-              { step: "3", title: "Development", desc: "Build your project with regular updates" },
-              { step: "4", title: "Launch", desc: "Deploy and provide ongoing support" }
-            ].map((item, index) => (
-              <div key={index} className="text-center animate-fade-in-delay" style={{animationDelay: `${index * 0.1}s`}}>
-                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-xl font-bold">
-                  {item.step}
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Enhanced CTA Section */}
-      <div className="relative bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white py-12 overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-black opacity-20"></div>
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-20 left-10 w-32 h-32 bg-white opacity-5 rounded-full animate-float"></div>
-            <div className="absolute bottom-20 right-20 w-24 h-24 bg-white opacity-5 rounded-full animate-float-delayed"></div>
-            <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white opacity-5 rounded-full animate-float"></div>
-          </div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className={`text-center transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="inline-flex items-center bg-white bg-opacity-10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
-              <span className="text-sm font-medium">🚀 Join Our Community</span>
-            </div>
-            
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Ready to Transform
-              <span className="block text-transparent bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text">
-                Your Business?
-              </span>
-            </h2>
-            
-            <p className="text-xl md:text-2xl mb-12 max-w-4xl mx-auto text-gray-200 leading-relaxed">
-              Join thousands of satisfied clients who trust our digital services to grow their business and achieve their goals.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Fast Delivery</h3>
-                <p className="text-gray-300">Get your projects completed quickly with our efficient workflow</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">Quality Assured</h3>
-                <p className="text-gray-300">100% satisfaction guarantee with unlimited revisions</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 109.75 9.75c0-5.385-4.365-9.75-9.75-9.75z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">24/7 Support</h3>
-                <p className="text-gray-300">Round-the-clock customer support for all your needs</p>
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-              <button className="group bg-gradient-to-r from-pink-500 to-purple-600 text-white px-10 py-4 rounded-full font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-pink-500/25">
-                <span className="flex items-center">
-                  Get Started Today
-                  <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </span>
-              </button>
-              
-              <button className="group border-2 border-white text-white px-10 py-4 rounded-full font-semibold hover:bg-white hover:text-purple-900 transition-all duration-300 transform hover:scale-105 backdrop-blur-sm">
-                <span className="flex items-center">
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  View Portfolio
-                </span>
-              </button>
+              )}
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Custom CSS for animations */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-
-        .animate-fade-in-delay {
-          animation: fade-in 0.6s ease-out 0.2s both;
-        }
-      `}</style>
+      )}
     </div>
   )
 }
