@@ -59,50 +59,101 @@ const Checkout = () => {
 
       const amount = getCartTotal();
       
-      // Razorpay options
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_RCIDppgVxTHljt', // Razorpay key from environment
-        amount: amount * 100, // Amount in paise
+      // Create payment order through backend
+      console.log('🚀 Making API call to:', `${import.meta.env.VITE_API_BASE_URL}/api/payment/create-order`);
+      console.log('📦 Request data:', {
+        amount: amount,
         currency: 'INR',
+        receipt: `receipt_${Date.now()}`,
+        customerInfo: customerInfo,
+        items: items
+      });
+      
+      const orderResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/payment/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amount,
+          currency: 'INR',
+          receipt: `receipt_${Date.now()}`,
+          customerInfo: customerInfo,
+          items: items
+        })
+      });
+
+      console.log('📡 Response status:', orderResponse.status);
+      console.log('📡 Response ok:', orderResponse.ok);
+      
+      if (!orderResponse.ok) {
+        const errorText = await orderResponse.text();
+        console.error('❌ Error response:', errorText);
+        throw new Error(`Failed to create payment order: ${orderResponse.status} - ${errorText}`);
+      }
+
+      const orderData = await orderResponse.json();
+      console.log('🎯 Payment order created:', orderData);
+      
+      // Razorpay options with backend order
+      const options = {
+        key: orderData.key, // Razorpay key from backend
+        amount: orderData.order.amount, // Amount in paise from backend
+        currency: orderData.order.currency,
         name: 'PrintCo',
         description: 'Printing Services Payment',
         image: '/logo.png',
-        order_id: '', // You can generate this from backend
-        handler: function (response) {
-          // Payment successful
+        order_id: orderData.order.id, // Order ID from backend
+        handler: async function (response) {
+          // Payment successful - verify through backend
           console.log('🎉 Payment successful:', response);
-          console.log('Customer Info:', customerInfo);
-          console.log('Cart Items:', items);
-          console.log('Total Amount:', amount);
           
-          // Generate order ID from payment ID
-          const orderId = `ORD${response.razorpay_payment_id.slice(-6).toUpperCase()}`;
-          
-          // Prepare navigation data
-          const navigationData = {
-            paymentId: response.razorpay_payment_id,
-            orderId: orderId,
-            amount: amount,
-            items: items,
-            customerInfo: customerInfo
-          };
-          
-          console.log('🚀 Navigating to OrderSuccess with data:', navigationData);
-          
-          // Clear cart AFTER preparing data
-          clearCart();
-          
-          // Navigate to success page with payment data - using window.location for reliable navigation
-          // Store data in sessionStorage for reliable transfer
-          sessionStorage.setItem('orderSuccessData', JSON.stringify(navigationData));
-          
-          // Use window.location for guaranteed navigation
-          window.location.href = '/order-success';
-          
-          // Show success message after navigation
-          setTimeout(() => {
-            console.log(`✅ Payment completed! Payment ID: ${response.razorpay_payment_id}`);
-          }, 100);
+          try {
+            // Verify payment through backend
+            const verifyResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/payment/verify`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                customerInfo: customerInfo,
+                items: items,
+                amount: amount
+              })
+            });
+
+            if (!verifyResponse.ok) {
+              throw new Error('Payment verification failed');
+            }
+
+            const verifyData = await verifyResponse.json();
+            console.log('✅ Payment verified:', verifyData);
+            
+            // Prepare navigation data
+            const navigationData = {
+              paymentId: response.razorpay_payment_id,
+              orderId: verifyData.orderId,
+              amount: amount,
+              items: items,
+              customerInfo: customerInfo
+            };
+            
+            console.log('🚀 Navigating to OrderSuccess with data:', navigationData);
+            
+            // Clear cart AFTER preparing data
+            clearCart();
+            
+            // Navigate to success page with payment data
+            sessionStorage.setItem('orderSuccessData', JSON.stringify(navigationData));
+            window.location.href = '/order-success';
+            
+          } catch (verifyError) {
+            console.error('Payment verification error:', verifyError);
+            alert('Payment verification failed. Please contact support.');
+          }
         },
         prefill: {
           name: customerInfo.name,
@@ -128,9 +179,12 @@ const Checkout = () => {
       razorpay.open();
       
     } catch (error) {
-      console.error('Payment error:', error);
-      alert('Payment failed. Please try again.');
-    } finally {
+      console.error('💥 Payment error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      alert(`Payment failed: ${error.message}. Please try again.`);
       setLoading(false);
     }
   };

@@ -56,12 +56,68 @@ const OrderSuccess = () => {
     hasCustomerInfo: !!customerInfo,
   });
 
-  // Save to MongoDB via API
-  const saveOrderToDatabase = async () => {
+  // Check if order was already created by backend verification
+  const checkOrderStatus = async () => {
     try {
-      console.log('🚀 Attempting to save order to database...');
+      console.log('🔍 Checking if order was already created by backend verification...');
+      console.log('🔍 Environment check:', {
+        VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+        NODE_ENV: import.meta.env.NODE_ENV,
+        MODE: import.meta.env.MODE
+      });
       setSaveStatus('saving');
       
+      // Use environment variable or fallback to localhost
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      
+      // First, try to find existing order by payment ID
+      const checkOrderUrl = `${API_BASE_URL}/api/orders/payment/${paymentId}`;
+      console.log('🌐 Checking order URL:', checkOrderUrl);
+      
+      const checkResponse = await fetch(checkOrderUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      console.log('📨 Check response received!');
+      console.log('📨 Response status:', checkResponse.status);
+      console.log('📨 Response ok:', checkResponse.ok);
+      
+      if (checkResponse.ok) {
+        // Order already exists from backend verification
+        const existingOrder = await checkResponse.json();
+        console.log('✅ Order already exists from backend verification:', existingOrder);
+        setSaveStatus('success');
+        localStorage.removeItem('pendingOrder');
+      } else if (checkResponse.status === 404) {
+        // Order doesn't exist, create it as fallback
+        console.log('⚠️ Order not found, creating as fallback...');
+        await createFallbackOrder(API_BASE_URL);
+      } else {
+        // Other error occurred
+        const errorText = await checkResponse.text();
+        console.error('❌ Server error checking order:', {
+          status: checkResponse.status,
+          errorText
+        });
+        setSaveStatus('error');
+        await savePendingOrderToLocalStorage();
+      }
+    } catch (error) {
+      console.error('❌ Network error occurred!');
+      console.error('❌ Error type:', error.constructor.name);
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Error stack:', error.stack);
+      setSaveStatus('error');
+      await savePendingOrderToLocalStorage();
+    }
+  };
+
+  // Create fallback order if backend verification didn't create one
+  const createFallbackOrder = async (API_BASE_URL) => {
+    try {
       const orderPayload = {
         orderId: finalOrderId,
         paymentId,
@@ -75,15 +131,9 @@ const OrderSuccess = () => {
         customerPincode: customerInfo?.pincode || ''
       };
       
-      console.log('📦 Order payload:', orderPayload);
+      console.log('📦 Creating fallback order:', JSON.stringify(orderPayload, null, 2));
       
-      // Use environment variable or fallback to localhost
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-      const API_URL = `${API_BASE_URL}/api/orders`;
-      
-      console.log('🌐 Using API URL:', API_URL);
-      
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,57 +141,46 @@ const OrderSuccess = () => {
         body: JSON.stringify(orderPayload)
       });
       
-      console.log('📨 Response status:', response.status);
-      
       if (response.ok) {
         const result = await response.json();
-        console.log('✅ Order saved to MongoDB successfully:', result);
+        console.log('✅ Fallback order created successfully:', result);
         setSaveStatus('success');
         localStorage.removeItem('pendingOrder');
       } else {
-        const errorText = await response.text();
-        console.error('❌ Server error:', {
-          status: response.status,
-          errorText
-        });
-        setSaveStatus('error');
-        
-        // Fallback to localStorage
-        const pendingOrder = {
-          ...orderPayload,
-          timestamp: new Date().toISOString(),
-          status: 'pending_sync'
-        };
-        localStorage.setItem('pendingOrder', JSON.stringify(pendingOrder));
-        console.log('📦 Order saved to localStorage for later sync');
+        throw new Error(`Failed to create fallback order: ${response.status}`);
       }
     } catch (error) {
-      console.error('❌ Network error:', error);
+      console.error('❌ Error creating fallback order:', error);
       setSaveStatus('error');
-      
-      // Fallback to localStorage
-      const pendingOrder = {
-        orderId: finalOrderId,
-        paymentId,
-        total: amount,
-        items,
-        customerName: customerInfo?.name || 'Anonymous User',
-        customerEmail: customerInfo?.email || '',
-        customerPhone: customerInfo?.phone || '',
-        customerAddress: customerInfo?.address || '',
-        customerCity: customerInfo?.city || '',
-        customerPincode: customerInfo?.pincode || '',
-        timestamp: new Date().toISOString(),
-        status: 'pending_sync'
-      };
-      localStorage.setItem('pendingOrder', JSON.stringify(pendingOrder));
-      console.log('📦 Order saved to localStorage due to network error');
+      await savePendingOrderToLocalStorage();
     }
+  };
+
+  // Save order to localStorage for later sync
+  const savePendingOrderToLocalStorage = async () => {
+    const pendingOrder = {
+      orderId: finalOrderId,
+      paymentId,
+      total: amount,
+      items,
+      customerName: customerInfo?.name || 'Anonymous User',
+      customerEmail: customerInfo?.email || '',
+      customerPhone: customerInfo?.phone || '',
+      customerAddress: customerInfo?.address || '',
+      customerCity: customerInfo?.city || '',
+      customerPincode: customerInfo?.pincode || '',
+      timestamp: new Date().toISOString(),
+      status: 'pending_sync'
+    };
+    localStorage.setItem('pendingOrder', JSON.stringify(pendingOrder));
+    console.log('📦 Order saved to localStorage for later sync');
   };
 
   useEffect(() => {
     console.log('🔄 OrderSuccess useEffect triggered');
     console.log('🔍 useEffect data check:', { paymentId, amount, items: items?.length, finalOrderId });
+    console.log('🌐 Current URL:', window.location.href);
+    console.log('🔍 SessionStorage check:', sessionStorage.getItem('orderSuccessData'));
     
     // Redirect to home if no payment data
     if (!paymentId) {
@@ -152,10 +191,17 @@ const OrderSuccess = () => {
     
     console.log('✅ PaymentId found, proceeding with order save');
     
-    // Save order to database
+    // Check order status (should already exist from backend verification)
     if (paymentId && amount && items && finalOrderId) {
-      console.log('✅ All required data present, calling saveOrderToDatabase');
-      saveOrderToDatabase();
+      console.log('✅ All required data present, calling checkOrderStatus');
+      console.log('🔍 Data validation before API call:', {
+        paymentId: paymentId,
+        amount: amount,
+        itemsCount: items?.length,
+        finalOrderId: finalOrderId,
+        customerInfo: customerInfo
+      });
+      checkOrderStatus();
     } else {
       console.error('❌ Missing order data - Cannot save order');
       console.error('Missing data details:', {
