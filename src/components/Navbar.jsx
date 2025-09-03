@@ -6,15 +6,91 @@ import logo from "../assets/newadd.png";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const navigate = useNavigate();
+    const navigate = useNavigate();
   const { getCartItemsCount, items, removeFromCart, updateQuantity, getCartTotal, clearCorruptedCart } = useCart();
   const cartItemsCount = getCartItemsCount();
 
   return (
     <div className="bg-white shadow-sm">
-      {/* Top Header - Fixed white space issue */}
+      {/* Navigation Menu */}
+      <div className="border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-3">
+            {/* Hamburger Menu - Hidden on desktop */}
+            <div className="md:hidden"></div>
+
+            {/* Navigation Links - Hidden on mobile, visible on desktop */}
+            <nav className="hidden md:flex space-x-8">
+              <Link
+                to="/"
+                className="text-gray-700 hover:text-purple-600 font-medium"
+              >
+                Home
+              </Link>
+                <Link
+                to="/e-market"
+                className="text-gray-700 hover:text-purple-600 font-medium"
+              >
+                E-Market
+              </Link>
+              <Link
+                to="/printing"
+                className="text-gray-700 hover:text-purple-600 font-medium"
+              >
+                Printing
+              </Link>
+            
+              <Link
+                to="/local-market"
+                className="text-gray-700 hover:text-purple-600 font-medium"
+              >
+                Local Market
+              </Link>
+              <Link
+                to="/news-today"
+                className="text-gray-700 hover:text-purple-600 font-medium"
+              >
+                NEWS TODAY
+              </Link>
+            </nav>
+
+            {/* Search and Actions - Hidden on mobile */}
+            <div className="hidden md:flex items-center space-x-4">
+              {/* Search Bar - White background */}
+              <div className="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-2">
+                <input
+                  type="text"
+                  placeholder="Search bar"
+                  className="bg-transparent outline-none text-sm w-32 text-gray-500"
+                />
+                <button className="ml-2 p-1 bg-blue-400 text-white rounded">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200">
+                Join US
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Header */}
       <div
-        className="w-full px-4 sm:px-6 lg:px-8 transition-all duration-500 hover:bg-gradient-to-r hover:from-purple-800 hover:to-blue-900"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 hover:bg-gradient-to-r hover:from-purple-800 hover:to-blue-900"
         style={{ backgroundColor: "#0A014A" }}
       >
         <div className="flex justify-between items-center py-2">
@@ -24,7 +100,7 @@ const Navbar = () => {
               <img
                 src={logo}
                 alt="E-Mart Logo"
-                className="w-12 h-12 sm:w-48 sm:h-20 object-contain transition-all duration-300 hover:brightness-110 hover:drop-shadow-lg"
+                className="w-16 h-16 sm:w-48 sm:h-20 object-contain transition-all duration-300 hover:brightness-110 hover:drop-shadow-lg"
               />
             </div>
           </div>
@@ -94,8 +170,8 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Contact - Visible only on mobile */}
-          <div className="md:hidden flex items-center space-x-3">
-            <div className="text-sm text-white font-semibold">
+          <div className="md:hidden flex items-center space-x-2">
+            <div className="text-sm text-purple-800 font-semibold">
               9880444189
             </div>
             {/* Mobile Login Icon */}
@@ -164,80 +240,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Navigation Menu */}
-      <div className="border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-3">
-            {/* Hamburger Menu - Hidden on desktop */}
-            <div className="md:hidden"></div>
 
-            {/* Navigation Links - Hidden on mobile, visible on desktop */}
-            <nav className="hidden md:flex space-x-8">
-              <Link
-                to="/"
-                className="text-gray-700 hover:text-purple-600 font-medium"
-              >
-                Home
-              </Link>
-              <Link
-                to="/e-market"
-                className="text-gray-700 hover:text-purple-600 font-medium"
-              >
-                E-Market
-              </Link>
-              <Link
-                to="/printing"
-                className="text-gray-700 hover:text-purple-600 font-medium"
-              >
-                Printing
-              </Link>
-              <Link
-                to="/local-market"
-                className="text-gray-700 hover:text-purple-600 font-medium"
-              >
-                Local Market
-              </Link>
-              <Link
-                to="/news-today"
-                className="text-gray-700 hover:text-purple-600 font-medium"
-              >
-                NEWS TODAY
-              </Link>
-            </nav>
-
-            {/* Search and Actions - Hidden on mobile */}
-            <div className="hidden md:flex items-center space-x-4">
-              {/* Search Bar - White background */}
-              <div className="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Search bar"
-                  className="bg-transparent outline-none text-sm w-32 text-gray-500"
-                />
-                <button className="ml-2 p-1 bg-blue-400 text-white rounded">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200">
-                Join US
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Mobile Menu - Dropdown */}
       {isMenuOpen && (
@@ -310,6 +313,7 @@ const Navbar = () => {
 
             {/* Mobile Actions */}
             <div className="pt-4 space-y-2">
+
               <button className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-center">
                 Join US
               </button>
@@ -340,16 +344,25 @@ const Navbar = () => {
                           const formData = new FormData();
                           files.forEach(file => formData.append('files', file));
                           
+                          // Get token from localStorage
+                          const token = localStorage.getItem('token');
+                          const headers = {};
+                          if (token) {
+                            headers.Authorization = `Bearer ${token}`;
+                          }
+                          
                           const response = await fetch('http://localhost:5000/api/files/upload-multiple-public', {
                             method: 'POST',
+                            headers: headers,
                             body: formData
                           });
                           
                           if (response.ok) {
                             const result = await response.json();
-                            alert(`Successfully uploaded ${result.files.length} files!`);
+                            alert(`Successfully uploaded ${result.files.length} files to Cloudinary!`);
                           } else {
-                            alert('Failed to upload files');
+                            const errorData = await response.json();
+                            alert(`Failed to upload files: ${errorData.message || 'Unknown error'}`);
                           }
                         } catch (error) {
                           console.error('Error uploading files:', error);
@@ -415,16 +428,25 @@ const Navbar = () => {
                       const formData = new FormData();
                       files.forEach(file => formData.append('files', file));
                       
+                      // Get token from localStorage
+                      const token = localStorage.getItem('token');
+                      const headers = {};
+                      if (token) {
+                        headers.Authorization = `Bearer ${token}`;
+                      }
+                      
                       const response = await fetch('http://localhost:5000/api/files/upload-multiple-public', {
                         method: 'POST',
+                        headers: headers,
                         body: formData
                       });
                       
                       if (response.ok) {
                         const result = await response.json();
-                        alert(`Successfully uploaded ${result.files.length} files!`);
+                        alert(`Successfully uploaded ${result.files.length} files to Cloudinary!`);
                       } else {
-                        alert('Failed to upload files');
+                        const errorData = await response.json();
+                        alert(`Failed to upload files: ${errorData.message || 'Unknown error'}`);
                       }
                     } catch (error) {
                       console.error('Error uploading files:', error);
