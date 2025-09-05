@@ -23,32 +23,32 @@ const Navbar = () => {
             <nav className="hidden md:flex space-x-8">
               <Link
                 to="/"
-                className="text-gray-700 hover:text-purple-600 font-medium"
+                className="text-blue-700 hover:text-purple-900 font-medium"
               >
                 Home
               </Link>
                 <Link
                 to="/e-market"
-                className="text-gray-700 hover:text-purple-600 font-medium"
+                className="text-blue-700 hover:text-purple-900 font-medium"
               >
                 E-Market
               </Link>
               <Link
                 to="/printing"
-                className="text-gray-700 hover:text-purple-600 font-medium"
+                className="text-blue-700 hover:text-purple-900 font-medium"
               >
                 Printing
               </Link>
             
               <Link
                 to="/local-market"
-                className="text-gray-700 hover:text-purple-600 font-medium"
+                className="text-blue-700 hover:text-purple-900 font-medium"
               >
                 Local Market
               </Link>
               <Link
                 to="/news-today"
-                className="text-gray-700 hover:text-purple-600 font-medium"
+                className="text-blue-700 hover:text-purple-900 font-medium"
               >
                 NEWS TODAY
               </Link>
@@ -90,7 +90,7 @@ const Navbar = () => {
 
       {/* Top Header */}
       <div
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 hover:bg-gradient-to-r hover:from-purple-800 hover:to-blue-900"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 hover:bg-gradient-to-r hover:from-blue-900 hover:to-purple-600"
         style={{ backgroundColor: "#0A014A" }}
       >
         <div className="flex justify-between items-center py-2">
@@ -107,8 +107,7 @@ const Navbar = () => {
 
           {/* Contact and Icons - Hidden on mobile */}
           <div className="hidden md:flex items-center space-x-6">
-            <div className="text-white font-semibold">Call US : 9880444189</div>
-            <div className="text-white font-semibold">Email : info@printco.com</div>
+     
             <div className="flex space-x-3">
               <button className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white">
                 <svg
