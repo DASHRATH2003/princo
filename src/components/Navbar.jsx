@@ -13,80 +13,7 @@ const Navbar = () => {
   return (
     <div className="bg-white shadow-sm">
       {/* Navigation Menu */}
-      <div className="border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-3">
-            {/* Hamburger Menu - Hidden on desktop */}
-            <div className="md:hidden"></div>
-
-            {/* Navigation Links - Hidden on mobile, visible on desktop */}
-            <nav className="hidden md:flex space-x-8">
-              <Link
-                to="/"
-                className="text-blue-700 hover:text-purple-900 font-medium"
-              >
-                Home
-              </Link>
-                <Link
-                to="/e-market"
-                className="text-blue-700 hover:text-purple-900 font-medium"
-              >
-                E-Market
-              </Link>
-              <Link
-                to="/printing"
-                className="text-blue-700 hover:text-purple-900 font-medium"
-              >
-                Printing
-              </Link>
-            
-              <Link
-                to="/local-market"
-                className="text-blue-700 hover:text-purple-900 font-medium"
-              >
-                Local Market
-              </Link>
-              <Link
-                to="/news-today"
-                className="text-blue-700 hover:text-purple-900 font-medium"
-              >
-                NEWS TODAY
-              </Link>
-            </nav>
-
-            {/* Search and Actions - Hidden on mobile */}
-            <div className="hidden md:flex items-center space-x-4">
-              {/* Search Bar - White background */}
-              <div className="flex items-center bg-white border border-gray-200 rounded-lg px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Search bar"
-                  className="bg-transparent outline-none text-sm w-32 text-gray-500"
-                />
-                <button className="ml-2 p-1 bg-blue-400 text-white rounded">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200">
-                Join US
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+     
 
       {/* Top Header */}
       <div
@@ -104,9 +31,13 @@ const Navbar = () => {
               />
             </div>
           </div>
+          
 
           {/* Contact and Icons - Hidden on mobile */}
           <div className="hidden md:flex items-center space-x-6">
+             <div className="text-sm text-yellow-300 font-semibold">
+        📞 9880444189
+      </div>
      
             <div className="flex space-x-3">
               <button className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white">
@@ -235,6 +166,82 @@ const Navbar = () => {
                 />
               </svg>
             </button>
+          </div>
+        </div>
+      </div>
+
+       <div className="border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-3">
+            {/* Hamburger Menu - Hidden on desktop */}
+            <div className="md:hidden"></div>
+
+            {/* Navigation Links - Hidden on mobile, visible on desktop */}
+            <nav className="hidden md:flex space-x-8">
+              <Link
+                to="/"
+                className="text-blue-700 hover:text-purple-500 font-medium"
+              >
+                Home
+              </Link>
+                <Link
+                to="/e-market"
+                className="text-blue-700 hover:text-purple-500 font-medium"
+              >
+                E-Market
+              </Link>
+               <Link
+                to="/local-market"
+                className="text-blue-700 hover:text-purple-500 font-medium"
+              >
+                Local Market
+              </Link>
+              <Link
+                to="/printing"
+                className="text-blue-700 hover:text-purple-500 font-medium"
+              >
+                Printing
+              </Link>
+            
+             
+              <Link
+                to="/news-today"
+                className="text-blue-700 hover:text-purple-500 font-medium"
+              >
+                NEWS TODAY
+              </Link>
+            </nav>
+
+            {/* Search and Actions - Hidden on mobile */}
+            <div className="hidden md:flex items-center space-x-4">
+              {/* Search Bar - White background */}
+              <div className="flex items-center bg-white border border-gray-400 rounded-lg px-3 py-2">
+                <input
+                  type="text"
+                  placeholder="Search bar"
+                  className="bg-transparent outline-none text-sm w-72 text-gray-500"
+                />
+                <button className="ml-2 p-1 bg-blue-400 text-white rounded">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200">
+                Join US
+              </button>
+            </div>
           </div>
         </div>
       </div>
