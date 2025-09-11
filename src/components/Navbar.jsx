@@ -350,7 +350,8 @@ const Navbar = () => {
                             headers.Authorization = `Bearer ${token}`;
                           }
                           
-                          const response = await fetch('http://localhost:5000/api/files/upload-multiple-public', {
+                          const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+                          const response = await fetch(`${API_BASE_URL}/api/files/upload-multiple-public`, {
                             method: 'POST',
                             headers: headers,
                             body: formData
@@ -434,7 +435,8 @@ const Navbar = () => {
                         headers.Authorization = `Bearer ${token}`;
                       }
                       
-                      const response = await fetch('http://localhost:5000/api/files/upload-multiple-public', {
+                      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+                      const response = await fetch(`${API_BASE_URL}/api/files/upload-multiple-public`, {
                         method: 'POST',
                         headers: headers,
                         body: formData
