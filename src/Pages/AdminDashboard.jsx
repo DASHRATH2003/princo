@@ -107,7 +107,7 @@ const AdminDashboard = () => {
         const filesResponse = await fetch(`${API_BASE_URL}/api/files/admin/all`, { headers });
         if (filesResponse.ok) {
           const filesData = await filesResponse.json();
-          setFiles(filesData);
+          setFiles(filesData.files || []);
         }
       } catch (error) {
         console.error('Error fetching files:', error);
