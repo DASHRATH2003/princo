@@ -298,6 +298,286 @@ const Home = () => {
         </div>
       ))}
 
+      {/* Welcome Text Overlay */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40">
+        <div className="text-center text-white px-4 mb-8">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in">
+            Welcome to E-Mart
+          </h1>
+          <p className="text-xl md:text-2xl font-medium animate-slide-up">
+            A Small Attempt at Online Shopping with all
+          </p>
+        </div>
+        
+        {/* Product Boxes Overlay with Auto Scroll */}
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="relative overflow-hidden mask-gradient">
+            <div className="flex animate-scroll-horizontal space-x-4" style={{width: '200%'}}>
+              {/* Product Box 1 - Motorcycle */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=120&fit=crop" 
+                  alt="Motorcycle" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Motorcycle</h3>
+                  <p className="text-xs text-gray-600">Premium Quality</p>
+                </div>
+              </div>
+
+              {/* Product Box 2 - Office Supplies */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=120&fit=crop" 
+                  alt="Office Supplies" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Office Supplies</h3>
+                  <p className="text-xs text-gray-600">Stationery Items</p>
+                </div>
+              </div>
+
+              {/* Product Box 3 - Backpack */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-blue-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=120&fit=crop" 
+                  alt="Backpack" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Backpack</h3>
+                  <p className="text-xs text-gray-600">Travel Gear</p>
+                </div>
+              </div>
+
+              {/* Product Box 4 - Laptop */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&h=120&fit=crop" 
+                  alt="Laptop" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Laptop</h3>
+                  <p className="text-xs text-gray-600">Technology</p>
+                </div>
+              </div>
+
+              {/* Product Box 5 - Digital Services */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-green-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1557838923-2985c318be48?w=200&h=120&fit=crop" 
+                  alt="Digital Services" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Digital Services</h3>
+                  <p className="text-xs text-gray-600">Web & Marketing</p>
+                </div>
+              </div>
+
+              {/* Product Box 6 - Smartphone */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-purple-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=120&fit=crop" 
+                  alt="Smartphone" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Smartphone</h3>
+                  <p className="text-xs text-gray-600">Latest Models</p>
+                </div>
+              </div>
+
+              {/* Product Box 7 - Headphones */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-red-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=120&fit=crop" 
+                  alt="Headphones" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Headphones</h3>
+                  <p className="text-xs text-gray-600">Audio Gear</p>
+                </div>
+              </div>
+
+              {/* Product Box 8 - Camera */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-indigo-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=200&h=120&fit=crop" 
+                  alt="Camera" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Camera</h3>
+                  <p className="text-xs text-gray-600">Photography</p>
+                </div>
+              </div>
+
+              {/* Product Box 9 - Watch */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-pink-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=120&fit=crop" 
+                  alt="Watch" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Watch</h3>
+                  <p className="text-xs text-gray-600">Timepieces</p>
+                </div>
+              </div>
+
+              {/* Product Box 10 - Gaming Console */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-orange-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=200&h=120&fit=crop" 
+                  alt="Gaming Console" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Gaming Console</h3>
+                  <p className="text-xs text-gray-600">Entertainment</p>
+                </div>
+              </div>
+
+              {/* Duplicate Set for Infinite Scroll */}
+              {/* Product Box 1 - Motorcycle (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=120&fit=crop" 
+                  alt="Motorcycle" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Motorcycle</h3>
+                  <p className="text-xs text-gray-600">Premium Quality</p>
+                </div>
+              </div>
+
+              {/* Product Box 2 - Office Supplies (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=120&fit=crop" 
+                  alt="Office Supplies" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Office Supplies</h3>
+                  <p className="text-xs text-gray-600">Stationery Items</p>
+                </div>
+              </div>
+
+              {/* Product Box 3 - Backpack (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-blue-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=120&fit=crop" 
+                  alt="Backpack" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Backpack</h3>
+                  <p className="text-xs text-gray-600">Travel Gear</p>
+                </div>
+              </div>
+
+              {/* Product Box 4 - Laptop (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&h=120&fit=crop" 
+                  alt="Laptop" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Laptop</h3>
+                  <p className="text-xs text-gray-600">Technology</p>
+                </div>
+              </div>
+
+              {/* Product Box 5 - Digital Services (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-green-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1557838923-2985c318be48?w=200&h=120&fit=crop" 
+                  alt="Digital Services" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Digital Services</h3>
+                  <p className="text-xs text-gray-600">Web & Marketing</p>
+                </div>
+              </div>
+
+              {/* Product Box 6 - Smartphone (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-purple-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=120&fit=crop" 
+                  alt="Smartphone" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Smartphone</h3>
+                  <p className="text-xs text-gray-600">Latest Models</p>
+                </div>
+              </div>
+
+              {/* Product Box 7 - Headphones (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-red-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=120&fit=crop" 
+                  alt="Headphones" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Headphones</h3>
+                  <p className="text-xs text-gray-600">Audio Gear</p>
+                </div>
+              </div>
+
+              {/* Product Box 8 - Camera (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-indigo-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=200&h=120&fit=crop" 
+                  alt="Camera" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Camera</h3>
+                  <p className="text-xs text-gray-600">Photography</p>
+                </div>
+              </div>
+
+              {/* Product Box 9 - Watch (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-pink-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=120&fit=crop" 
+                  alt="Watch" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Watch</h3>
+                  <p className="text-xs text-gray-600">Timepieces</p>
+                </div>
+              </div>
+
+              {/* Product Box 10 - Gaming Console (Duplicate) */}
+              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-orange-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
+                <img 
+                  src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=200&h=120&fit=crop" 
+                  alt="Gaming Console" 
+                  className="w-full h-24 object-cover"
+                />
+                <div className="p-2">
+                  <h3 className="text-xs font-semibold text-gray-800">Gaming Console</h3>
+                  <p className="text-xs text-gray-600">Entertainment</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Dots Indicator */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
         {images.map((_, index) => (
@@ -311,6 +591,8 @@ const Home = () => {
         ))}
       </div>
     </div>
+
+
 
       {/* Custom Printing Banner Section */}
       

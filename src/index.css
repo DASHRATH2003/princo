@@ -74,3 +74,37 @@
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+@keyframes scroll-horizontal {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-scroll-horizontal {
+    animation: scroll-horizontal 25s linear infinite;
+  }
+
+  .mask-gradient {
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  }
+
+  .mask-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -2%;
+    right: -2%;
+    bottom: 0;
+    background: linear-gradient(to right, 
+      rgba(255,255,255,0.8) 0%, 
+      transparent 3%, 
+      transparent 97%, 
+      rgba(255,255,255,0.8) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }

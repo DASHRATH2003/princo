@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
+import ProductForm from '../components/ProductForm';
+import { getProductsByCategory, deleteProduct, toggleProductStatus } from '../services/productService';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -21,6 +23,15 @@ const AdminDashboard = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState('');
+  const [products, setProducts] = useState({
+    emart: [],
+    localmarket: [],
+    printing: [],
+    news: []
+  });
+  const [loadingProducts, setLoadingProducts] = useState(false);
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
 
@@ -134,11 +145,75 @@ const AdminDashboard = () => {
       } catch (error) {
         console.error('Error fetching customers:', error);
       }
+
+      // Fetch products for all categories
+      await fetchAllProducts();
       
       setLoading(false);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       setLoading(false);
+    }
+  };
+
+  const fetchAllProducts = async () => {
+    setLoadingProducts(true);
+    try {
+      const categories = ['emart', 'localmarket', 'printing', 'news'];
+      const productPromises = categories.map(async (category) => {
+        try {
+          const response = await getProductsByCategory(category);
+          return { category, products: response.products || [] };
+        } catch (error) {
+          console.error(`Error fetching ${category} products:`, error);
+          return { category, products: [] };
+        }
+      });
+
+      const results = await Promise.all(productPromises);
+      const newProducts = {};
+      results.forEach(({ category, products }) => {
+        newProducts[category] = products;
+      });
+      
+      setProducts(newProducts);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  const handleDeleteProduct = async (productId, category) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await deleteProduct(productId);
+        // Refresh products for this category
+        const response = await getProductsByCategory(category);
+        setProducts(prev => ({
+          ...prev,
+          [category]: response.products || []
+        }));
+        alert('Product deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        alert('Error deleting product. Please try again.');
+      }
+    }
+  };
+
+  const handleToggleProductStatus = async (productId, category) => {
+    try {
+      await toggleProductStatus(productId);
+      // Refresh products for this category
+      const response = await getProductsByCategory(category);
+      setProducts(prev => ({
+        ...prev,
+        [category]: response.products || []
+      }));
+    } catch (error) {
+      console.error('Error toggling product status:', error);
+      alert('Error updating product status. Please try again.');
     }
   };
 
@@ -364,7 +439,11 @@ const AdminDashboard = () => {
               { key: 'overview', label: 'Overview', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
               { key: 'customers', label: 'Customers', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z' },
               { key: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
-              { key: 'files', label: 'Files', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
+              { key: 'files', label: 'Files', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+              { key: 'emart', label: 'E-Mart', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l1.5 1.5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z' },
+              { key: 'localmarket', label: 'Local Market', icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' },
+              { key: 'printing', label: 'Printing', icon: 'M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z' },
+              { key: 'news', label: 'Today News', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' }
             ].map((tab) => (
               <button
                 key={tab.key}
@@ -829,6 +908,181 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+
+        {/* E-Mart Tab */}
+        {activeTab === 'emart' && (
+          <div className="space-y-6">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">E-Mart Products</h3>
+                <button 
+                  onClick={() => {
+                    setCurrentCategory('emart');
+                    setShowProductForm(true);
+                  }}
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+                >
+                  Add Product
+                </button>
+              </div>
+              {loadingProducts ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading products...</p>
+                </div>
+              ) : products.emart.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l1.5 1.5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">No E-Mart Products</h3>
+                  <p className="text-gray-600">Start by adding your first e-commerce product.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {products.emart.map((product) => (
+                    <div key={product._id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                      {product.images && product.images.length > 0 && (
+                        <img 
+                          src={product.images[0]} 
+                          alt={product.name}
+                          className="w-full h-48 object-cover"
+                        />
+                      )}
+                      <div className="p-6">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="text-lg font-semibold text-gray-800 truncate">{product.name}</h4>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {product.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+                        <div className="flex justify-between items-center mb-4">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-lg font-bold text-blue-600">₹{product.price}</span>
+                            {product.originalPrice && product.originalPrice > product.price && (
+                              <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
+                            )}
+                          </div>
+                          {product.stockQuantity !== undefined && (
+                            <span className="text-sm text-gray-500">Stock: {product.stockQuantity}</span>
+                          )}
+                        </div>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleToggleProductStatus(product._id, 'emart')}
+                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                              product.isActive 
+                                ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' 
+                                : 'bg-green-100 text-green-800 hover:bg-green-200'
+                            }`}
+                          >
+                            {product.isActive ? 'Deactivate' : 'Activate'}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product._id, 'emart')}
+                            className="px-3 py-2 bg-red-100 text-red-800 rounded-lg text-sm font-medium hover:bg-red-200 transition-all duration-200"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Local Market Tab */}
+        {activeTab === 'localmarket' && (
+          <div className="space-y-6">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Local Market Products</h3>
+                <button 
+                  onClick={() => {
+                    setCurrentCategory('localmarket');
+                    setShowProductForm(true);
+                  }}
+                  className="bg-gradient-to-r from-green-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+                >
+                  Add Product
+                </button>
+              </div>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">Local Market Products</h3>
+                <p className="text-gray-600">Manage local business products and services. Connect with your local community.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Printing Tab */}
+        {activeTab === 'printing' && (
+          <div className="space-y-6">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Printing Services</h3>
+                <button 
+                  onClick={() => {
+                    setCurrentCategory('printing');
+                    setShowProductForm(true);
+                  }}
+                  className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+                >
+                  Add Service
+                </button>
+              </div>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">Printing Services</h3>
+                <p className="text-gray-600">Manage printing services and options. Configure paper types, sizes, and pricing.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Today News Tab */}
+        {activeTab === 'news' && (
+          <div className="space-y-6">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Today News</h3>
+                <button 
+                  onClick={() => {
+                    setCurrentCategory('news');
+                    setShowProductForm(true);
+                  }}
+                  className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+                >
+                  Add News
+                </button>
+              </div>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">Today News</h3>
+                <p className="text-gray-600">Manage daily news articles and updates. Keep your audience informed with latest news.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Order Details Modal */}
@@ -955,6 +1209,27 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Product Form Modal */}
+      {showProductForm && (
+        <ProductForm 
+          category={currentCategory}
+          onClose={() => setShowProductForm(false)}
+          onSuccess={async () => {
+            setShowProductForm(false);
+            // Refresh products for the current category
+            try {
+              const response = await getProductsByCategory(currentCategory);
+              setProducts(prev => ({
+                ...prev,
+                [currentCategory]: response.products || []
+              }));
+            } catch (error) {
+              console.error('Error refreshing products:', error);
+            }
+          }}
+        />
       )}
     </div>
   );
