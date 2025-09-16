@@ -20,14 +20,14 @@ const Navbar = () => {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 hover:bg-gradient-to-r hover:from-blue-900 hover:to-purple-600"
         style={{ backgroundColor: "#0A014A" }}
       >
-        <div className="flex justify-between items-center py-2">
+        <div className="flex justify-between items-center py-1">
           {/* Logo and Brand */}
           <div className="flex items-center space-x-3">
             <div className="relative transform transition-transform duration-300 hover:scale-110">
               <img
                 src={logo}
                 alt="E-Mart Logo"
-                className="w-16 h-16 sm:w-48 sm:h-20 object-contain transition-all duration-300 hover:brightness-110 hover:drop-shadow-lg"
+                className="w-14 h-14 sm:w-40 sm:h-16 object-contain transition-all duration-300 hover:brightness-110 hover:drop-shadow-lg"
               />
             </div>
           </div>
@@ -35,7 +35,7 @@ const Navbar = () => {
 
           {/* Contact and Icons - Hidden on mobile */}
           <div className="hidden md:flex items-center space-x-6">
-             <div className="text-sm text-yellow-300 font-semibold">
+             <div className="text-lg text-white font-bold">
         📞 9880444189
       </div>
      
@@ -101,8 +101,8 @@ const Navbar = () => {
 
           {/* Mobile Contact - Visible only on mobile */}
           <div className="md:hidden flex items-center space-x-2">
-            <div className="text-sm text-purple-800 font-semibold">
-              9880444189
+            <div className="text-lg text-white font-bold">
+              📞 9880444189
             </div>
             {/* Mobile Login Icon */}
             <button 
@@ -172,7 +172,7 @@ const Navbar = () => {
 
        <div className="border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-3">
+          <div className="flex items-center justify-between py-2">
             {/* Hamburger Menu - Hidden on desktop */}
             <div className="md:hidden"></div>
 
@@ -235,6 +235,85 @@ const Navbar = () => {
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                     />
                   </svg>
+                </button>
+              </div>
+
+              {/* Upload and Download functionality */}
+              <div className="flex items-center space-x-3">
+                <label className="flex items-center text-gray-700 hover:text-purple-600 text-sm cursor-pointer transition duration-200">
+                  <svg
+                    className="w-4 h-4 mr-1 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                  Upload files
+                  <input
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files);
+                      if (files.length > 0) {
+                        try {
+                          const formData = new FormData();
+                          files.forEach(file => formData.append('files', file));
+                          
+                          // Get token from localStorage
+                          const token = localStorage.getItem('token');
+                          const headers = {};
+                          if (token) {
+                            headers.Authorization = `Bearer ${token}`;
+                          }
+                          
+                          const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+                          const response = await fetch(`${API_BASE_URL}/api/files/upload-multiple-public`, {
+                            method: 'POST',
+                            headers: headers,
+                            body: formData
+                          });
+                          
+                          if (response.ok) {
+                            const result = await response.json();
+                            alert(`Successfully uploaded ${result.files.length} files to Cloudinary!`);
+                          } else {
+                            const errorData = await response.json();
+                            alert(`Failed to upload files: ${errorData.message || 'Unknown error'}`);
+                          }
+                        } catch (error) {
+                          console.error('Error uploading files:', error);
+                          alert('Error uploading files');
+                        }
+                      }
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
+                <button
+                  onClick={() => navigate('/file-downloads')}
+                  className="flex items-center text-gray-700 hover:text-purple-600 text-sm cursor-pointer transition duration-200"
+                >
+                  <svg
+                    className="w-4 h-4 mr-1 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Download
                 </button>
               </div>
 
@@ -405,88 +484,7 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* File Actions - Below search bar as per image - Hidden on mobile */}
-      <div className="hidden md:block border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-end space-x-6 py-2">
-            <label className="flex items-center text-gray-700 hover:text-purple-600 text-sm cursor-pointer">
-              <svg
-                className="w-4 h-4 mr-1 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
-              Upload files
-              <input
-                type="file"
-                multiple
-                className="hidden"
-                onChange={async (e) => {
-                  const files = Array.from(e.target.files);
-                  if (files.length > 0) {
-                    try {
-                      const formData = new FormData();
-                      files.forEach(file => formData.append('files', file));
-                      
-                      // Get token from localStorage
-                      const token = localStorage.getItem('token');
-                      const headers = {};
-                      if (token) {
-                        headers.Authorization = `Bearer ${token}`;
-                      }
-                      
-                      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-                      const response = await fetch(`${API_BASE_URL}/api/files/upload-multiple-public`, {
-                        method: 'POST',
-                        headers: headers,
-                        body: formData
-                      });
-                      
-                      if (response.ok) {
-                        const result = await response.json();
-                        alert(`Successfully uploaded ${result.files.length} files to Cloudinary!`);
-                      } else {
-                        const errorData = await response.json();
-                        alert(`Failed to upload files: ${errorData.message || 'Unknown error'}`);
-                      }
-                    } catch (error) {
-                      console.error('Error uploading files:', error);
-                      alert('Error uploading files');
-                    }
-                  }
-                  e.target.value = '';
-                }}
-              />
-            </label>
-            <button
-              onClick={() => navigate('/file-downloads')}
-              className="flex items-center text-gray-700 hover:text-purple-600 text-sm cursor-pointer"
-            >
-              <svg
-                className="w-4 h-4 mr-1 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              Download
-            </button>
-          </div>
-        </div>
-      </div>
+
 
       {/* Cart Dropdown/Sidebar */}
       {isCartOpen && (

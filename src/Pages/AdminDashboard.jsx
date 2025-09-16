@@ -24,7 +24,6 @@ const AdminDashboard = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState('');
   const [products, setProducts] = useState({
     emart: [],
     localmarket: [],
@@ -32,6 +31,10 @@ const AdminDashboard = () => {
     news: []
   });
   const [loadingProducts, setLoadingProducts] = useState(false);
+  const [posters, setPosters] = useState([]);
+  const [showPosterForm, setShowPosterForm] = useState(false);
+  const [editingPoster, setEditingPoster] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
 
@@ -148,6 +151,30 @@ const AdminDashboard = () => {
 
       // Fetch products for all categories
       await fetchAllProducts();
+
+      // Initialize posters (in real app, this would be fetched from backend)
+      setPosters([
+        {
+          id: '1',
+          title: 'Special Printing Offer',
+          description: 'Get 50% off on all printing services this month!',
+          category: 'printing',
+          imageUrl: 'https://via.placeholder.com/300x200/ff6b6b/ffffff?text=Printing+Offer',
+          linkUrl: '#',
+          isActive: true,
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: '2',
+          title: 'E-Mart Sale',
+          description: 'Huge discounts on electronics and gadgets',
+          category: 'emart',
+          imageUrl: 'https://via.placeholder.com/300x200/4ecdc4/ffffff?text=E-Mart+Sale',
+          linkUrl: '#',
+          isActive: true,
+          createdAt: new Date().toISOString()
+        }
+      ]);
       
       setLoading(false);
     } catch (error) {
@@ -246,6 +273,73 @@ const AdminDashboard = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
     navigate('/admin/login');
+  };
+
+  // Poster Management Functions
+  const handlePosterSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const posterData = {
+      title: formData.get('title'),
+      description: formData.get('description'),
+      category: formData.get('category'),
+      imageUrl: formData.get('imageUrl'),
+      linkUrl: formData.get('linkUrl'),
+      isActive: formData.get('isActive') === 'true'
+    };
+
+    try {
+      if (editingPoster) {
+        // Update existing poster
+        const updatedPosters = posters.map(poster => 
+          poster.id === editingPoster.id 
+            ? { ...poster, ...posterData }
+            : poster
+        );
+        setPosters(updatedPosters);
+        alert('Poster updated successfully!');
+      } else {
+        // Add new poster
+        const newPoster = {
+          id: Date.now().toString(),
+          ...posterData,
+          createdAt: new Date().toISOString()
+        };
+        setPosters(prev => [...prev, newPoster]);
+        alert('Poster added successfully!');
+      }
+      
+      setShowPosterForm(false);
+      setEditingPoster(null);
+    } catch (error) {
+      console.error('Error saving poster:', error);
+      alert('Error saving poster. Please try again.');
+    }
+  };
+
+  const deletePoster = async (posterId) => {
+    if (window.confirm('Are you sure you want to delete this poster?')) {
+      try {
+        setPosters(prev => prev.filter(poster => poster.id !== posterId));
+        alert('Poster deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting poster:', error);
+        alert('Error deleting poster. Please try again.');
+      }
+    }
+  };
+
+  const togglePosterStatus = async (posterId) => {
+    try {
+      setPosters(prev => prev.map(poster => 
+        poster.id === posterId 
+          ? { ...poster, isActive: !poster.isActive }
+          : poster
+      ));
+    } catch (error) {
+      console.error('Error toggling poster status:', error);
+      alert('Error updating poster status. Please try again.');
+    }
   };
 
   const getStatusColor = (status) => {
@@ -397,8 +491,18 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className="w-56 bg-white/90 backdrop-blur-md shadow-xl border-r border-gray-200/50 flex flex-col">
+      <div className={`${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-56 bg-white/95 backdrop-blur-md shadow-xl border-r border-gray-200/50 flex flex-col transition-transform duration-300 ease-in-out`}>
         {/* Header */}
         <div className="p-4 border-b border-gray-200/50">
           <div className="flex items-center space-x-2">
@@ -440,6 +544,7 @@ const AdminDashboard = () => {
               { key: 'customers', label: 'Customers', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z' },
               { key: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
               { key: 'files', label: 'Files', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+              { key: 'posters', label: 'Poster Ads', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
               { key: 'emart', label: 'E-Mart', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l1.5 1.5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z' },
               { key: 'localmarket', label: 'Local Market', icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' },
               { key: 'printing', label: 'Printing', icon: 'M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z' },
@@ -463,6 +568,19 @@ const AdminDashboard = () => {
           </nav>
         </div>
 
+        {/* Add Product Button */}
+        <div className="p-3">
+          <button
+            onClick={() => setShowProductForm(true)}
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 font-medium"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Add Product</span>
+          </button>
+        </div>
+
         {/* Logout Button */}
         <div className="p-3 border-t border-gray-200/50">
           <button
@@ -478,7 +596,36 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-4">
+      <div className="flex-1 flex flex-col lg:ml-0">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200/50 p-4">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div className="flex items-center space-x-2">
+              <div className="p-1.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Dashboard</h1>
+            </div>
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Area */}
+        <div className="flex-1 p-3 lg:p-6 overflow-y-auto">
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
@@ -913,17 +1060,8 @@ const AdminDashboard = () => {
         {activeTab === 'emart' && (
           <div className="space-y-6">
             <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
-              <div className="flex justify-between items-center mb-6">
+              <div className="mb-6">
                 <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">E-Mart Products</h3>
-                <button 
-                  onClick={() => {
-                    setCurrentCategory('emart');
-                    setShowProductForm(true);
-                  }}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
-                >
-                  Add Product
-                </button>
               </div>
               {loadingProducts ? (
                 <div className="text-center py-12">
@@ -1001,17 +1139,8 @@ const AdminDashboard = () => {
         {activeTab === 'localmarket' && (
           <div className="space-y-6">
             <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
-              <div className="flex justify-between items-center mb-6">
+              <div className="mb-6">
                 <h3 className="text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Local Market Products</h3>
-                <button 
-                  onClick={() => {
-                    setCurrentCategory('localmarket');
-                    setShowProductForm(true);
-                  }}
-                  className="bg-gradient-to-r from-green-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
-                >
-                  Add Product
-                </button>
               </div>
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1030,17 +1159,8 @@ const AdminDashboard = () => {
         {activeTab === 'printing' && (
           <div className="space-y-6">
             <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
-              <div className="flex justify-between items-center mb-6">
+              <div className="mb-6">
                 <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Printing Services</h3>
-                <button 
-                  onClick={() => {
-                    setCurrentCategory('printing');
-                    setShowProductForm(true);
-                  }}
-                  className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
-                >
-                  Add Service
-                </button>
               </div>
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1059,17 +1179,8 @@ const AdminDashboard = () => {
         {activeTab === 'news' && (
           <div className="space-y-6">
             <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
-              <div className="flex justify-between items-center mb-6">
+              <div className="mb-6">
                 <h3 className="text-lg font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Today News</h3>
-                <button 
-                  onClick={() => {
-                    setCurrentCategory('news');
-                    setShowProductForm(true);
-                  }}
-                  className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
-                >
-                  Add News
-                </button>
               </div>
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1079,6 +1190,107 @@ const AdminDashboard = () => {
                 </div>
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">Today News</h3>
                 <p className="text-gray-600">Manage daily news articles and updates. Keep your audience informed with latest news.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Poster Ads Tab */}
+        {activeTab === 'posters' && (
+          <div className="space-y-6">
+            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Poster Ads Management</h3>
+                <button 
+                  onClick={() => {
+                    setEditingPoster(null);
+                    setShowPosterForm(true);
+                  }}
+                  className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+                >
+                  Add New Poster
+                </button>
+              </div>
+
+              {/* Poster Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+                {posters.length > 0 ? (
+                  posters.map((poster) => (
+                    <div key={poster.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                      <div className="relative">
+                        <img 
+                          src={poster.imageUrl || '/api/placeholder/300/200'} 
+                          alt={poster.title}
+                          className="w-full h-32 sm:h-40 lg:h-48 object-cover"
+                        />
+                        <div className="absolute top-1 right-1 sm:top-2 sm:right-2 flex space-x-1">
+                          <button
+                            onClick={() => {
+                              setEditingPoster(poster);
+                              setShowPosterForm(true);
+                            }}
+                            className="bg-blue-500 text-white p-1 sm:p-1.5 rounded-full hover:bg-blue-600 transition-colors"
+                          >
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => deletePoster(poster.id)}
+                            className="bg-red-500 text-white p-1 sm:p-1.5 rounded-full hover:bg-red-600 transition-colors"
+                          >
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                        {poster.isActive && (
+                          <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                            Active
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3 sm:p-4">
+                        <h4 className="font-semibold text-gray-800 mb-1 sm:mb-2 truncate text-sm sm:text-base">{poster.title}</h4>
+                        <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">{poster.description}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">
+                            {poster.category}
+                          </span>
+                          <button
+                            onClick={() => togglePosterStatus(poster.id)}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                              poster.isActive 
+                                ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                            }`}
+                          >
+                            {poster.isActive ? 'Active' : 'Inactive'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-12">
+                    <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">No Poster Ads Yet</h3>
+                    <p className="text-gray-600 mb-4">Create your first poster ad to start promoting your products and services.</p>
+                    <button 
+                      onClick={() => {
+                        setEditingPoster(null);
+                        setShowPosterForm(true);
+                      }}
+                      className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+                    >
+                      Create First Poster
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1214,23 +1426,151 @@ const AdminDashboard = () => {
       {/* Product Form Modal */}
       {showProductForm && (
         <ProductForm 
-          category={currentCategory}
           onClose={() => setShowProductForm(false)}
-          onSuccess={async () => {
+          onSubmit={async (result) => {
             setShowProductForm(false);
-            // Refresh products for the current category
-            try {
-              const response = await getProductsByCategory(currentCategory);
-              setProducts(prev => ({
-                ...prev,
-                [currentCategory]: response.products || []
-              }));
-            } catch (error) {
-              console.error('Error refreshing products:', error);
-            }
+            // Refresh products for all categories
+            await fetchProducts();
           }}
         />
       )}
+
+      {/* Poster Form Modal */}
+      {showPosterForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                  {editingPoster ? 'Edit Poster Ad' : 'Add New Poster Ad'}
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowPosterForm(false);
+                    setEditingPoster(null);
+                  }}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handlePosterSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Poster Title *
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      defaultValue={editingPoster?.title || ''}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Enter poster title"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category *
+                    </label>
+                    <select
+                      name="category"
+                      defaultValue={editingPoster?.category || ''}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+                    >
+                      <option value="">Select Category</option>
+                      <option value="printing">Printing</option>
+                      <option value="emart">E-Mart</option>
+                      <option value="local-market">Local Market</option>
+                      <option value="general">General</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    defaultValue={editingPoster?.description || ''}
+                    rows={3}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Enter poster description"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Image URL
+                  </label>
+                  <input
+                    type="url"
+                    name="imageUrl"
+                    defaultValue={editingPoster?.imageUrl || ''}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Enter image URL"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Link URL
+                    </label>
+                    <input
+                      type="url"
+                      name="linkUrl"
+                      defaultValue={editingPoster?.linkUrl || ''}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+                      placeholder="Enter link URL (optional)"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Status
+                    </label>
+                    <select
+                      name="isActive"
+                      defaultValue={editingPoster?.isActive ? 'true' : 'false'}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
+                    >
+                      <option value="true">Active</option>
+                      <option value="false">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPosterForm(false);
+                      setEditingPoster(null);
+                    }}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+                  >
+                    {editingPoster ? 'Update Poster' : 'Create Poster'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      </div>
     </div>
   );
 };

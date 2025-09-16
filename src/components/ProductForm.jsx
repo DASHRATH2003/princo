@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { createProduct } from '../services/productService';
 
-const ProductForm = ({ category, onClose, onSubmit }) => {
+const ProductForm = ({ category: initialCategory, onClose, onSubmit }) => {
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'emart');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -68,7 +69,7 @@ const ProductForm = ({ category, onClose, onSubmit }) => {
         name: formData.name,
         description: formData.description,
         price: formData.price,
-        category: category,
+        category: selectedCategory,
         originalPrice: formData.originalPrice,
         discount: formData.discount,
         subcategory: formData.subcategory,
@@ -79,17 +80,17 @@ const ProductForm = ({ category, onClose, onSubmit }) => {
       };
       
       // Add category-specific fields
-      if (category === 'news') {
+      if (selectedCategory === 'news') {
         productData.newsContent = formData.newsContent;
         productData.newsDate = formData.newsDate;
         productData.newsAuthor = formData.newsAuthor;
       }
       
-      if (category === 'printing') {
+      if (selectedCategory === 'printing') {
         productData.printingOptions = formData.printingOptions;
       }
       
-      if (category === 'localmarket') {
+      if (selectedCategory === 'localmarket') {
         productData.businessInfo = formData.businessInfo;
       }
 
@@ -112,7 +113,7 @@ const ProductForm = ({ category, onClose, onSubmit }) => {
   };
 
   const getCategoryTitle = () => {
-    switch (category) {
+    switch (selectedCategory) {
       case 'emart': return 'E-Mart Product';
       case 'localmarket': return 'Local Market Product';
       case 'printing': return 'Printing Service';
@@ -122,7 +123,7 @@ const ProductForm = ({ category, onClose, onSubmit }) => {
   };
 
   const getCategoryColor = () => {
-    switch (category) {
+    switch (selectedCategory) {
       case 'emart': return 'from-blue-500 to-purple-600';
       case 'localmarket': return 'from-green-500 to-blue-600';
       case 'printing': return 'from-purple-500 to-pink-600';
@@ -156,6 +157,21 @@ const ProductForm = ({ category, onClose, onSubmit }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Category Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+            >
+              <option value="emart">E-Mart</option>
+              <option value="printing">Printing</option>
+              <option value="localmarket">Local Market</option>
+              <option value="news">Today News</option>
+            </select>
+          </div>
+
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -281,7 +297,7 @@ const ProductForm = ({ category, onClose, onSubmit }) => {
           </div>
 
           {/* Category-specific fields */}
-          {category === 'news' && (
+          {selectedCategory === 'news' && (
             <div className="space-y-4 border-t pt-6">
               <h4 className="text-lg font-semibold text-gray-800">News Details</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -321,7 +337,7 @@ const ProductForm = ({ category, onClose, onSubmit }) => {
             </div>
           )}
 
-          {category === 'printing' && (
+          {selectedCategory === 'printing' && (
             <div className="space-y-4 border-t pt-6">
               <h4 className="text-lg font-semibold text-gray-800">Printing Options</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -382,7 +398,7 @@ const ProductForm = ({ category, onClose, onSubmit }) => {
             </div>
           )}
 
-          {category === 'localmarket' && (
+          {selectedCategory === 'localmarket' && (
             <div className="space-y-4 border-t pt-6">
               <h4 className="text-lg font-semibold text-gray-800">Business Information</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

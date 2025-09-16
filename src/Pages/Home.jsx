@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from '../context/CartContext';
+import ProductDetailModal from "../components/ProductDetailModal";
 
 const Home = () => {
   const { addToCart } = useCart();
@@ -267,6 +268,8 @@ const Home = () => {
     "https://macedoniaprojects.co.zw/wp-content/uploads/2023/12/Digital-Printing-Services.jpg",
   ];
    const [current, setCurrent] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Auto change every 4 sec
   useEffect(() => {
@@ -275,6 +278,28 @@ const Home = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, [images.length]);
+
+  // Event listener for related product modal opening
+  useEffect(() => {
+    const handleOpenProductModal = (event) => {
+      const product = event.detail;
+      setSelectedProduct(product);
+      setIsModalOpen(true);
+    };
+
+    window.addEventListener('openProductModal', handleOpenProductModal);
+    return () => window.removeEventListener('openProductModal', handleOpenProductModal);
+  }, []);
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
+  };
 
   const featuredProducts = allProducts.filter((product) => product.featured);
   const otherProducts = allProducts.filter((product) => !product.featured);
@@ -313,266 +338,43 @@ const Home = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="relative overflow-hidden mask-gradient">
             <div className="flex animate-scroll-horizontal space-x-4" style={{width: '200%'}}>
-              {/* Product Box 1 - Motorcycle */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=120&fit=crop" 
-                  alt="Motorcycle" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Motorcycle</h3>
-                  <p className="text-xs text-gray-600">Premium Quality</p>
+              {/* First set of featured products */}
+              {featuredProducts.map((product, index) => (
+                <div 
+                  key={`first-${product.id}`}
+                  className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40 cursor-pointer"
+                  onClick={() => handleProductClick(product)}
+                >
+                  <img 
+                    src={product.imageUrl} 
+                    alt={product.name} 
+                    className="w-full h-24 object-cover"
+                  />
+                  <div className="p-2">
+                    <h3 className="text-xs font-semibold text-gray-800 truncate">{product.name}</h3>
+                    <p className="text-xs text-gray-600 truncate">{product.category}</p>
+                  </div>
                 </div>
-              </div>
-
-              {/* Product Box 2 - Office Supplies */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=120&fit=crop" 
-                  alt="Office Supplies" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Office Supplies</h3>
-                  <p className="text-xs text-gray-600">Stationery Items</p>
+              ))}
+              
+              {/* Duplicate set for infinite scroll */}
+              {featuredProducts.map((product, index) => (
+                <div 
+                  key={`second-${product.id}`}
+                  className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40 cursor-pointer"
+                  onClick={() => handleProductClick(product)}
+                >
+                  <img 
+                    src={product.imageUrl} 
+                    alt={product.name} 
+                    className="w-full h-24 object-cover"
+                  />
+                  <div className="p-2">
+                    <h3 className="text-xs font-semibold text-gray-800 truncate">{product.name}</h3>
+                    <p className="text-xs text-gray-600 truncate">{product.category}</p>
+                  </div>
                 </div>
-              </div>
-
-              {/* Product Box 3 - Backpack */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-blue-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=120&fit=crop" 
-                  alt="Backpack" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Backpack</h3>
-                  <p className="text-xs text-gray-600">Travel Gear</p>
-                </div>
-              </div>
-
-              {/* Product Box 4 - Laptop */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&h=120&fit=crop" 
-                  alt="Laptop" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Laptop</h3>
-                  <p className="text-xs text-gray-600">Technology</p>
-                </div>
-              </div>
-
-              {/* Product Box 5 - Digital Services */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-green-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1557838923-2985c318be48?w=200&h=120&fit=crop" 
-                  alt="Digital Services" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Digital Services</h3>
-                  <p className="text-xs text-gray-600">Web & Marketing</p>
-                </div>
-              </div>
-
-              {/* Product Box 6 - Smartphone */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-purple-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=120&fit=crop" 
-                  alt="Smartphone" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Smartphone</h3>
-                  <p className="text-xs text-gray-600">Latest Models</p>
-                </div>
-              </div>
-
-              {/* Product Box 7 - Headphones */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-red-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=120&fit=crop" 
-                  alt="Headphones" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Headphones</h3>
-                  <p className="text-xs text-gray-600">Audio Gear</p>
-                </div>
-              </div>
-
-              {/* Product Box 8 - Camera */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-indigo-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=200&h=120&fit=crop" 
-                  alt="Camera" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Camera</h3>
-                  <p className="text-xs text-gray-600">Photography</p>
-                </div>
-              </div>
-
-              {/* Product Box 9 - Watch */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-pink-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=120&fit=crop" 
-                  alt="Watch" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Watch</h3>
-                  <p className="text-xs text-gray-600">Timepieces</p>
-                </div>
-              </div>
-
-              {/* Product Box 10 - Gaming Console */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-orange-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=200&h=120&fit=crop" 
-                  alt="Gaming Console" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Gaming Console</h3>
-                  <p className="text-xs text-gray-600">Entertainment</p>
-                </div>
-              </div>
-
-              {/* Duplicate Set for Infinite Scroll */}
-              {/* Product Box 1 - Motorcycle (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=120&fit=crop" 
-                  alt="Motorcycle" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Motorcycle</h3>
-                  <p className="text-xs text-gray-600">Premium Quality</p>
-                </div>
-              </div>
-
-              {/* Product Box 2 - Office Supplies (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=200&h=120&fit=crop" 
-                  alt="Office Supplies" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Office Supplies</h3>
-                  <p className="text-xs text-gray-600">Stationery Items</p>
-                </div>
-              </div>
-
-              {/* Product Box 3 - Backpack (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-blue-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&h=120&fit=crop" 
-                  alt="Backpack" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Backpack</h3>
-                  <p className="text-xs text-gray-600">Travel Gear</p>
-                </div>
-              </div>
-
-              {/* Product Box 4 - Laptop (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&h=120&fit=crop" 
-                  alt="Laptop" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Laptop</h3>
-                  <p className="text-xs text-gray-600">Technology</p>
-                </div>
-              </div>
-
-              {/* Product Box 5 - Digital Services (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-green-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1557838923-2985c318be48?w=200&h=120&fit=crop" 
-                  alt="Digital Services" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Digital Services</h3>
-                  <p className="text-xs text-gray-600">Web & Marketing</p>
-                </div>
-              </div>
-
-              {/* Product Box 6 - Smartphone (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-purple-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=120&fit=crop" 
-                  alt="Smartphone" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Smartphone</h3>
-                  <p className="text-xs text-gray-600">Latest Models</p>
-                </div>
-              </div>
-
-              {/* Product Box 7 - Headphones (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-red-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=120&fit=crop" 
-                  alt="Headphones" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Headphones</h3>
-                  <p className="text-xs text-gray-600">Audio Gear</p>
-                </div>
-              </div>
-
-              {/* Product Box 8 - Camera (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-indigo-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=200&h=120&fit=crop" 
-                  alt="Camera" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Camera</h3>
-                  <p className="text-xs text-gray-600">Photography</p>
-                </div>
-              </div>
-
-              {/* Product Box 9 - Watch (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-pink-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=120&fit=crop" 
-                  alt="Watch" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Watch</h3>
-                  <p className="text-xs text-gray-600">Timepieces</p>
-                </div>
-              </div>
-
-              {/* Product Box 10 - Gaming Console (Duplicate) */}
-              <div className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-orange-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40">
-                <img 
-                  src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=200&h=120&fit=crop" 
-                  alt="Gaming Console" 
-                  className="w-full h-24 object-cover"
-                />
-                <div className="p-2">
-                  <h3 className="text-xs font-semibold text-gray-800">Gaming Console</h3>
-                  <p className="text-xs text-gray-600">Entertainment</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -1334,6 +1136,14 @@ const Home = () => {
             0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
       `}</style>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal 
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        allProducts={allProducts}
+      />
     </div>
   );
 };

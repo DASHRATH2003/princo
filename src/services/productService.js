@@ -58,8 +58,18 @@ export const createProduct = async (productData) => {
         Array.from(productData[key]).forEach(file => {
           formData.append('images', file);
         });
+      } else if (key === 'image' && productData[key] instanceof File) {
+        // Handle single image file
+        formData.append('image', productData[key]);
       } else if (productData[key] !== null && productData[key] !== undefined) {
-        formData.append(key, productData[key]);
+        // Stringify objects and arrays for backend processing
+        if (typeof productData[key] === 'object' && !Array.isArray(productData[key])) {
+          formData.append(key, JSON.stringify(productData[key]));
+        } else if (Array.isArray(productData[key])) {
+          formData.append(key, JSON.stringify(productData[key]));
+        } else {
+          formData.append(key, productData[key]);
+        }
       }
     });
 
@@ -95,8 +105,18 @@ export const updateProduct = async (productId, productData) => {
         Array.from(productData[key]).forEach(file => {
           formData.append('images', file);
         });
+      } else if (key === 'image' && productData[key] instanceof File) {
+        // Handle single image file
+        formData.append('image', productData[key]);
       } else if (productData[key] !== null && productData[key] !== undefined) {
-        formData.append(key, productData[key]);
+        // Stringify objects and arrays for backend processing
+        if (typeof productData[key] === 'object' && !Array.isArray(productData[key])) {
+          formData.append(key, JSON.stringify(productData[key]));
+        } else if (Array.isArray(productData[key])) {
+          formData.append(key, JSON.stringify(productData[key]));
+        } else {
+          formData.append(key, productData[key]);
+        }
       }
     });
 
