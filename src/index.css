@@ -31,7 +31,7 @@
 @layer utilities {
   .container-responsive {
     width: 100%;
-    max-width: 1400px;
+    max-width: 80rem;
     margin-left: auto;
     margin-right: auto;
     padding-left: 1rem;
@@ -40,51 +40,22 @@
   
   @media (min-width: 640px) {
     .container-responsive {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
   }
   
   @media (min-width: 1024px) {
     .container-responsive {
-      padding-left: 2rem;
-      padding-right: 2rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
   }
   
   @media (min-width: 1280px) {
     .container-responsive {
-      padding-left: 2.5rem;
-      padding-right: 2.5rem;
-    }
-  }
-  
-  /* Specific optimizations for common laptop resolutions */
-  
-  /* 1366x768 laptops (most common) */
-  @media (min-width: 1366px) and (max-width: 1440px) {
-    .container-responsive {
-      max-width: 1320px;
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
-  
-  /* 1440x900 and 1536x864 laptops */
-  @media (min-width: 1440px) and (max-width: 1600px) {
-    .container-responsive {
-      max-width: 1380px;
-      padding-left: 2.5rem;
-      padding-right: 2.5rem;
-    }
-  }
-  
-  /* 1920x1080 and larger laptops */
-  @media (min-width: 1920px) {
-    .container-responsive {
-      max-width: 1600px;
-      padding-left: 3rem;
-      padding-right: 3rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
   }
 }
