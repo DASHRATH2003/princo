@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
 // Add custom CSS animations
@@ -163,12 +164,12 @@ if (typeof document !== 'undefined') {
 }
 
 const Printing = () => {
+  const navigate = useNavigate()
   const { addToCart } = useCart()
   const [selectedCategory, setSelectedCategory] = useState('All Products')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('Featured')
   const [priceRange, setPriceRange] = useState([99, 25000])
   const [showFilters, setShowFilters] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const categories = [
     'All Products',
@@ -186,7 +187,7 @@ const Printing = () => {
   const products = [
     // Business Cards
     {
-      id: 1,
+      id: "1",
       name: 'Premium Business Cards',
       price: 299,
       originalPrice: 399,
@@ -199,7 +200,7 @@ const Printing = () => {
       deliveryTime: '2-3 days'
     },
     {
-      id: 2,
+      id: "2",
       name: 'Matte Finish Business Cards',
       price: 249,
       image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
@@ -392,61 +393,20 @@ const Printing = () => {
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === 'All Products' || product.category === selectedCategory
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
-    return matchesCategory && matchesSearch && matchesPrice
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesCategory && matchesPrice && matchesSearch
   })
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with Search Bar */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="container-responsive py-4">
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search for printing services, business cards, brochures..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base"
-                />
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-between md:justify-end">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600 whitespace-nowrap">Sort By:</span>
-                <select 
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                  <option>Featured</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                  <option>Newest</option>
-                  <option>Best Rating</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="container-responsive py-6">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Mobile Filter Toggle */}
           <div className="lg:hidden mb-4">
             <button 
               onClick={() => setShowFilters(!showFilters)}
-              className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
@@ -634,9 +594,14 @@ const Printing = () => {
                         </svg>
                         <span className="whitespace-nowrap">Add to Cart</span>
                       </button>
-                      <button className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                      <button 
+                        onClick={() => navigate(`/product/${product.id}`)}
+                        className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        aria-label="Quick view product"
+                      >
                         <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                       </button>
                     </div>
@@ -654,6 +619,20 @@ const Printing = () => {
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
                 <p className="text-gray-600">Try adjusting your search or filter criteria</p>
               </div>
+            )}
+          </div>
+          
+          {/* Mobile Filter Toggle State */}
+          <div className="lg:hidden">
+            {showFilters && (
+              <button 
+                onClick={() => setShowFilters(false)}
+                className="fixed top-4 right-4 z-50 bg-gray-800 text-white p-2 rounded-full shadow-lg"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             )}
           </div>
         </div>

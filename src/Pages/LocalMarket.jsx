@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
 import { useCart } from '../context/CartContext'
+import { useNavigate } from 'react-router-dom'
 
 const LocalMarket = () => {
   const { addToCart } = useCart()
+  const navigate = useNavigate()
   const [pageTitle] = useState('Local Market')
   const [pageDescription] = useState('Fresh Local Products & Groceries')
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('Popular')
-  const [priceRange, setPriceRange] = useState([0, 1000])
+  const [priceRange, setPriceRange] = useState([10, 5000])
   const [showFilters, setShowFilters] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   // Categories for local market
   const categories = [
@@ -25,7 +26,7 @@ const LocalMarket = () => {
   // Local market products
   const products = [
     {
-      id: 1,
+      id: "1",
       name: 'Fresh Tomatoes',
       category: 'Vegetables',
       price: 40,
@@ -39,7 +40,7 @@ const LocalMarket = () => {
       inStock: true
     },
     {
-      id: 2,
+      id: "2",
       name: 'Organic Bananas',
       category: 'Fruits',
       price: 60,
@@ -212,38 +213,6 @@ const LocalMarket = () => {
               <h1 className="text-3xl font-bold text-gray-900">{pageTitle}</h1>
               <p className="text-gray-600 mt-1">{pageDescription}</p>
             </div>
-            
-            {/* Search Bar */}
-            <div className="flex-1 max-w-lg mx-4">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search for fresh products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-                <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Sort By */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">Sort by:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              >
-                <option>Popular</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-                <option>Newest</option>
-                <option>Rating</option>
-              </select>
-            </div>
           </div>
         </div>
       </div>
@@ -370,9 +339,13 @@ const LocalMarket = () => {
                     <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-medium">
                       {product.freshness}
                     </div>
-                    <button className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <button 
+                      onClick={() => navigate(`/product/${product.id}`)}
+                      className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    >
                       <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
                     </button>
                   </div>

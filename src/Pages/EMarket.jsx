@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 
 const EMarket = () => {
+  const navigate = useNavigate()
   const pageTitle = "Printing Services"
   const pageDescription = "Professional printing and design services for your business needs"
   const [selectedCategory, setSelectedCategory] = useState('All Products')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sortBy, setSortBy] = useState('Featured')
   const [priceRange, setPriceRange] = useState([999, 332500])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   const { items: cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart()
 
   // Get cart item quantity for a specific product
@@ -41,7 +42,7 @@ const EMarket = () => {
   const products = [
     // Business Cards
     {
-      id: 1,
+      id: "1",
       name: 'Premium Business Cards',
       price: 2159,
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
@@ -50,7 +51,7 @@ const EMarket = () => {
       onSale: false
     },
     {
-      id: 2,
+      id: "2",
       name: 'Matte Finish Business Cards',
       price: 2491,
       image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
@@ -274,65 +275,16 @@ const EMarket = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with Search Bar */}
       <div className="bg-white shadow-sm border-b">
         <div className="container-responsive py-4">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search for printing services, business cards, brochures..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base"
-                />
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-              </div>
             </div>
             
-            <div className="flex items-center space-x-4 ml-6">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Benelux</span>
-                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-              
             <div className="flex items-center justify-between md:justify-end gap-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600 whitespace-nowrap">Sort By:</span>
-                <select 
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option>Featured</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                  <option>Newest</option>
-                </select>
-              </div>
 
               {/* Cart Icon */}
-              <button 
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 text-gray-600 hover:text-purple-600 transition-colors"
-              >
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-                </svg>
-                {getTotalItems() > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {getTotalItems()}
-                  </span>
-                )}
-              </button>
-            </div>
+             
             </div>
           </div>
         </div>
@@ -518,19 +470,21 @@ const EMarket = () => {
                         </div>
                       ) : (
                         <button
-                          onClick={() => addToCart(product)}
-                          className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 lg:px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-base"
+                          onClick={() => addToCart({...product})}
+                          className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 lg:px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-base h-10 lg:h-12"
                         >
-                          <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-                          </svg>
+                         
                           <span className="hidden sm:inline">Add to Cart</span>
                           <span className="sm:hidden">Add</span>
                         </button>
                       )}
                       
                       {/* Quick View Button */}
-                      <button className="ml-2 p-2 text-gray-400 hover:text-purple-600 transition-colors">
+                      <button 
+                        onClick={() => navigate(`/product/${product.id}`)}
+                        className="ml-2 p-2 text-gray-400 hover:text-purple-600 transition-colors"
+                        aria-label="Quick view product"
+                      >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

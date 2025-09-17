@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import logo from "../assets/newadd.png";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { getCartItemsCount, items, removeFromCart, updateQuantity, getCartTotal, clearCorruptedCart } = useCart();
   const cartItemsCount = getCartItemsCount();
 
@@ -180,35 +181,60 @@ const Navbar = () => {
             <nav className="hidden md:flex space-x-8">
               <Link
                 to="/"
-                className="text-blue-700 hover:text-purple-500 font-medium"
+                className={`text-blue-700 hover:text-purple-500 font-medium relative ${
+                  location.pathname === "/" ? "active-nav-item" : ""
+                }`}
               >
                 Home
+                {location.pathname === "/" && (
+                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                )}
               </Link>
                 <Link
                 to="/e-market"
-                className="text-blue-700 hover:text-purple-500 font-medium"
+                className={`text-blue-700 hover:text-purple-500 font-medium relative ${
+                  location.pathname === "/e-market" ? "active-nav-item" : ""
+                }`}
               >
                 E-Market
+                {location.pathname === "/e-market" && (
+                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                )}
               </Link>
                <Link
                 to="/local-market"
-                className="text-blue-700 hover:text-purple-500 font-medium"
+                className={`text-blue-700 hover:text-purple-500 font-medium relative ${
+                  location.pathname === "/local-market" ? "active-nav-item" : ""
+                }`}
               >
                 Local Market
+                {location.pathname === "/local-market" && (
+                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                )}
               </Link>
               <Link
                 to="/printing"
-                className="text-blue-700 hover:text-purple-500 font-medium"
+                className={`text-blue-700 hover:text-purple-500 font-medium relative ${
+                  location.pathname === "/printing" ? "active-nav-item" : ""
+                }`}
               >
                 Printing
+                {location.pathname === "/printing" && (
+                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                )}
               </Link>
             
              
               <Link
                 to="/news-today"
-                className="text-blue-700 hover:text-purple-500 font-medium"
+                className={`text-blue-700 hover:text-purple-500 font-medium relative ${
+                  location.pathname === "/news-today" ? "active-nav-item" : ""
+                }`}
               >
                 NEWS TODAY
+                {location.pathname === "/news-today" && (
+                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                )}
               </Link>
             </nav>
 
@@ -335,35 +361,45 @@ const Navbar = () => {
             <nav className="flex flex-col space-y-2">
               <Link
                 to="/"
-                className="text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100"
+                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                  location.pathname === "/" ? "text-purple-600" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
                 to="/printing"
-                className="text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100"
+                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                  location.pathname === "/printing" ? "text-purple-600" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Printing
               </Link>
               <Link
                 to="/e-market"
-                className="text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100"
+                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                  location.pathname === "/e-market" ? "text-purple-600" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 E-Market
               </Link>
               <Link
                 to="/local-market"
-                className="text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100"
+                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                  location.pathname === "/local-market" ? "text-purple-600" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Local Market
               </Link>
               <Link
                 to="/news-today"
-                className="text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100"
+                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                  location.pathname === "/news-today" ? "text-purple-600" : ""
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 NEWS TODAY

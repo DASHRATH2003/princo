@@ -7,7 +7,7 @@ const Home = () => {
 
   const allProducts = [
     {
-      id: 1,
+      id: "1",
       name: "Business Cards",
       description: "Premium quality printing",
       price: 299,
@@ -618,7 +618,7 @@ const Home = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {otherProducts.map((product, index) => (
               <Link 
-                to={`/${product.category.toLowerCase().replace(/\s+/g, '')}`}
+                to={`/product/${product.id}`}
                 key={product.id} 
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >

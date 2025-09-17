@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global Layout Fixes for Consistent Display */
 @layer base {
   * {
     box-sizing: border-box;
@@ -13,7 +12,7 @@
   html {
     scroll-behavior: smooth;
     overflow-x: hidden;
-    font-size: 16px; /* Base font size for rem calculations */
+    font-size: 16px;
   }
   
   body {
@@ -39,11 +38,50 @@
     display: block;
   }
 }
+.container-responsive {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-responsive {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container-responsive {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-responsive {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-responsive {
+    max-width: 1280px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container-responsive {
+    max-width: 1536px;
+  }
+}
 
 /* Container Utilities for Consistent Widths */
 @layer utilities {
   .container-responsive {
     width: 100%;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     padding-left: 0.75rem;
@@ -141,9 +179,6 @@
   }
 }
 
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out;
-}
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -155,10 +190,10 @@
   }
 }
 
-@keyframes fade-in-delay {
+@keyframes slide-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -166,72 +201,208 @@
   }
 }
 
-@keyframes fade-in-delay-2 {
-  from {
+@keyframes bounce-in {
+  0% {
     opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+    transform: scale(0.3) translateY(50px);
   }
   50% {
-    transform: translateY(-20px);
+    opacity: 1;
+    transform: scale(1.05) translateY(-10px);
   }
+  70% {
+    transform: scale(0.9) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes scroll-horizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scroll-reviews {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
 }
 
 .animate-fade-in {
-  animation: fade-in 1s ease-out;
+  animation: fade-in 0.6s ease-out;
 }
 
 .animate-fade-in-delay {
-  animation: fade-in 1s ease-out 0.3s both;
+  animation: fade-in 0.6s ease-out 0.2s both;
 }
 
 .animate-fade-in-delay-2 {
-  animation: fade-in 1s ease-out 0.6s both;
+  animation: fade-in 0.6s ease-out 0.4s both;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s ease-out 0.3s both;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.8s ease-out both;
 }
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
-@keyframes scroll-horizontal {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
+.animate-scroll-horizontal {
+  animation: scroll-horizontal 20s linear infinite;
+}
 
-  .animate-scroll-horizontal {
-    animation: scroll-horizontal 25s linear infinite;
-  }
+.auto-scroll-reviews {
+  animation: scroll-reviews 15s linear infinite;
+}
 
-  .mask-gradient {
-    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
-  }
+.auto-scroll-reviews:hover {
+  animation-play-state: paused;
+}
 
+/* Fixed Mask Gradient - यह सबसे महत्वपूर्ण सुधार है */
+.mask-gradient {
+  position: relative;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+.mask-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.8) 0%,
+    transparent 10%,
+    transparent 90%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Review card hover effects */
+.review-card {
+  transition: all 0.3s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+              0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Z-index utilities for proper layering */
+.z-slider {
+  z-index: 10;
+}
+
+.z-overlay {
+  z-index: 20;
+}
+
+.z-controls {
+  z-index: 30;
+}
+
+/* Responsive adjustments for different zoom levels */
+@media (max-width: 1024px) {
+  .container-responsive {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
   .mask-gradient::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -2%;
-    right: -2%;
-    bottom: 0;
-    background: linear-gradient(to right, 
-      rgba(255,255,255,0.8) 0%, 
-      transparent 3%, 
-      transparent 97%, 
-      rgba(255,255,255,0.8) 100%);
-    pointer-events: none;
-    z-index: 1;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.9) 0%,
+      transparent 5%,
+      transparent 95%,
+      rgba(255, 255, 255, 0.9) 100%
+    );
   }
+}
+
+@media (max-width: 768px) {
+  .container-responsive {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  .mask-gradient {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+  }
+  
+  .mask-gradient::before {
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.95) 0%,
+      transparent 3%,
+      transparent 97%,
+      rgba(255, 255, 255, 0.95) 100%
+    );
+  }
+}
+
+@media (max-width: 480px) {
+  .container-responsive {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .mask-gradient {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+  
+  .mask-gradient::before {
+    display: none;
+  }
+}
