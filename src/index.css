@@ -31,11 +31,88 @@
 @layer utilities {
   .container-responsive {
     width: 100%;
-    max-width: 80rem;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Mobile First Approach */
+  @media (min-width: 640px) {
+    .container-responsive {
+      max-width: 640px;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .container-responsive {
+      max-width: 768px;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-responsive {
+      max-width: 1024px;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .container-responsive {
+      max-width: 1280px;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  
+  @media (min-width: 1536px) {
+    .container-responsive {
+      max-width: 1536px;
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+  }
+  
+  /* Additional responsive utilities */
+  .responsive-text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  @media (min-width: 640px) {
+    .responsive-text-sm {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+  }
+  
+  .responsive-spacing {
+    margin: 0.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .responsive-spacing {
+      margin: 1rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .responsive-spacing {
+      margin: 1.5rem;
+    }
+  }
+  
+  /* Ensure proper scaling on different zoom levels */
+  @media (max-width: 480px) {
+    .container-responsive {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
   }
 }
 
