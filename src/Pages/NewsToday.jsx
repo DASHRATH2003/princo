@@ -408,7 +408,7 @@ const NewsToday = () => {
         {/* No Results Message */}
         {filteredArticles.length === 0 && (
           <div className="py-16 bg-gray-50 rounded-3xl">
-            <div className="max-w-4xl mx-auto px-4 text-center">
+            <div className="container-responsive text-center">
               <div className="text-8xl mb-6 animate-pulse-slow">🔍</div>
               <h3 className="text-3xl font-bold text-gray-900 mb-4">No articles found</h3>
               <p className="text-gray-600 mb-8 text-lg">We couldn't find any articles matching your search criteria</p>
@@ -483,7 +483,7 @@ const NewsToday = () => {
             <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-400/10 rounded-full animate-float"></div>
             <div className="absolute bottom-10 right-10 w-16 h-16 bg-purple-400/10 rounded-full animate-float delay-300"></div>
           </div>
-          <div className="relative max-w-4xl mx-auto px-4 text-center">
+          <div className="relative container-responsive text-center">
             <div className="animate-fadeInUp">
               <span className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
                 <span className="text-yellow-400 mr-2">📧</span>
@@ -521,7 +521,7 @@ const NewsToday = () => {
             <div className="absolute top-5 right-5 w-12 h-12 bg-white/10 rounded-full animate-pulse-slow"></div>
             <div className="absolute bottom-5 left-5 w-8 h-8 bg-yellow-400/20 rounded-full animate-float"></div>
           </div>
-          <div className="relative max-w-4xl mx-auto px-4 text-center">
+          <div className="relative container-responsive text-center">
             <div className="mb-8 animate-fadeInUp">
               <span className="inline-flex items-center bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
                 <span className="text-yellow-400 mr-2">✨</span>

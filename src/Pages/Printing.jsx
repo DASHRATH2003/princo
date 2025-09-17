@@ -934,7 +934,7 @@ const Printing = () => {
           </div>
         </div>
         
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+        <div className="container-responsive text-center relative z-10">
           <div className="animate-fade-in-up">
             <h2 className="text-5xl font-bold text-white mb-6">
               Order Today!

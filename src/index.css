@@ -37,27 +37,6 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
-  @media (min-width: 640px) {
-    .container-responsive {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .container-responsive {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-  }
-  
-  @media (min-width: 1280px) {
-    .container-responsive {
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-  }
 }
 
 /* Custom Animations */

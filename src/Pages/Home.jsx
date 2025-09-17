@@ -335,7 +335,7 @@ const Home = () => {
         </div>
         
         {/* Product Boxes Overlay with Auto Scroll */}
-        <div className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="container-responsive">
           <div className="relative overflow-hidden mask-gradient">
             <div className="flex animate-scroll-horizontal space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5" style={{width: '200%'}}>
               {/* First set of featured products */}
@@ -500,7 +500,7 @@ const Home = () => {
 
       {/* Sub Category Section */}
       <div className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="container-responsive">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center px-6 py-2 bg-gradient-to-r from-orange-400 to-red-500 text-white rounded-full text-sm font-semibold mb-4">
               <span className="mr-2">◀</span>
@@ -629,7 +629,7 @@ const Home = () => {
 
       {/* Complete Product Collection */}
       <div className="py-8 bg-white">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="container-responsive">
           <div className="text-center mb-6">
             <h2 className="text-3xl font-bold text-gray-900 mb-4 animate-fade-in">
               Complete Product Collection
@@ -711,7 +711,7 @@ const Home = () => {
 
       {/* Premium Bestsellers */}
       <div className="py-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="container-responsive">
           <div className="text-center mb-6">
             <h2 className="text-3xl font-bold text-gray-900 mb-4 animate-fade-in">
               Premium Bestsellers
@@ -823,7 +823,7 @@ const Home = () => {
 
       {/* Customer Reviews Section */}
       <div className="bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container-responsive">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
             {/* Left Side - Image */}
             <div className="relative">

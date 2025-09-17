@@ -262,7 +262,7 @@ const OrderSuccess = () => {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container-responsive">
         <div className={`bg-white rounded-2xl shadow-2xl p-8 transform transition-all duration-1000 ${
           animateSuccess ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
         }`}>

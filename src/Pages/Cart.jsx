@@ -9,7 +9,7 @@ const Cart = () => {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container-responsive">
           <div className="text-center">
             <div className="mx-auto h-24 w-24 text-gray-400">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +32,7 @@ const Cart = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container-responsive">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">
             <h1 className="text-2xl font-bold text-gray-900">Shopping Cart ({getCartItemsCount()} items)</h1>
