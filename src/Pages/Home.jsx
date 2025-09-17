@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from '../context/CartContext';
-import ProductDetailModal from "../components/ProductDetailModal";
 
 const Home = () => {
   const { addToCart } = useCart();
@@ -14,7 +13,7 @@ const Home = () => {
       price: 299,
       category: "Printing",
       imageUrl:
-        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
       relatedProducts: [2, 9, 10],
       featured: true,
     },
@@ -23,9 +22,9 @@ const Home = () => {
       name: "Premium Paper",
       description: "A4 size, 100 sheets",
       price: 150,
-      category: "Office Supplies",
+      category: "LocalMarket",
       imageUrl:
-        "https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://t4.ftcdn.net/jpg/00/69/28/27/360_F_69282769_nnGX7SidAFQs8SwUgmZFx5Zlz6sXRkl4.jpg",
       relatedProducts: [1, 9, 10],
       featured: true,
     },
@@ -34,9 +33,9 @@ const Home = () => {
       name: "Digital Marketing",
       description: "Complete package",
       price: 4999,
-      category: "Digital Services",
+      category: "EMarket",
       imageUrl:
-        "https://images.unsplash.com/photo-1557838923-2985c318be48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
       relatedProducts: [5, 8, 11],
       featured: true,
     },
@@ -47,7 +46,7 @@ const Home = () => {
       price: 899,
       category: "Printing",
       imageUrl:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1626785774625-9b8a2b722da9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
       relatedProducts: [1, 7, 9],
       featured: true,
     },
@@ -56,22 +55,22 @@ const Home = () => {
       name: "Website Design",
       description: "Professional website design",
       price: 15999,
-      category: "Digital Services",
+      category: "EMarket",
       imageUrl:
-        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
       relatedProducts: [6, 11, 12],
-      featured: false,
+      featured: true,
     },
     {
       id: 6,
       name: "Logo Design",
       description: "Custom logo design",
       price: 2999,
-      category: "Digital Services",
+      category: "NewsToday",
       imageUrl:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1626785774573-4b799315345d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
       relatedProducts: [5, 8, 12],
-      featured: false,
+      featured: true,
     },
     {
       id: 7,
@@ -86,25 +85,25 @@ const Home = () => {
     },
     {
       id: 8,
-      name: "Social Media Management",
-      description: "Monthly management",
+      name: "Breaking News",
+      description: "Latest updates",
       price: 4999,
-      category: "Digital Services",
+      category: "NewsToday",
       imageUrl:
-        "https://images.unsplash.com/photo-1557838923-2985c318be48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
       relatedProducts: [3, 6, 12],
-      featured: false,
+      featured: true,
     },
     {
       id: 9,
       name: "Stickers & Labels",
       description: "Custom stickers",
       price: 99,
-      category: "Printing",
+      category: "LocalMarket",
       imageUrl:
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
+        "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
       relatedProducts: [1, 4, 7],
-      featured: false,
+      featured: true,
     },
     {
       id: 10,
@@ -268,8 +267,6 @@ const Home = () => {
     "https://macedoniaprojects.co.zw/wp-content/uploads/2023/12/Digital-Printing-Services.jpg",
   ];
    const [current, setCurrent] = useState(0);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Auto change every 4 sec
   useEffect(() => {
@@ -278,28 +275,6 @@ const Home = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, [images.length]);
-
-  // Event listener for related product modal opening
-  useEffect(() => {
-    const handleOpenProductModal = (event) => {
-      const product = event.detail;
-      setSelectedProduct(product);
-      setIsModalOpen(true);
-    };
-
-    window.addEventListener('openProductModal', handleOpenProductModal);
-    return () => window.removeEventListener('openProductModal', handleOpenProductModal);
-  }, []);
-
-  const handleProductClick = (product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedProduct(null);
-  };
 
   const featuredProducts = allProducts.filter((product) => product.featured);
   const otherProducts = allProducts.filter((product) => !product.featured);
@@ -340,10 +315,10 @@ const Home = () => {
             <div className="flex animate-scroll-horizontal space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5" style={{width: '200%'}}>
               {/* First set of featured products */}
               {featuredProducts.map((product, index) => (
-                <div 
+                <Link 
+                  to={`/${product.category === 'EMarket' ? 'e-market' : product.category === 'LocalMarket' ? 'local-market' : product.category === 'NewsToday' ? 'news-today' : product.category.toLowerCase()}`}
                   key={`first-${product.id}`}
                   className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
-                  onClick={() => handleProductClick(product)}
                 >
                   <img 
                     src={product.imageUrl} 
@@ -354,15 +329,15 @@ const Home = () => {
                     <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
                     <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
                   </div>
-                </div>
+                </Link>
               ))}
               
               {/* Duplicate set for infinite scroll */}
               {featuredProducts.map((product, index) => (
-                <div 
+                <Link 
+                  to={`/${product.category.toLowerCase().replace(/\s+/g, '')}`}
                   key={`second-${product.id}`}
                   className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
-                  onClick={() => handleProductClick(product)}
                 >
                   <img 
                     src={product.imageUrl} 
@@ -373,7 +348,7 @@ const Home = () => {
                     <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
                     <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -511,7 +486,7 @@ const Home = () => {
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
             {/* Logo Design */}
-            <div className="flex flex-col items-center group cursor-pointer">
+            <Link to="/newstoday" className="flex flex-col items-center group cursor-pointer">
               <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
@@ -520,10 +495,10 @@ const Home = () => {
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Logo Design</h3>
-            </div>
+            </Link>
 
             {/* Web Design */}
-            <div className="flex flex-col items-center group cursor-pointer">
+            <Link to="/emarket" className="flex flex-col items-center group cursor-pointer">
               <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
@@ -532,10 +507,10 @@ const Home = () => {
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Web Design</h3>
-            </div>
+            </Link>
 
             {/* T-shirt Design */}
-            <div className="flex flex-col items-center group cursor-pointer">
+            <Link to="/printing" className="flex flex-col items-center group cursor-pointer">
               <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
@@ -544,10 +519,10 @@ const Home = () => {
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">T-shirt Design</h3>
-            </div>
+            </Link>
 
             {/* Flyer Design */}
-            <div className="flex flex-col items-center group cursor-pointer">
+            <Link to="/printing" className="flex flex-col items-center group cursor-pointer">
               <div className="w-24 h-24 bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
@@ -556,10 +531,10 @@ const Home = () => {
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Flyer Design</h3>
-            </div>
+            </Link>
 
             {/* Brochure Design */}
-            <div className="flex flex-col items-center group cursor-pointer">
+            <Link to="/printing" className="flex flex-col items-center group cursor-pointer">
               <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-pink-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
@@ -568,10 +543,10 @@ const Home = () => {
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Brochure Design</h3>
-            </div>
+            </Link>
 
             {/* Business Card Design */}
-            <div className="flex flex-col items-center group cursor-pointer">
+            <Link to="/printing" className="flex flex-col items-center group cursor-pointer">
               <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
@@ -580,46 +555,46 @@ const Home = () => {
                 />
               </div>
               <h3 className="text-sm font-medium text-gray-900 text-center">Business Card Design</h3>
-            </div>
+            </Link>
           </div>
 
           {/* Sample Work Display */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Sample 1 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <Link to="/printing" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <img 
                 src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
                 alt="Sample Work 1" 
                 className="w-full h-48 object-cover"
               />
-            </div>
+            </Link>
 
             {/* Sample 2 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <Link to="/emarket" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <img 
                 src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
                 alt="Sample Work 2" 
                 className="w-full h-48 object-cover"
               />
-            </div>
+            </Link>
 
             {/* Sample 3 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <Link to="/localmarket" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <img 
                 src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
                 alt="Sample Work 3" 
                 className="w-full h-48 object-cover"
               />
-            </div>
+            </Link>
 
             {/* Sample 4 */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <Link to="/newstoday" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <img 
                 src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
                 alt="Sample Work 4" 
                 className="w-full h-48 object-cover"
               />
-            </div>
+            </Link>
           </div>
         </div>
       </div>
@@ -642,7 +617,11 @@ const Home = () => {
           {/* Products Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {otherProducts.map((product, index) => (
-              <div key={product.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <Link 
+                to={`/${product.category.toLowerCase().replace(/\s+/g, '')}`}
+                key={product.id} 
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
                 {/* Product Image */}
                 <div className="relative">
                   <img
@@ -703,7 +682,7 @@ const Home = () => {
                     <span className="sm:hidden">Add</span>
                   </button>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -724,7 +703,11 @@ const Home = () => {
           {/* Products Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {featuredProducts.map((product, index) => (
-              <div key={product.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <Link 
+                to={`/${product.category.toLowerCase().replace(/\s+/g, '')}`}
+                key={product.id} 
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
                 {/* Product Image */}
                 <div className="relative">
                   <img
@@ -785,7 +768,7 @@ const Home = () => {
                     <span className="sm:hidden">Add</span>
                   </button>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
 
@@ -1136,14 +1119,6 @@ const Home = () => {
             0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
       `}</style>
-
-      {/* Product Detail Modal */}
-      <ProductDetailModal 
-        product={selectedProduct}
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        allProducts={allProducts}
-      />
     </div>
   );
 };
