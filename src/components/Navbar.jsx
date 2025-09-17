@@ -17,7 +17,7 @@ const Navbar = () => {
 
       {/* Top Header */}
       <div
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 hover:bg-gradient-to-r hover:from-blue-900 hover:to-purple-600"
+        className="container-responsive transition-all duration-500 hover:bg-gradient-to-r hover:from-blue-900 hover:to-purple-600"
         style={{ backgroundColor: "#0A014A" }}
       >
         <div className="flex justify-between items-center py-1">
@@ -171,7 +171,7 @@ const Navbar = () => {
       </div>
 
        <div className="border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container-responsive">
           <div className="flex items-center justify-between py-2">
             {/* Hamburger Menu - Hidden on desktop */}
             <div className="md:hidden"></div>

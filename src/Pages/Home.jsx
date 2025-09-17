@@ -307,7 +307,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Hero Section */}
-      <div className="relative w-full h-[80vh] overflow-hidden">
+      <div className="relative w-full h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] overflow-hidden">
       {images.map((img, index) => (
         <div
           key={index}
@@ -325,34 +325,34 @@ const Home = () => {
 
       {/* Welcome Text Overlay */}
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40">
-        <div className="text-center text-white px-4 mb-8">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in">
+        <div className="text-center text-white px-4 mb-6 sm:mb-8 lg:mb-10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-3 sm:mb-4 lg:mb-6 animate-fade-in leading-tight">
             Welcome to E-Mart
           </h1>
-          <p className="text-xl md:text-2xl font-medium animate-slide-up">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-medium animate-slide-up leading-relaxed">
             A Small Attempt at Online Shopping with all
           </p>
         </div>
         
         {/* Product Boxes Overlay with Auto Scroll */}
-        <div className="max-w-6xl mx-auto px-4">
+        <div className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
           <div className="relative overflow-hidden mask-gradient">
-            <div className="flex animate-scroll-horizontal space-x-4" style={{width: '200%'}}>
+            <div className="flex animate-scroll-horizontal space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5" style={{width: '200%'}}>
               {/* First set of featured products */}
               {featuredProducts.map((product, index) => (
                 <div 
                   key={`first-${product.id}`}
-                  className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40 cursor-pointer"
+                  className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
                   onClick={() => handleProductClick(product)}
                 >
                   <img 
                     src={product.imageUrl} 
                     alt={product.name} 
-                    className="w-full h-24 object-cover"
+                    className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-cover"
                   />
-                  <div className="p-2">
-                    <h3 className="text-xs font-semibold text-gray-800 truncate">{product.name}</h3>
-                    <p className="text-xs text-gray-600 truncate">{product.category}</p>
+                  <div className="p-1 sm:p-2 lg:p-3">
+                    <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
                   </div>
                 </div>
               ))}
@@ -361,17 +361,17 @@ const Home = () => {
               {featuredProducts.map((product, index) => (
                 <div 
                   key={`second-${product.id}`}
-                  className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-40 cursor-pointer"
+                  className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
                   onClick={() => handleProductClick(product)}
                 >
                   <img 
                     src={product.imageUrl} 
                     alt={product.name} 
-                    className="w-full h-24 object-cover"
+                    className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-cover"
                   />
-                  <div className="p-2">
-                    <h3 className="text-xs font-semibold text-gray-800 truncate">{product.name}</h3>
-                    <p className="text-xs text-gray-600 truncate">{product.category}</p>
+                  <div className="p-1 sm:p-2 lg:p-3">
+                    <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
                   </div>
                 </div>
               ))}
@@ -381,11 +381,11 @@ const Home = () => {
       </div>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
         {images.map((_, index) => (
           <button
             key={index}
-            className={`w-3 h-3 rounded-full ${
+            className={`w-2 h-2 sm:w-3 sm:h-3 lg:w-4 lg:h-4 rounded-full transition-colors ${
               index === current ? "bg-white" : "bg-gray-400"
             }`}
             onClick={() => setCurrent(index)}
@@ -400,12 +400,12 @@ const Home = () => {
       
 
       {/* Categories Section */}
-      <div className="py-4 sm:py-8 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-4 sm:mb-6 animate-fade-in">
+      <div className="py-6 sm:py-8 md:py-10 lg:py-12 bg-gray-50">
+        <div className="container-responsive">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-6 sm:mb-8 md:mb-10 lg:mb-12 animate-fade-in">
             Shop by Category
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
             {/* Printing Category */}
             <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition transform hover:scale-105 animate-fade-in-delay">
               <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">

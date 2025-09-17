@@ -276,7 +276,7 @@ const EMarket = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header with Search Bar */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="container-responsive py-4">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="flex-1">
               <div className="relative">
@@ -338,7 +338,7 @@ const EMarket = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="container-responsive py-6">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Mobile Filter Toggle */}
           <div className="lg:hidden mb-4">
