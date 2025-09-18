@@ -23,6 +23,7 @@ import PrivacyPolicy from './Pages/PrivacyPolicy'
 import CookiePolicy from './Pages/CookiePolicy'
 import FileDownloads from './Pages/FileDownloads'
 import ProductDetail from './Pages/ProductDetail'
+import Contact from './Pages/Contact'
 import NotFound from './Pages/NotFound'
 
 const App = () => {
@@ -78,6 +79,7 @@ const App = () => {
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/cookie-policy" element={<CookiePolicy />} />
                     <Route path="/file-downloads" element={<FileDownloads />} />
+                    <Route path="/contact" element={<Contact />} />
                     <Route path="/product/:productId" element={<ProductDetail />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
