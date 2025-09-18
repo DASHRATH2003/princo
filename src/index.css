@@ -2,183 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  html {
-    scroll-behavior: smooth;
-    overflow-x: hidden;
-    font-size: 16px;
-  }
-  
-  body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    min-width: 320px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  #root {
-    width: 100%;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-  }
-  
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Container responsive utility - simplified */
 .container-responsive {
-  width: 100%;
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  @apply w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12;
+  @apply max-w-none sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl;
 }
 
-@media (min-width: 640px) {
-  .container-responsive {
-    max-width: 640px;
-  }
-}
-
-@media (min-width: 768px) {
-  .container-responsive {
-    max-width: 768px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container-responsive {
-    max-width: 1024px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .container-responsive {
-    max-width: 1280px;
-  }
-}
-
-@media (min-width: 1536px) {
-  .container-responsive {
-    max-width: 1536px;
-  }
-}
-
-/* Container Utilities for Consistent Widths */
-@layer utilities {
-  .container-responsive {
-    width: 100%;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-  
-  /* Mobile First Approach */
-  @media (min-width: 640px) {
-    .container-responsive {
-      max-width: 640px;
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-  }
-  
-  @media (min-width: 768px) {
-    .container-responsive {
-      max-width: 768px;
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .container-responsive {
-      max-width: 1024px;
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
-  
-  @media (min-width: 1280px) {
-    .container-responsive {
-      max-width: 1280px;
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
-  
-  @media (min-width: 1536px) {
-    .container-responsive {
-      max-width: 1536px;
-      padding-left: 2.5rem;
-      padding-right: 2.5rem;
-    }
-  }
-  
-  /* Additional responsive utilities */
-  .responsive-text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-  
-  @media (min-width: 640px) {
-    .responsive-text-sm {
-      font-size: 1rem;
-      line-height: 1.5rem;
-    }
-  }
-  
-  .responsive-spacing {
-    margin: 0.5rem;
-  }
-  
-  @media (min-width: 640px) {
-    .responsive-spacing {
-      margin: 1rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .responsive-spacing {
-      margin: 1.5rem;
-    }
-  }
-  
-  /* Ensure proper scaling on different zoom levels */
-  @media (max-width: 480px) {
-    .container-responsive {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-  }
-}
-
-/* Custom Animations */
-@keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
+/* Essential Custom Animations */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -201,24 +80,6 @@
   }
 }
 
-@keyframes bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.3) translateY(50px);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05) translateY(-10px);
-  }
-  70% {
-    transform: scale(0.9) translateY(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
 @keyframes scroll-horizontal {
   0% {
     transform: translateX(0);
@@ -228,19 +89,7 @@
   }
 }
 
-@keyframes scroll-reviews {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-100%);
-  }
-}
-
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out;
-}
-
+/* Animation Classes */
 .animate-fade-in {
   animation: fade-in 0.6s ease-out;
 }
@@ -257,146 +106,32 @@
   animation: slide-up 0.8s ease-out 0.3s both;
 }
 
-.animate-bounce-in {
-  animation: bounce-in 0.8s ease-out both;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
 .animate-scroll-horizontal {
   animation: scroll-horizontal 20s linear infinite;
 }
 
-.auto-scroll-reviews {
-  animation: scroll-reviews 15s linear infinite;
-}
-
-.auto-scroll-reviews:hover {
-  animation-play-state: paused;
-}
-
-/* Fixed Mask Gradient - यह सबसे महत्वपूर्ण सुधार है */
+/* Mask Gradient for Horizontal Scroll */
 .mask-gradient {
-  position: relative;
-  overflow: hidden;
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 10%,
-    black 90%,
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    black 10%,
-    black 90%,
-    transparent 100%
-  );
+  @apply relative overflow-hidden;
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
 }
 
 .mask-gradient::before {
   content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0.8) 0%,
-    transparent 10%,
-    transparent 90%,
-    rgba(255, 255, 255, 0.8) 100%
-  );
-  pointer-events: none;
-  z-index: 10;
+  @apply absolute inset-0 pointer-events-none z-10;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.8) 0%, transparent 10%, transparent 90%, rgba(255, 255, 255, 0.8) 100%);
 }
 
-/* Review card hover effects */
-.review-card {
-  transition: all 0.3s ease;
-}
-
-.review-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-              0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Z-index utilities for proper layering */
-.z-slider {
-  z-index: 10;
-}
-
-.z-overlay {
-  z-index: 20;
-}
-
-.z-controls {
-  z-index: 30;
-}
-
-/* Responsive adjustments for different zoom levels */
-@media (max-width: 1024px) {
-  .container-responsive {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .mask-gradient::before {
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.9) 0%,
-      transparent 5%,
-      transparent 95%,
-      rgba(255, 255, 255, 0.9) 100%
-    );
-  }
-}
-
+/* Mobile Responsive Mask Gradient */
 @media (max-width: 768px) {
-  .container-responsive {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-  
   .mask-gradient {
-    mask-image: linear-gradient(
-      to right,
-      transparent 0%,
-      black 5%,
-      black 95%,
-      transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent 0%,
-      black 5%,
-      black 95%,
-      transparent 100%
-    );
-  }
-  
-  .mask-gradient::before {
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0.95) 0%,
-      transparent 3%,
-      transparent 97%,
-      rgba(255, 255, 255, 0.95) 100%
-    );
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
   }
 }
 
 @media (max-width: 480px) {
-  .container-responsive {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-  }
-  
   .mask-gradient {
     mask-image: none;
     -webkit-mask-image: none;
