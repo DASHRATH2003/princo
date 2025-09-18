@@ -173,12 +173,9 @@ const Navbar = () => {
 
        <div className="border-t border-gray-200">
         <div className="container-responsive">
-          <div className="flex items-center justify-between py-2">
-            {/* Hamburger Menu - Hidden on desktop */}
-            <div className="md:hidden"></div>
-
+          <div className="flex items-center justify-between py-3">
             {/* Navigation Links - Hidden on mobile, visible on desktop */}
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden md:flex items-center space-x-8">
               <Link
                 to="/"
                 className={`text-blue-700 hover:text-purple-500 font-medium relative ${
@@ -239,13 +236,13 @@ const Navbar = () => {
             </nav>
 
             {/* Search and Actions - Hidden on mobile */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-3">
               {/* Search Bar - White background */}
               <div className="flex items-center bg-white border border-gray-400 rounded-lg px-3 py-2">
                 <input
                   type="text"
                   placeholder="Search bar"
-                  className="bg-transparent outline-none text-sm w-72 text-gray-500"
+                  className="bg-transparent outline-none text-sm w-48 text-gray-500"
                 />
                 <button className="ml-2 p-1 bg-blue-400 text-white rounded">
                   <svg
@@ -265,7 +262,7 @@ const Navbar = () => {
               </div>
 
               {/* Upload and Download functionality */}
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 <label className="flex items-center text-gray-700 hover:text-purple-600 text-sm cursor-pointer transition duration-200">
                   <svg
                     className="w-4 h-4 mr-1 text-gray-600"
@@ -343,7 +340,7 @@ const Navbar = () => {
                 </button>
               </div>
 
-              <button className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200">
+              <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200 whitespace-nowrap">
                 Join US
               </button>
             </div>
