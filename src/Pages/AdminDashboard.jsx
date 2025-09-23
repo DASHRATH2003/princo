@@ -71,7 +71,7 @@ const AdminDashboard = () => {
         'Content-Type': 'application/json'
       };
 
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
       
       // Fetch dashboard statistics from backend
       try {

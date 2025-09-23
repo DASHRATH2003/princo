@@ -60,7 +60,8 @@ const Checkout = () => {
       const amount = getCartTotal();
       
       // Create payment order through backend
-      console.log('🚀 Making API call to:', `${import.meta.env.VITE_API_BASE_URL}/api/payment/create-order`);
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      console.log('🚀 Making API call to:', `${API_BASE_URL}/api/payment/create-order`);
       console.log('📦 Request data:', {
         amount: amount,
         currency: 'INR',
@@ -69,7 +70,7 @@ const Checkout = () => {
         items: items
       });
       
-      const orderResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/payment/create-order`, {
+      const orderResponse = await fetch(`${API_BASE_URL}/api/payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +111,7 @@ const Checkout = () => {
           
           try {
             // Verify payment through backend
-            const verifyResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/payment/verify`, {
+            const verifyResponse = await fetch(`${API_BASE_URL}/api/payment/verify`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

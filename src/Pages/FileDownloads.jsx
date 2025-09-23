@@ -14,7 +14,7 @@ const FileDownloads = () => {
 
   const fetchPublicFiles = async () => {
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
       const response = await fetch(`${API_BASE_URL}/api/files/public`);
       
       if (response.ok) {
@@ -34,7 +34,7 @@ const FileDownloads = () => {
 
   const handleDownload = async (fileId, fileName) => {
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
       const response = await fetch(`${API_BASE_URL}/api/files/download/${fileId}`);
       
       if (response.ok) {

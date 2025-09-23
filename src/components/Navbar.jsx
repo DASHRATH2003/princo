@@ -295,7 +295,7 @@ const Navbar = () => {
                             headers.Authorization = `Bearer ${token}`;
                           }
                           
-                          const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+                          const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
                           const response = await fetch(`${API_BASE_URL}/api/files/upload-multiple-public`, {
                             method: 'POST',
                             headers: headers,
