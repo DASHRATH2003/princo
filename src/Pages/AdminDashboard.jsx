@@ -9,7 +9,8 @@ const AdminDashboard = () => {
     totalCustomers: 0,
     totalOrders: 0,
     totalRevenue: 0,
-    pendingOrders: 0
+    pendingOrders: 0,
+    totalProducts: 0
   });
   const [customers, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -552,7 +553,7 @@ const AdminDashboard = () => {
         {activeTab === 'overview' && (
           <div className="space-y-4">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-lg p-4 border border-blue-200/50 hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <div>
@@ -620,6 +621,24 @@ const AdminDashboard = () => {
                   <div className="p-2 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg shadow-lg">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg shadow-lg p-4 border border-indigo-200/50 hover:shadow-xl transition-all duration-300">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide">Total Products</p>
+                    <p className="text-xl font-bold text-indigo-900 mt-1">{stats.totalProducts}</p>
+                    <div className="flex items-center mt-1">
+                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1"></div>
+                      <span className="text-xs text-indigo-600">Active Products</span>
+                    </div>
+                  </div>
+                  <div className="p-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                   </div>
                 </div>
