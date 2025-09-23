@@ -1,265 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from '../context/CartContext';
+import { getAllProducts } from '../services/productService';
 
 const Home = () => {
   const { addToCart } = useCart();
-
-  const allProducts = [
-    {
-      id: "1",
-      name: "Business Cards",
-      description: "Premium quality printing",
-      price: 299,
-      category: "Printing",
-      imageUrl:
-        "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [2, 9, 10],
-      featured: true,
-    },
-    {
-      id: 2,
-      name: "Premium Paper",
-      description: "A4 size, 100 sheets",
-      price: 150,
-      category: "LocalMarket",
-      imageUrl:
-        "https://t4.ftcdn.net/jpg/00/69/28/27/360_F_69282769_nnGX7SidAFQs8SwUgmZFx5Zlz6sXRkl4.jpg",
-      relatedProducts: [1, 9, 10],
-      featured: true,
-    },
-    {
-      id: 3,
-      name: "Digital Marketing",
-      description: "Complete package",
-      price: 4999,
-      category: "EMarket",
-      imageUrl:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [5, 8, 11],
-      featured: true,
-    },
-    {
-      id: 4,
-      name: "Banner Printing",
-      description: "Large format printing",
-      price: 899,
-      category: "Printing",
-      imageUrl:
-        "https://images.unsplash.com/photo-1626785774625-9b8a2b722da9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 7, 9],
-      featured: true,
-    },
-    {
-      id: 5,
-      name: "Website Design",
-      description: "Professional website design",
-      price: 15999,
-      category: "EMarket",
-      imageUrl:
-        "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [6, 11, 12],
-      featured: true,
-    },
-    {
-      id: 6,
-      name: "Logo Design",
-      description: "Custom logo design",
-      price: 2999,
-      category: "NewsToday",
-      imageUrl:
-        "https://images.unsplash.com/photo-1626785774573-4b799315345d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [5, 8, 12],
-      featured: true,
-    },
-    {
-      id: 7,
-      name: "T-Shirt Printing",
-      description: "Custom t-shirt printing",
-      price: 399,
-      category: "Printing",
-      imageUrl:
-        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 4, 9],
-      featured: false,
-    },
-    {
-      id: 8,
-      name: "Breaking News",
-      description: "Latest updates",
-      price: 4999,
-      category: "NewsToday",
-      imageUrl:
-        "https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [3, 6, 12],
-      featured: true,
-    },
-    {
-      id: 9,
-      name: "Stickers & Labels",
-      description: "Custom stickers",
-      price: 99,
-      category: "LocalMarket",
-      imageUrl:
-        "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 4, 7],
-      featured: true,
-    },
-    {
-      id: 10,
-      name: "Photo Printing",
-      description: "High-quality photos",
-      price: 149,
-      category: "Printing",
-      imageUrl:
-        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 2, 9],
-      featured: false,
-    },
-    {
-      id: 11,
-      name: "E-commerce Setup",
-      description: "Complete setup",
-      price: 12999,
-      category: "Digital Services",
-      imageUrl:
-        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [5, 6, 12],
-      featured: false,
-    },
-    {
-      id: 12,
-      name: "Content Writing",
-      description: "Professional content",
-      price: 1999,
-      category: "Digital Services",
-      imageUrl:
-        "https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [5, 6, 8],
-      featured: false,
-    },
-    {
-      id: 13,
-      name: "Brochure Design",
-      description: "Professional brochures",
-      price: 799,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 4, 7],
-      featured: false,
-    },
-    {
-      id: 14,
-      name: "Poster Printing",
-      description: "High-quality posters",
-      price: 599,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [4, 7, 9],
-      featured: false,
-    },
-    {
-      id: 15,
-      name: "Flyer Design",
-      description: "Eye-catching flyers",
-      price: 499,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 4, 13],
-      featured: false,
-    },
-    {
-      id: 16,
-      name: "Mug Printing",
-      description: "Custom printed mugs",
-      price: 299,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [7, 9, 10],
-      featured: false,
-    },
-    {
-      id: 17,
-      name: "Calendar Printing",
-      description: "Custom calendars",
-      price: 399,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 2, 10],
-      featured: false,
-    },
-    {
-      id: 18,
-      name: "Book Printing",
-      description: "Professional book printing",
-      price: 999,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [2, 12, 13],
-      featured: false,
-    },
-    {
-      id: 19,
-      name: "Premium Invitation Cards",
-      description: "Luxury wedding invitations",
-      price: 1299,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 2, 4],
-      featured: true,
-    },
-    {
-      id: 20,
-      name: "Corporate Branding Package",
-      description: "Complete brand identity",
-      price: 8999,
-      category: "Digital Services",
-      imageUrl: "https://images.unsplash.com/photo-1557838923-2985c318be48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [3, 5, 6],
-      featured: true,
-    },
-    {
-      id: 21,
-      name: "Custom Packaging Design",
-      description: "Professional packaging",
-      price: 2499,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 4, 13],
-      featured: true,
-    },
-    {
-      id: 22,
-      name: "Premium Photo Albums",
-      description: "High-quality photo books",
-      price: 1799,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [10, 18, 2],
-      featured: true,
-    },
-    {
-      id: 23,
-      name: "Digital Marketing Campaign",
-      description: "Complete social media package",
-      price: 6999,
-      category: "Digital Services",
-      imageUrl: "https://images.unsplash.com/photo-1557838923-2985c318be48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [3, 8, 20],
-      featured: true,
-    },
-    {
-      id: 24,
-      name: "Luxury Certificate Printing",
-      description: "Premium certificates",
-      price: 899,
-      category: "Printing",
-      imageUrl: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-      relatedProducts: [1, 2, 18],
-      featured: true,
-    },
-  ];
-   const images = [
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  const images = [
     "https://trios.qa/wp-content/uploads/2024/10/Printing.jpeg",
     "https://simplife.ae/uploads/business_sliders/slider-1692617396-951.jpg",
     "https://www.indusdubai.com/wp-content/uploads/2021/10/slide44-scaled.jpg",
@@ -267,6 +17,31 @@ const Home = () => {
     "https://macedoniaprojects.co.zw/wp-content/uploads/2023/12/Digital-Printing-Services.jpg",
   ];
    const [current, setCurrent] = useState(0);
+
+  // Fetch real products from database
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await getAllProducts();
+        console.log('Products response:', response); // Debug log
+        if (response && response.data) {
+          setProducts(response.data);
+        } else if (Array.isArray(response)) {
+          setProducts(response);
+        } else if (response && response.products) {
+          setProducts(response.products);
+        }
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   // Auto change every 4 sec
   useEffect(() => {
@@ -276,11 +51,43 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [images.length]);
 
-  const featuredProducts = allProducts.filter((product) => product.featured);
-  const otherProducts = allProducts.filter((product) => !product.featured);
+  const featuredProducts = products.filter((product) => product.featured);
+  const otherProducts = products.filter((product) => !product.featured);
+
+  // If no featured products, use all products
+  const displayProducts = featuredProducts.length > 0 ? featuredProducts : products;
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
+      {/* Loading State */}
+      {loading && (
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600 font-medium">Loading products...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="text-center bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-red-600 font-medium mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
       {/* Hero Section */}
       <div className="relative w-full h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] overflow-hidden">
       {images.map((img, index) => (
@@ -313,36 +120,48 @@ const Home = () => {
         <div className="container-responsive">
           <div className="relative overflow-hidden mask-gradient">
             <div className="flex animate-scroll-horizontal space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5" style={{width: '200%'}}>
-              {/* First set of featured products */}
-              {featuredProducts.map((product, index) => (
+              {/* First set of products */}
+              {displayProducts.length > 0 ? displayProducts.map((product, index) => (
                 <Link 
-                  to={`/${product.category === 'EMarket' ? 'e-market' : product.category === 'LocalMarket' ? 'local-market' : product.category === 'NewsToday' ? 'news-today' : product.category.toLowerCase()}`}
-                  key={`first-${product.id}`}
+                  to={`/${product.category === 'emart' ? 'e-market' : product.category === 'localmarket' ? 'local-market' : product.category === 'news' ? 'news-today' : product.category.toLowerCase()}`}
+                  key={`first-${product.id || product._id}`}
                   className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
                 >
                   <img 
-                    src={product.imageUrl} 
+                    src={product.imageUrl || product.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9Ijc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOUI5QjlCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo='} 
                     alt={product.name} 
                     className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-cover"
+                    onError={(e) => {
+                      console.log('Image failed to load for product:', product.name, 'Image URL:', product.imageUrl || product.image);
+                      e.target.src = 'https://via.placeholder.com/150?text=Product+Image';
+                    }}
                   />
                   <div className="p-1 sm:p-2 lg:p-3">
                     <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
                     <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
                   </div>
                 </Link>
-              ))}
+              )) : (
+                <div className="flex items-center justify-center w-full py-8">
+                  <p className="text-gray-500 text-center">No products available</p>
+                </div>
+              )}
               
               {/* Duplicate set for infinite scroll */}
-              {featuredProducts.map((product, index) => (
+              {displayProducts.length > 0 && displayProducts.map((product, index) => (
                 <Link 
-                  to={`/${product.category.toLowerCase().replace(/\s+/g, '')}`}
-                  key={`second-${product.id}`}
+                  to={`/${product.category === 'emart' ? 'e-market' : product.category === 'localmarket' ? 'local-market' : product.category === 'news' ? 'news-today' : product.category.toLowerCase()}`}
+                  key={`second-${product.id || product._id}`}
                   className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
                 >
                   <img 
-                    src={product.imageUrl} 
+                    src={product.imageUrl || product.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9Ijc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOUI5QjlCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo='} 
                     alt={product.name} 
                     className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-cover"
+                    onError={(e) => {
+                      console.log('Image failed to load for product (second set):', product.name, 'Image URL:', product.imageUrl || product.image);
+                      e.target.src = 'https://via.placeholder.com/150?text=Product+Image';
+                    }}
                   />
                   <div className="p-1 sm:p-2 lg:p-3">
                     <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
@@ -498,7 +317,7 @@ const Home = () => {
             </Link>
 
             {/* Web Design */}
-            <Link to="/emarket" className="flex flex-col items-center group cursor-pointer">
+            <Link to="/e-market" className="flex flex-col items-center group cursor-pointer">
               <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
@@ -570,7 +389,7 @@ const Home = () => {
             </Link>
 
             {/* Sample 2 */}
-            <Link to="/emarket" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <Link to="/e-market" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <img 
                 src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
                 alt="Sample Work 2" 
@@ -579,7 +398,7 @@ const Home = () => {
             </Link>
 
             {/* Sample 3 */}
-            <Link to="/localmarket" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <Link to="/local-market" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
               <img 
                 src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
                 alt="Sample Work 3" 
@@ -625,9 +444,13 @@ const Home = () => {
                 {/* Product Image */}
                 <div className="relative">
                   <img
-                    src={product.imageUrl}
+                    src={product.imageUrl || product.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9Ijc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOUI5QjlCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo='}
                     alt={product.name}
                     className="w-full h-32 sm:h-40 md:h-48 object-cover"
+                    onError={(e) => {
+                      console.log('Image failed to load in featured section for product:', product.name, 'Image URL:', product.imageUrl || product.image);
+                      e.target.src = 'https://via.placeholder.com/150?text=Product+Image';
+                    }}
                   />
                   {/* Discount Badge */}
                   <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
@@ -704,16 +527,20 @@ const Home = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {featuredProducts.map((product, index) => (
               <Link 
-                to={`/${product.category.toLowerCase().replace(/\s+/g, '')}`}
+                to={`/${product.category === 'emart' ? 'e-market' : product.category === 'localmarket' ? 'local-market' : product.category === 'news' ? 'news-today' : product.category.toLowerCase()}`}
                 key={product.id} 
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 {/* Product Image */}
                 <div className="relative">
                   <img
-                    src={product.imageUrl}
+                    src={product.imageUrl || product.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5QjlCOUIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+Cg=='}
                     alt={product.name}
                     className="w-full h-32 sm:h-40 md:h-48 object-cover"
+                    onError={(e) => {
+                      console.log('Product grid image failed to load:', product.name, 'Image URL:', product.imageUrl || product.image);
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5QjlCOUIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+Cg==';
+                    }}
                   />
                   {/* Discount Badge */}
                   <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
@@ -1030,95 +857,7 @@ const Home = () => {
 </div>
 
 
-      {/* Custom CSS for animations */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-
-        .animate-fade-in-delay {
-          animation: fade-in 0.6s ease-out 0.2s both;
-        }
-
-        .animate-fade-in-delay-2 {
-          animation: fade-in 0.6s ease-out 0.4s both;
-        }
-
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-slide-up {
-          animation: slide-up 0.8s ease-out 0.3s both;
-        }
-
-        @keyframes bounce-in {
-          0% {
-            opacity: 0;
-            transform: scale(0.3) translateY(50px);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.05) translateY(-10px);
-          }
-          70% {
-            transform: scale(0.9) translateY(0);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
-
-        .animate-bounce-in {
-          animation: bounce-in 0.8s ease-out both;
-        }
-
-        @keyframes scroll-reviews {
-          0% {
-            transform: translateY(0);
-          }
-          100% {
-            transform: translateY(-100%);
-          }
-        }
-
-        .auto-scroll-reviews {
-          animation: scroll-reviews 15s linear infinite;
-        }
-
-        .auto-scroll-reviews:hover {
-          animation-play-state: paused;
-        }
-
-        .review-card {
-          transition: all 0.3s ease;
-        }
-
-        .review-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-            0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-      `}</style>
+      {/* Custom CSS for animations - moved to index.css */}
     </div>
   );
 };

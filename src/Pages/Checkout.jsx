@@ -298,9 +298,13 @@ const Checkout = () => {
               {items.map((item) => (
                 <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
                   <img
-                    src={item.image}
+                    src={item.image || 'https://via.placeholder.com/64?text=No+Image'}
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded-md"
+                    onError={(e) => {
+                      console.log('Checkout image failed to load:', item.name, 'Image URL:', item.image);
+                      e.target.src = 'https://via.placeholder.com/64?text=No+Image';
+                    }}
                   />
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{item.name}</h3>

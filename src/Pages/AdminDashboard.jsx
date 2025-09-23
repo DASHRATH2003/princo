@@ -31,9 +31,6 @@ const AdminDashboard = () => {
     news: []
   });
   const [loadingProducts, setLoadingProducts] = useState(false);
-  const [posters, setPosters] = useState([]);
-  const [showPosterForm, setShowPosterForm] = useState(false);
-  const [editingPoster, setEditingPoster] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
@@ -151,30 +148,6 @@ const AdminDashboard = () => {
 
       // Fetch products for all categories
       await fetchAllProducts();
-
-      // Initialize posters (in real app, this would be fetched from backend)
-      setPosters([
-        {
-          id: '1',
-          title: 'Special Printing Offer',
-          description: 'Get 50% off on all printing services this month!',
-          category: 'printing',
-          imageUrl: 'https://via.placeholder.com/300x200/ff6b6b/ffffff?text=Printing+Offer',
-          linkUrl: '#',
-          isActive: true,
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: '2',
-          title: 'E-Mart Sale',
-          description: 'Huge discounts on electronics and gadgets',
-          category: 'emart',
-          imageUrl: 'https://via.placeholder.com/300x200/4ecdc4/ffffff?text=E-Mart+Sale',
-          linkUrl: '#',
-          isActive: true,
-          createdAt: new Date().toISOString()
-        }
-      ]);
       
       setLoading(false);
     } catch (error) {
@@ -275,72 +248,7 @@ const AdminDashboard = () => {
     navigate('/admin/login');
   };
 
-  // Poster Management Functions
-  const handlePosterSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const posterData = {
-      title: formData.get('title'),
-      description: formData.get('description'),
-      category: formData.get('category'),
-      imageUrl: formData.get('imageUrl'),
-      linkUrl: formData.get('linkUrl'),
-      isActive: formData.get('isActive') === 'true'
-    };
 
-    try {
-      if (editingPoster) {
-        // Update existing poster
-        const updatedPosters = posters.map(poster => 
-          poster.id === editingPoster.id 
-            ? { ...poster, ...posterData }
-            : poster
-        );
-        setPosters(updatedPosters);
-        alert('Poster updated successfully!');
-      } else {
-        // Add new poster
-        const newPoster = {
-          id: Date.now().toString(),
-          ...posterData,
-          createdAt: new Date().toISOString()
-        };
-        setPosters(prev => [...prev, newPoster]);
-        alert('Poster added successfully!');
-      }
-      
-      setShowPosterForm(false);
-      setEditingPoster(null);
-    } catch (error) {
-      console.error('Error saving poster:', error);
-      alert('Error saving poster. Please try again.');
-    }
-  };
-
-  const deletePoster = async (posterId) => {
-    if (window.confirm('Are you sure you want to delete this poster?')) {
-      try {
-        setPosters(prev => prev.filter(poster => poster.id !== posterId));
-        alert('Poster deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting poster:', error);
-        alert('Error deleting poster. Please try again.');
-      }
-    }
-  };
-
-  const togglePosterStatus = async (posterId) => {
-    try {
-      setPosters(prev => prev.map(poster => 
-        poster.id === posterId 
-          ? { ...poster, isActive: !poster.isActive }
-          : poster
-      ));
-    } catch (error) {
-      console.error('Error toggling poster status:', error);
-      alert('Error updating poster status. Please try again.');
-    }
-  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -490,76 +398,56 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex relative">
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`${
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-56 bg-white/95 backdrop-blur-md shadow-xl border-r border-gray-200/50 flex flex-col transition-transform duration-300 ease-in-out`}>
+      <div className={`fixed lg:sticky top-0 left-0 z-40 w-64 lg:w-60 h-screen bg-gradient-to-b from-white/95 to-blue-50/90 backdrop-blur-md shadow-xl border-r border-blue-200/50 flex flex-col transition-transform duration-300 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
         {/* Header */}
         <div className="p-4 border-b border-gray-200/50">
-          <div className="flex items-center space-x-2">
-            <div className="p-1.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-sm font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Dashboard</h1>
-            </div>
-          </div>
-        </div>
-
-        {/* User Info */}
-        <div className="p-3 border-b border-gray-200/50">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-gray-900 truncate">
-                {adminUser?.name || 'Admin User'}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {adminUser?.email || 'admin@printo.com'}
-              </p>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Dashboard</h1>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 p-3">
-          <nav className="space-y-1">
+        <div className="flex-1 p-4">
+          <nav className="space-y-2">
             {[
               { key: 'overview', label: 'Overview', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
               { key: 'customers', label: 'Customers', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z' },
               { key: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
-              { key: 'files', label: 'Files', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-              { key: 'posters', label: 'Poster Ads', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-              { key: 'emart', label: 'E-Mart', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l1.5 1.5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z' },
-              { key: 'localmarket', label: 'Local Market', icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' },
-              { key: 'printing', label: 'Printing', icon: 'M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z' },
-              { key: 'news', label: 'Today News', icon: 'M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z' }
+              { key: 'files', label: 'Files', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
             ].map((tab) => (
               <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`w-full flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-xs transition-all duration-300 ${
-                  activeTab === tab.key
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/50'
-                }`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              key={tab.key}
+              onClick={() => {
+                setActiveTab(tab.key);
+                // Close mobile menu when tab is selected
+                setIsMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                activeTab === tab.key
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md'
+              }`}
+            >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={tab.icon} />
                 </svg>
                 <span>{tab.label}</span>
@@ -569,12 +457,12 @@ const AdminDashboard = () => {
         </div>
 
         {/* Add Product Button */}
-        <div className="p-3">
+        <div className="p-4">
           <button
             onClick={() => setShowProductForm(true)}
-            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 font-medium"
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 font-medium text-sm transform hover:scale-105"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             <span>Add Product</span>
@@ -582,21 +470,54 @@ const AdminDashboard = () => {
         </div>
 
         {/* Logout Button */}
-        <div className="p-3 border-t border-gray-200/50">
+        <div className="p-4 border-t border-gray-200/50">
           <button
             onClick={handleLogout}
-            className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+            className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 font-medium text-sm transform hover:scale-105"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            <span className="text-xs">Logout</span>
+            <span>Logout</span>
           </button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:ml-0">
+      <div className="flex-1 flex flex-col">
+        {/* Desktop Header */}
+        <div className="hidden lg:flex bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200/50 p-4 items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="p-1.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Dashboard</h1>
+          </div>
+          
+          {/* Admin User Profile */}
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-3 py-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-medium text-gray-900">{adminUser?.name || 'Admin User'}</p>
+                <p className="text-xs text-gray-500">{adminUser?.email || 'admin@printo.com'}</p>
+              </div>
+            </div>
+            <button className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
         {/* Mobile Header */}
         <div className="lg:hidden bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200/50 p-4">
           <div className="flex items-center justify-between">
@@ -718,55 +639,57 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200/50">
-                  <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-                    <tr>
-                      <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Customer Info</th>
-                      <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Items & Amount</th>
-                      <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Payment Date</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white/50 divide-y divide-gray-200/30">
-                    {orders.slice(0, 5).map((order, index) => (
-                      <tr key={order.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200">
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                              {order.customerName?.charAt(0) || 'U'}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-gray-900 text-sm">{order.customerName}</div>
-                              <div className="text-xs text-gray-500">{order.customerEmail}</div>
-                              <div className="text-xs text-gray-500">{order.customerPhone}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          <div>
-                            <div className="font-bold text-base text-green-600">₹{order.total}</div>
-                            <div className="text-xs text-gray-500 flex items-center mt-1">
-                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                              </svg>
-                              {order.items?.length || 0} items
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          <div>
-                            <div className="text-gray-700 font-medium text-sm">{order.paymentDate ? new Date(order.paymentDate).toLocaleDateString() : new Date(order.createdAt).toLocaleDateString()}</div>
-                            <button
-                              onClick={() => openOrderModal(order)}
-                              className="mt-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
-                            >
-                              View Details
-                            </button>
-                          </div>
-                        </td>
+                <div className="max-h-80 overflow-y-auto">
+                  <table className="min-w-full divide-y divide-gray-200/50">
+                    <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Customer Info</th>
+                        <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Items & Amount</th>
+                        <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Payment Date</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white/50 divide-y divide-gray-200/30">
+                      {orders.slice(0, 5).map((order, index) => (
+                        <tr key={order.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                                {order.customerName?.charAt(0) || 'U'}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-gray-900 text-sm">{order.customerName}</div>
+                                <div className="text-xs text-gray-500">{order.customerEmail}</div>
+                                <div className="text-xs text-gray-500">{order.customerPhone}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                            <div>
+                              <div className="font-bold text-base text-green-600">₹{order.total}</div>
+                              <div className="text-xs text-gray-500 flex items-center mt-1">
+                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                </svg>
+                                {order.items?.length || 0} items
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap text-sm">
+                            <div>
+                              <div className="text-gray-700 font-medium text-sm">{order.paymentDate ? new Date(order.paymentDate).toLocaleDateString() : new Date(order.createdAt).toLocaleDateString()}</div>
+                              <button
+                                onClick={() => openOrderModal(order)}
+                                className="mt-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -1056,245 +979,15 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* E-Mart Tab */}
-        {activeTab === 'emart' && (
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
-              <div className="mb-6">
-                <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">E-Mart Products</h3>
-              </div>
-              {loadingProducts ? (
-                <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading products...</p>
-                </div>
-              ) : products.emart.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 1.5M7 13l1.5 1.5M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">No E-Mart Products</h3>
-                  <p className="text-gray-600">Start by adding your first e-commerce product.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.emart.map((product) => (
-                    <div key={product._id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300">
-                      {product.images && product.images.length > 0 && (
-                        <img 
-                          src={product.images[0]} 
-                          alt={product.name}
-                          className="w-full h-48 object-cover"
-                        />
-                      )}
-                      <div className="p-6">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="text-lg font-semibold text-gray-800 truncate">{product.name}</h4>
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                            {product.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </div>
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-                        <div className="flex justify-between items-center mb-4">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg font-bold text-blue-600">₹{product.price}</span>
-                            {product.originalPrice && product.originalPrice > product.price && (
-                              <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
-                            )}
-                          </div>
-                          {product.stockQuantity !== undefined && (
-                            <span className="text-sm text-gray-500">Stock: {product.stockQuantity}</span>
-                          )}
-                        </div>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => handleToggleProductStatus(product._id, 'emart')}
-                            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                              product.isActive 
-                                ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' 
-                                : 'bg-green-100 text-green-800 hover:bg-green-200'
-                            }`}
-                          >
-                            {product.isActive ? 'Deactivate' : 'Activate'}
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product._id, 'emart')}
-                            className="px-3 py-2 bg-red-100 text-red-800 rounded-lg text-sm font-medium hover:bg-red-200 transition-all duration-200"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
-        {/* Local Market Tab */}
-        {activeTab === 'localmarket' && (
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
-              <div className="mb-6">
-                <h3 className="text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Local Market Products</h3>
-              </div>
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Local Market Products</h3>
-                <p className="text-gray-600">Manage local business products and services. Connect with your local community.</p>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Printing Tab */}
-        {activeTab === 'printing' && (
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
-              <div className="mb-6">
-                <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Printing Services</h3>
-              </div>
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Printing Services</h3>
-                <p className="text-gray-600">Manage printing services and options. Configure paper types, sizes, and pricing.</p>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Today News Tab */}
-        {activeTab === 'news' && (
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-8">
-              <div className="mb-6">
-                <h3 className="text-lg font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Today News</h3>
-              </div>
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Today News</h3>
-                <p className="text-gray-600">Manage daily news articles and updates. Keep your audience informed with latest news.</p>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* Poster Ads Tab */}
-        {activeTab === 'posters' && (
-          <div className="space-y-6">
-            <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border border-white/20 p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">Poster Ads Management</h3>
-                <button 
-                  onClick={() => {
-                    setEditingPoster(null);
-                    setShowPosterForm(true);
-                  }}
-                  className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
-                >
-                  Add New Poster
-                </button>
-              </div>
 
-              {/* Poster Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-                {posters.length > 0 ? (
-                  posters.map((poster) => (
-                    <div key={poster.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                      <div className="relative">
-                        <img 
-                          src={poster.imageUrl || '/api/placeholder/300/200'} 
-                          alt={poster.title}
-                          className="w-full h-32 sm:h-40 lg:h-48 object-cover"
-                        />
-                        <div className="absolute top-1 right-1 sm:top-2 sm:right-2 flex space-x-1">
-                          <button
-                            onClick={() => {
-                              setEditingPoster(poster);
-                              setShowPosterForm(true);
-                            }}
-                            className="bg-blue-500 text-white p-1 sm:p-1.5 rounded-full hover:bg-blue-600 transition-colors"
-                          >
-                            <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                          </button>
-                          <button
-                            onClick={() => deletePoster(poster.id)}
-                            className="bg-red-500 text-white p-1 sm:p-1.5 rounded-full hover:bg-red-600 transition-colors"
-                          >
-                            <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                          </button>
-                        </div>
-                        {poster.isActive && (
-                          <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                            Active
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-3 sm:p-4">
-                        <h4 className="font-semibold text-gray-800 mb-1 sm:mb-2 truncate text-sm sm:text-base">{poster.title}</h4>
-                        <p className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-3 line-clamp-2">{poster.description}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">
-                            {poster.category}
-                          </span>
-                          <button
-                            onClick={() => togglePosterStatus(poster.id)}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                              poster.isActive 
-                                ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                            }`}
-                          >
-                            {poster.isActive ? 'Active' : 'Inactive'}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="col-span-full text-center py-12">
-                    <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">No Poster Ads Yet</h3>
-                    <p className="text-gray-600 mb-4">Create your first poster ad to start promoting your products and services.</p>
-                    <button 
-                      onClick={() => {
-                        setEditingPoster(null);
-                        setShowPosterForm(true);
-                      }}
-                      className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
-                    >
-                      Create First Poster
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
+
+
+
+
       </div>
 
       {/* Order Details Modal */}
@@ -1430,146 +1123,12 @@ const AdminDashboard = () => {
           onSubmit={async (result) => {
             setShowProductForm(false);
             // Refresh products for all categories
-            await fetchProducts();
+            await fetchAllProducts();
           }}
         />
       )}
 
-      {/* Poster Form Modal */}
-      {showPosterForm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                  {editingPoster ? 'Edit Poster Ad' : 'Add New Poster Ad'}
-                </h2>
-                <button
-                  onClick={() => {
-                    setShowPosterForm(false);
-                    setEditingPoster(null);
-                  }}
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
 
-              <form onSubmit={handlePosterSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Poster Title *
-                    </label>
-                    <input
-                      type="text"
-                      name="title"
-                      defaultValue={editingPoster?.title || ''}
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Enter poster title"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category *
-                    </label>
-                    <select
-                      name="category"
-                      defaultValue={editingPoster?.category || ''}
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
-                    >
-                      <option value="">Select Category</option>
-                      <option value="printing">Printing</option>
-                      <option value="emart">E-Mart</option>
-                      <option value="local-market">Local Market</option>
-                      <option value="general">General</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    name="description"
-                    defaultValue={editingPoster?.description || ''}
-                    rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter poster description"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image URL
-                  </label>
-                  <input
-                    type="url"
-                    name="imageUrl"
-                    defaultValue={editingPoster?.imageUrl || ''}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Enter image URL"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Link URL
-                    </label>
-                    <input
-                      type="url"
-                      name="linkUrl"
-                      defaultValue={editingPoster?.linkUrl || ''}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Enter link URL (optional)"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
-                    </label>
-                    <select
-                      name="isActive"
-                      defaultValue={editingPoster?.isActive ? 'true' : 'false'}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200"
-                    >
-                      <option value="true">Active</option>
-                      <option value="false">Inactive</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowPosterForm(false);
-                      setEditingPoster(null);
-                    }}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
-                  >
-                    {editingPoster ? 'Update Poster' : 'Create Poster'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
       </div>
     </div>
   );

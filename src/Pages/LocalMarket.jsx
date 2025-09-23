@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useCart } from '../context/CartContext'
 import { useNavigate } from 'react-router-dom'
+import { getProductsByCategory } from '../services/productService'
 
 const LocalMarket = () => {
   const { addToCart } = useCart()
@@ -11,6 +12,8 @@ const LocalMarket = () => {
   const [priceRange, setPriceRange] = useState([10, 5000])
   const [showFilters, setShowFilters] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
   // Categories for local market
   const categories = [
@@ -23,182 +26,31 @@ const LocalMarket = () => {
   // Delivery options
   const deliveryOptions = ['Same Day', '2-4 Hours', 'Next Day']
 
-  // Local market products
-  const products = [
-    {
-      id: "1",
-      name: 'Fresh Tomatoes',
-      category: 'Vegetables',
-      price: 40,
-      originalPrice: 50,
-      image: 'https://t4.ftcdn.net/jpg/00/69/28/27/360_F_69282769_nnGX7SidAFQs8SwUgmZFx5Zlz6sXRkl4.jpg',
-      freshness: 'Fresh Today',
-      delivery: 'Same Day',
-      rating: 4.8,
-      unit: 'per kg',
-      discount: 20,
-      inStock: true
-    },
-    {
-      id: "2",
-      name: 'Organic Bananas',
-      category: 'Fruits',
-      price: 60,
-      originalPrice: 70,
-      image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Organic',
-      delivery: '2-4 Hours',
-      rating: 4.9,
-      unit: 'per dozen',
-      discount: 14,
-      inStock: true
-    },
-    {
-      id: 3,
-      name: 'Fresh Milk',
-      category: 'Dairy',
-      price: 55,
-      originalPrice: 60,
-      image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Fresh Today',
-      delivery: 'Same Day',
-      rating: 4.7,
-      unit: 'per liter',
-      discount: 8,
-      inStock: true
-    },
-    {
-      id: 4,
-      name: 'Whole Wheat Bread',
-      category: 'Bakery',
-      price: 35,
-      originalPrice: 40,
-      image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Fresh Today',
-      delivery: 'Same Day',
-      rating: 4.6,
-      unit: 'per loaf',
-      discount: 12,
-      inStock: true
-    },
-    {
-      id: 5,
-      name: 'Fresh Spinach',
-      category: 'Vegetables',
-      price: 25,
-      originalPrice: 30,
-      image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Farm Fresh',
-      delivery: 'Same Day',
-      rating: 4.8,
-      unit: 'per bunch',
-      discount: 17,
-      inStock: true
-    },
-    {
-      id: 6,
-      name: 'Red Apples',
-      category: 'Fruits',
-      price: 120,
-      originalPrice: 140,
-      image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Farm Fresh',
-      delivery: '2-4 Hours',
-      rating: 4.9,
-      unit: 'per kg',
-      discount: 14,
-      inStock: true
-    },
-    {
-      id: 7,
-      name: 'Basmati Rice',
-      category: 'Groceries',
-      price: 180,
-      originalPrice: 200,
-      image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Farm Fresh',
-      delivery: 'Next Day',
-      rating: 4.7,
-      unit: 'per kg',
-      discount: 10,
-      inStock: true
-    },
-    {
-      id: 8,
-      name: 'Fresh Chicken',
-      category: 'Meat & Fish',
-      price: 280,
-      originalPrice: 320,
-      image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Fresh Today',
-      delivery: 'Same Day',
-      rating: 4.8,
-      unit: 'per kg',
-      discount: 12,
-      inStock: true
-    },
-    {
-      id: 9,
-      name: 'Turmeric Powder',
-      category: 'Spices',
-      price: 45,
-      originalPrice: 50,
-      image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Organic',
-      delivery: 'Next Day',
-      rating: 4.9,
-      unit: 'per 100g',
-      discount: 10,
-      inStock: true
-    },
-    {
-      id: 10,
-      name: 'Fresh Carrots',
-      category: 'Vegetables',
-      price: 35,
-      originalPrice: 40,
-      image: 'https://images.unsplash.com/photo-1445282768818-728615cc910a?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Farm Fresh',
-      delivery: 'Same Day',
-      rating: 4.7,
-      unit: 'per kg',
-      discount: 12,
-      inStock: true
-    },
-    {
-      id: 11,
-      name: 'Fresh Oranges',
-      category: 'Fruits',
-      price: 80,
-      originalPrice: 90,
-      image: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Farm Fresh',
-      delivery: '2-4 Hours',
-      rating: 4.8,
-      unit: 'per kg',
-      discount: 11,
-      inStock: true
-    },
-    {
-      id: 12,
-      name: 'Paneer',
-      category: 'Dairy',
-      price: 320,
-      originalPrice: 350,
-      image: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80',
-      freshness: 'Fresh Today',
-      delivery: 'Same Day',
-      rating: 4.9,
-      unit: 'per kg',
-      discount: 9,
-      inStock: true
+  // Fetch products from backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        const response = await getProductsByCategory('localmarket')
+        if (response.success) {
+          setProducts(response.data)
+        } else {
+          console.error('Failed to fetch products:', response.message)
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchProducts()
+  }, [])
 
   // Filter products based on search, category, and price range
   const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory === 'All' || product.subcategory === selectedCategory
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     return matchesSearch && matchesCategory && matchesPrice
   })
@@ -321,80 +173,97 @@ const LocalMarket = () => {
               </div>
             </div>
 
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group">
-                  <div className="relative">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                    {product.discount > 0 && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium">
-                        {product.discount}% OFF
-                      </div>
-                    )}
-                    <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-medium">
-                      {product.freshness}
-                    </div>
-                    <button 
-                      onClick={() => navigate(`/product/${product.id}`)}
-                      className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
-                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    </button>
-                  </div>
-                  
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{product.unit}</p>
-                    
-                    <div className="flex items-center mb-2">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <svg
-                            key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'
-                            }`}
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        ))}
-                        <span className="ml-1 text-sm text-gray-600">({product.rating})</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
-                        {product.originalPrice > product.price && (
-                          <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
-                        )}
-                      </div>
-                      <span className="text-xs text-green-600 font-medium">{product.delivery}</span>
-                    </div>
-                    
-                    <button 
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors duration-200 font-medium"
-                    >
-                      Add to Cart
-                    </button>
-                  </div>
-                </div>
-              ))}
+            {/* Search Bar - Add this if you want search functionality */}
+            <div className="mb-6">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
             </div>
 
+            {/* Products Grid */}
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredProducts.map((product) => (
+                  <div key={product._id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group">
+                    <div className="relative">
+                      <img
+                        src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
+                        alt={product.name}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
+                      />
+                      {product.discount > 0 && (
+                        <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+                          {product.discount}% OFF
+                        </div>
+                      )}
+                      <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+                        {product.freshness || 'Fresh'}
+                      </div>
+                      <button 
+                        onClick={() => navigate(`/product/${product._id}`)}
+                        className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      >
+                        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{product.name}</h3>
+                      <p className="text-sm text-gray-600 mb-2">{product.unit || 'per unit'}</p>
+                      
+                      <div className="flex items-center mb-2">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <svg
+                              key={i}
+                              className={`w-4 h-4 ${
+                                i < Math.floor(product.rating || 4.5) ? 'text-yellow-400' : 'text-gray-300'
+                              }`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                          <span className="ml-1 text-sm text-gray-600">({product.rating || 4.5})</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
+                          {product.originalPrice > product.price && (
+                            <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
+                          )}
+                        </div>
+                        <span className="text-xs text-green-600 font-medium">{product.delivery || 'Standard'}</span>
+                      </div>
+                      
+                      <button 
+                        onClick={() => addToCart({...product, id: product._id})}
+                        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors duration-200 font-medium"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Empty State */}
-            {filteredProducts.length === 0 && (
+            {filteredProducts.length === 0 && !loading && (
               <div className="text-center py-12">
                 <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8l-4 4m0 0l-4-4m4 4V3" />

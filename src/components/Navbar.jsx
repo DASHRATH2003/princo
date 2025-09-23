@@ -18,8 +18,7 @@ const Navbar = () => {
 
       {/* Top Header */}
       <div
-        className="container-responsive transition-all duration-500 hover:bg-gradient-to-r hover:from-blue-900 hover:to-purple-600"
-        style={{ backgroundColor: "#0A014A" }}
+        className="container-responsive transition-all duration-500 bg-gradient-to-r from-blue-900 to-purple-600"
       >
         <div className="flex justify-between items-center py-1">
           {/* Logo and Brand */}

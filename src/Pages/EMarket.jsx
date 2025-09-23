@@ -1,17 +1,42 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { getProductsByCategory } from '../services/productService'
 
 const EMarket = () => {
   const navigate = useNavigate()
-  const pageTitle = "Printing Services"
-  const pageDescription = "Professional printing and design services for your business needs"
+  const pageTitle = "E-Market"
+  const pageDescription = "Online marketplace for electronics and gadgets"
   const [selectedCategory, setSelectedCategory] = useState('All Products')
   const [priceRange, setPriceRange] = useState([999, 332500])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
   const { items: cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart()
+
+  // Fetch products from backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true)
+        const response = await getProductsByCategory('emart')
+        if (response.success && response.data) {
+          setProducts(response.data)
+        } else {
+          setProducts([])
+        }
+      } catch (error) {
+        console.error('Error fetching emart products:', error)
+        setProducts([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
 
   // Get cart item quantity for a specific product
   const getProductQuantity = (productId) => {
@@ -25,249 +50,32 @@ const EMarket = () => {
 
   const categories = [
     'All Products',
-    'Services',
-    'Business Cards',
-    'Brochures',
-    'Posters',
-    'Flyers',
-    'Banners',
-    'Logo Design',
-    'Stickers',
-    'Booklets'
+    'electronics',
+    'gadgets',
+    'accessories',
+    'mobiles',
+    'laptops',
+    'tablets'
   ]
 
   const legs = ['Steel', 'Aluminium', 'Custom', 'Wood']
   const durations = ['-', '1-3 days', '1 week', '2 weeks', '1 month']
 
-  const products = [
-    // Business Cards
-    {
-      id: "1",
-      name: 'Premium Business Cards',
-      price: 2159,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: true,
-      onSale: false
-    },
-    {
-      id: "2",
-      name: 'Matte Finish Business Cards',
-      price: 2491,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: false,
-      onSale: true
-    },
-    {
-      id: 3,
-      name: 'Glossy Business Cards',
-      price: 1909,
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: false,
-      onSale: false
-    },
-    // Brochures
-    {
-      id: 4,
-      name: 'Tri-fold Brochures',
-      price: 7474,
-      image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Brochures',
-      isNew: false,
-      onSale: true
-    },
-    {
-      id: 5,
-      name: 'Bi-fold Brochures',
-      price: 6643,
-      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Brochures',
-      isNew: false,
-      onSale: false
-    },
-    {
-      id: 6,
-      name: 'Z-fold Brochures',
-      price: 7972,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Brochures',
-      isNew: true,
-      onSale: false
-    },
-    // Posters
-    {
-      id: 7,
-      name: 'A3 Poster Printing',
-      price: 1287,
-      image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Posters',
-      isNew: false,
-      onSale: false
-    },
-    {
-      id: 8,
-      name: 'A2 Poster Printing',
-      price: 2118,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Posters',
-      isNew: false,
-      onSale: true
-    },
-    {
-      id: 9,
-      name: 'A1 Large Poster',
-      price: 2949,
-      image: 'https://m.media-amazon.com/images/I/71LiV1XNphL._UF894,1000_QL80_.jpg',
-      category: 'Posters',
-      isNew: true,
-      onSale: false
-    },
-    // Flyers
-    {
-      id: 10,
-      name: 'A5 Flyer Design',
-      price: 2908,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Flyers',
-      isNew: false,
-      onSale: true
-    },
-    {
-      id: 11,
-      name: 'A4 Flyer Printing',
-      price: 3739,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Flyers',
-      isNew: false,
-      onSale: false
-    },
-    {
-      id: 12,
-      name: 'Double-sided Flyers',
-      price: 4570,
-      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Flyers',
-      isNew: true,
-      onSale: false
-    },
-    // Banners
-    {
-      id: 13,
-      name: 'Vinyl Banner Printing',
-      price: 10385,
-      image: 'https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQFtOF-6TGnt0I1uruUVy1kMsk9YsvUdSQMERFebE0iHQZk4x8d8CbbzsYjP9qElLWeRURuCx8JDAbiWic-fz60xR6vVDPxmwTg0OSuM2ESCsQsdGRtEtg-Yg',
-      category: 'Banners',
-      isNew: false,
-      onSale: false
-    },
-    {
-      id: 14,
-      name: 'Fabric Banner',
-      price: 12047,
-      image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Banners',
-      isNew: true,
-      onSale: false
-    },
-    {
-      id: 15,
-      name: 'Mesh Banner',
-      price: 11216,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Banners',
-      isNew: false,
-      onSale: true
-    },
-    // Logo Design
-    {
-      id: 16,
-      name: 'Professional Logo Design',
-      price: 16614,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Logo Design',
-      isNew: true,
-      onSale: false
-    },
-    {
-      id: 17,
-      name: 'Logo + Brand Identity',
-      price: 24922,
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Logo Design',
-      isNew: false,
-      onSale: true
-    },
-    {
-      id: 18,
-      name: 'Logo Redesign',
-      price: 12461,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Logo Design',
-      isNew: false,
-      onSale: false
-    },
-    // Stickers
-    {
-      id: 19,
-      name: 'Vinyl Stickers',
-      price: 1079,
-      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Stickers',
-      isNew: false,
-      onSale: false
-    },
-    {
-      id: 20,
-      name: 'Die-cut Stickers',
-      price: 1578,
-      image: 'https://www.tradeprint.co.uk/dam/jcr:a7fcbe27-b906-447f-a05e-5174f335948b/Stickers%20-%20Die%20Cut.webp',
-      category: 'Stickers',
-      isNew: true,
-      onSale: false
-    },
-    {
-      id: 21,
-      name: 'Transparent Stickers',
-      price: 1328,
-      image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Stickers',
-      isNew: false,
-      onSale: true
-    },
-    // Booklets
-    {
-      id: 22,
-      name: 'Saddle-stitched Booklet',
-      price: 3739,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Booklets',
-      isNew: false,
-      onSale: true
-    },
-    {
-      id: 23,
-      name: 'Perfect Bound Booklet',
-      price: 5401,
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Booklets',
-      isNew: true,
-      onSale: false
-    },
-    {
-      id: 24,
-      name: 'Spiral Bound Booklet',
-      price: 4570,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Booklets',
-      isNew: false,
-      onSale: false
-    }
-  ]
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    )
+  }
 
+  // Filter products based on search, category, and price range
   const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'All Products' || product.category === selectedCategory
+    const matchesCategory = selectedCategory === 'All Products' || product.subcategory === selectedCategory
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     return matchesCategory && matchesSearch && matchesPrice
@@ -424,10 +232,10 @@ const EMarket = () => {
             {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
               {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative">
                     <img
-                      src={product.image}
+                      src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
                       alt={product.name}
                       className="w-full h-40 lg:h-48 object-cover"
                     />
@@ -448,19 +256,19 @@ const EMarket = () => {
                     
                     {/* Add to Cart Section */}
                     <div className="flex items-center justify-between">
-                      {getProductQuantity(product.id) > 0 ? (
+                      {getProductQuantity(product._id) > 0 ? (
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => updateQuantity(product.id, getProductQuantity(product.id) - 1)}
+                            onClick={() => updateQuantity(product._id, getProductQuantity(product._id) - 1)}
                             className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
                           >
                             <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                             </svg>
                           </button>
-                          <span className="w-6 lg:w-8 text-center font-medium text-sm lg:text-base">{getProductQuantity(product.id)}</span>
+                          <span className="w-6 lg:w-8 text-center font-medium text-sm lg:text-base">{getProductQuantity(product._id)}</span>
                           <button
-                            onClick={() => updateQuantity(product.id, getProductQuantity(product.id) + 1)}
+                            onClick={() => updateQuantity(product._id, getProductQuantity(product._id) + 1)}
                             className="w-7 h-7 lg:w-8 lg:h-8 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
                           >
                             <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -470,7 +278,7 @@ const EMarket = () => {
                         </div>
                       ) : (
                         <button
-                          onClick={() => addToCart({...product})}
+                          onClick={() => addToCart({...product, id: product._id})}
                           className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 lg:px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-base h-10 lg:h-12"
                         >
                          
@@ -481,7 +289,7 @@ const EMarket = () => {
                       
                       {/* Quick View Button */}
                       <button 
-                        onClick={() => navigate(`/product/${product.id}`)}
+                        onClick={() => navigate(`/product/${product._id}`)}
                         className="ml-2 p-2 text-gray-400 hover:text-purple-600 transition-colors"
                         aria-label="Quick view product"
                       >

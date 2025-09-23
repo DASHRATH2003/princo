@@ -43,9 +43,13 @@ const Cart = () => {
               {items.map((item) => (
                 <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
                   <img
-                    src={item.image}
+                    src={item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjQwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSIjOUI5QjlCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo='}
                     alt={item.name}
                     className="w-20 h-20 object-cover rounded-md"
+                    onError={(e) => {
+                      console.log('Cart image failed to load:', item.name, 'Image URL:', item.image);
+                      e.target.src = 'https://via.placeholder.com/80?text=No+Image';
+                    }}
                   />
                   
                   <div className="flex-1">

@@ -135,9 +135,13 @@ const ProductDetail = () => {
         <div className="md:w-1/2">
           <div className="bg-white rounded-lg overflow-hidden shadow-lg">
             <img 
-              src={product.image} 
+              src={product.imageUrl || product.image || 'https://via.placeholder.com/400x300?text=Product+Image'} 
               alt={product.name} 
               className="w-full h-auto object-cover"
+              onError={(e) => {
+                console.log('Product detail image failed to load:', product.name, 'Image URL:', product.imageUrl || product.image);
+                e.target.src = 'https://via.placeholder.com/400x300?text=Product+Image';
+              }}
             />
             {product.isNew && (
               <div className="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">

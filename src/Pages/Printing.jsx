@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { getProductsByCategory } from '../services/productService'
 
 // Add custom CSS animations
 const customStyles = `
@@ -170,6 +171,8 @@ const Printing = () => {
   const [priceRange, setPriceRange] = useState([99, 25000])
   const [showFilters, setShowFilters] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const categories = [
     'All Products',
@@ -184,215 +187,24 @@ const Printing = () => {
     'Custom Printing'
   ]
 
-  const products = [
-    // Business Cards
-    {
-      id: "1",
-      name: 'Premium Business Cards',
-      price: 299,
-      originalPrice: 399,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: true,
-      onSale: true,
-      rating: 4.8,
-      reviews: 156,
-      deliveryTime: '2-3 days'
-    },
-    {
-      id: "2",
-      name: 'Matte Finish Business Cards',
-      price: 249,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: false,
-      onSale: false,
-      rating: 4.6,
-      reviews: 89,
-      deliveryTime: '1-2 days'
-    },
-    {
-      id: 3,
-      name: 'Glossy Business Cards',
-      price: 199,
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: false,
-      onSale: true,
-      rating: 4.5,
-      reviews: 67,
-      deliveryTime: '2-3 days'
-    },
-    // Brochures & Flyers
-    {
-      id: 4,
-      name: 'Tri-fold Brochures',
-      price: 599,
-      originalPrice: 799,
-      image: 'https://images.unsplash.com/photo-1586953208448-b95a79798f07?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Brochures & Flyers',
-      isNew: false,
-      onSale: true,
-      rating: 4.7,
-      reviews: 123,
-      deliveryTime: '3-5 days'
-    },
-    {
-      id: 5,
-      name: 'A4 Flyer Design & Print',
-      price: 149,
-      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Brochures & Flyers',
-      isNew: true,
-      onSale: false,
-      rating: 4.4,
-      reviews: 98,
-      deliveryTime: '1-2 days'
-    },
-    {
-      id: 6,
-      name: 'Double-sided Flyers',
-      price: 199,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Brochures & Flyers',
-      isNew: false,
-      onSale: false,
-      rating: 4.6,
-      reviews: 76,
-      deliveryTime: '2-3 days'
-    },
-    // Posters & Banners
-    {
-      id: 7,
-      name: 'A3 Poster Printing',
-      price: 99,
-      image: 'https://images.unsplash.com/photo-1541701494587-cb58502866ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Posters & Banners',
-      isNew: false,
-      onSale: true,
-      rating: 4.3,
-      reviews: 54,
-      deliveryTime: '1-2 days'
-    },
-    {
-      id: 8,
-      name: 'Vinyl Banner Printing',
-      price: 899,
-      originalPrice: 1199,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Posters & Banners',
-      isNew: true,
-      onSale: true,
-      rating: 4.9,
-      reviews: 234,
-      deliveryTime: '3-5 days'
-    },
-    {
-      id: 9,
-      name: 'A1 Large Poster',
-      price: 299,
-      image: 'https://m.media-amazon.com/images/I/71LiV1XNphL._UF894,1000_QL80_.jpg',
-      category: 'Posters & Banners',
-      isNew: false,
-      onSale: false,
-      rating: 4.5,
-      reviews: 87,
-      deliveryTime: '2-3 days'
-    },
-    // Stickers & Labels
-    {
-      id: 10,
-      name: 'Vinyl Stickers',
-      price: 99,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Stickers & Labels',
-      isNew: false,
-      onSale: true,
-      rating: 4.7,
-      reviews: 145,
-      deliveryTime: '1-2 days'
-    },
-    {
-      id: 11,
-      name: 'Custom Labels',
-      price: 149,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Stickers & Labels',
-      isNew: true,
-      onSale: false,
-      rating: 4.6,
-      reviews: 92,
-      deliveryTime: '2-3 days'
-    },
-    // Letterheads
-    {
-      id: 12,
-      name: 'Professional Letterheads',
-      price: 199,
-      originalPrice: 249,
-      image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Letterheads',
-      isNew: false,
-      onSale: true,
-      rating: 4.5,
-      reviews: 67,
-      deliveryTime: '2-3 days'
-    },
-    // Invitations
-    {
-      id: 13,
-      name: 'Wedding Invitations',
-      price: 399,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Invitations',
-      isNew: true,
-      onSale: false,
-      rating: 4.8,
-      reviews: 198,
-      deliveryTime: '3-4 days'
-    },
-    {
-      id: 14,
-      name: 'Birthday Invitations',
-      price: 249,
-      image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Invitations',
-      isNew: false,
-      onSale: true,
-      rating: 4.4,
-      reviews: 76,
-      deliveryTime: '2-3 days'
-    },
-    // Photo Printing
-    {
-      id: 15,
-      name: 'Photo Prints 4x6',
-      price: 49,
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Photo Printing',
-      isNew: false,
-      onSale: false,
-      rating: 4.6,
-      reviews: 234,
-      deliveryTime: '1 day'
-    },
-    {
-      id: 16,
-      name: 'Canvas Photo Prints',
-      price: 799,
-      originalPrice: 999,
-      image: 'https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Photo Printing',
-      isNew: true,
-      onSale: true,
-      rating: 4.9,
-      reviews: 156,
-      deliveryTime: '3-5 days'
+  // Dynamic products from backend - loaded in useEffect
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await getProductsByCategory('printing')
+        setProducts(response.data)
+        setLoading(false)
+      } catch (error) {
+        console.error('Error fetching printing products:', error)
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchProducts()
+  }, [])
 
   const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'All Products' || product.category === selectedCategory
+    const matchesCategory = selectedCategory === 'All Products' || product.subcategory === selectedCategory
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesCategory && matchesPrice && matchesSearch
@@ -400,144 +212,153 @@ const Printing = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container-responsive py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Mobile Filter Toggle */}
-          <div className="lg:hidden mb-4">
-            <button 
-              onClick={() => setShowFilters(!showFilters)}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
-              </svg>
-              Filters
-            </button>
+     
+<div className="container-responsive py-6">
+  <div className="flex flex-col lg:flex-row gap-6">
+    {/* Mobile Filter Toggle */}
+    <div className="lg:hidden mb-4">
+      <button 
+        onClick={() => setShowFilters(!showFilters)}
+        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium flex items-center justify-center gap-2"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+        </svg>
+        Filters
+      </button>
+    </div>
+    
+    {/* Sidebar */}
+    <div className={`w-full lg:w-64 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+      {/* Categories */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <h3 className="font-semibold text-gray-800 mb-4">Categories</h3>
+        <div className="space-y-2">
+          {categories.map((category) => (
+            <div key={category} className="flex items-center">
+              <input
+                type="radio"
+                id={category}
+                name="category"
+                checked={selectedCategory === category}
+                onChange={() => setSelectedCategory(category)}
+                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+              />
+              <label htmlFor={category} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                {category}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Service Type Filter */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <h3 className="font-semibold text-gray-800 mb-4">Service Type</h3>
+        <div className="space-y-2">
+          {['Design Only', 'Print Only', 'Design + Print', 'Rush Service'].map((type) => (
+            <div key={type} className="flex items-center">
+              <input
+                type="checkbox"
+                id={type}
+                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+              />
+              <label htmlFor={type} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                {type}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Delivery Time Filter */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+        <h3 className="font-semibold text-gray-800 mb-4">Delivery Time</h3>
+        <div className="space-y-2">
+          {['Same Day', '1-2 days', '3-5 days', '1 week', '2+ weeks'].map((delivery) => (
+            <div key={delivery} className="flex items-center">
+              <input
+                type="checkbox"
+                id={delivery}
+                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+              />
+              <label htmlFor={delivery} className="ml-2 text-sm text-gray-700 cursor-pointer">
+                {delivery}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Price Range */}
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <h3 className="font-semibold text-gray-800 mb-4">Price Range</h3>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <span>₹ {priceRange[0]}</span>
+            <span>₹ {priceRange[1]}</span>
           </div>
-          
-          {/* Sidebar */}
-          <div className={`w-full lg:w-64 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-            {/* Categories */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Categories</h3>
-              <div className="space-y-2">
-                {categories.map((category) => (
-                  <div key={category} className="flex items-center">
-                    <input
-                      type="radio"
-                      id={category}
-                      name="category"
-                      checked={selectedCategory === category}
-                      onChange={() => setSelectedCategory(category)}
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
-                    />
-                    <label htmlFor={category} className="ml-2 text-sm text-gray-700 cursor-pointer">
-                      {category}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Service Type Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Service Type</h3>
-              <div className="space-y-2">
-                {['Design Only', 'Print Only', 'Design + Print', 'Rush Service'].map((type) => (
-                  <div key={type} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={type}
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor={type} className="ml-2 text-sm text-gray-700 cursor-pointer">
-                      {type}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Delivery Time Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Delivery Time</h3>
-              <div className="space-y-2">
-                {['Same Day', '1-2 days', '3-5 days', '1 week', '2+ weeks'].map((delivery) => (
-                  <div key={delivery} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id={delivery}
-                      className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor={delivery} className="ml-2 text-sm text-gray-700 cursor-pointer">
-                      {delivery}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Price Range */}
-            <div className="bg-white rounded-lg shadow-sm p-4">
-              <h3 className="font-semibold text-gray-800 mb-4">Price Range</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-sm text-gray-600">
-                  <span>₹ {priceRange[0]}</span>
-                  <span>₹ {priceRange[1]}</span>
-                </div>
-                <div className="relative">
-                  <input
-                    type="range"
-                    min="99"
-                    max="25000"
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="relative">
+            <input
+              type="range"
+              min="99"
+              max="25000"
+              value={priceRange[1]}
+              onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+            />
           </div>
+        </div>
+      </div>
+    </div>
 
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Category Tabs */}
-            <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg overflow-x-auto">
-              {['Business Cards', 'Brochures & Flyers', 'Posters & Banners', 'Stickers & Labels', 'Photo Printing'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setSelectedCategory(tab)}
-                  className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                    selectedCategory === tab
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="w-6 h-6 bg-purple-300 rounded flex items-center justify-center">
-                      <div className="w-3 h-3 bg-purple-600 rounded"></div>
-                    </div>
-                    <span>{tab}</span>
-                  </div>
-                </button>
-              ))}
+    {/* Main Content */}
+    <div className="flex-1">
+      {/* Category Tabs */}
+      <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg overflow-x-auto">
+        {['Business Cards', 'Brochures & Flyers', 'Posters & Banners', 'Stickers & Labels', 'Photo Printing'].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setSelectedCategory(tab)}
+            className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              selectedCategory === tab
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-6 h-6 bg-purple-300 rounded flex items-center justify-center">
+                <div className="w-3 h-3 bg-purple-600 rounded"></div>
+              </div>
+              <span>{tab}</span>
             </div>
+          </button>
+        ))}
+      </div>
 
-            {/* Results Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">
-                {selectedCategory === 'All Products' ? 'All Printing Services' : selectedCategory}
-              </h2>
-              <p className="text-gray-600">{filteredProducts.length} products found</p>
-            </div>
+      {/* Results Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">
+          {selectedCategory === 'All Products' ? 'All Printing Services' : selectedCategory}
+        </h2>
+        <p className="text-gray-600">{filteredProducts.length} products found</p>
+      </div>
 
-            {/* Products Grid */}
+      {/* Products Grid */}
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        </div>
+      ) : (
+        <>
+          {/* Products Grid या Empty State */}
+          {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
+                <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
                   <div className="relative">
                     <img
-                      src={product.image}
+                      src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
                       alt={product.name}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -546,7 +367,7 @@ const Printing = () => {
                         New!
                       </span>
                     )}
-                    {product.onSale && (
+                    {product.discount > 0 && (
                       <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
                         Sale
                       </span>
@@ -586,7 +407,7 @@ const Printing = () => {
                     {/* Action Buttons */}
                     <div className="flex space-x-2">
                       <button 
-                        onClick={() => addToCart(product)}
+                        onClick={() => addToCart({...product, id: product._id})}
                         className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors flex items-center justify-center gap-2"
                       >
                         <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -595,7 +416,7 @@ const Printing = () => {
                         <span className="whitespace-nowrap">Add to Cart</span>
                       </button>
                       <button 
-                        onClick={() => navigate(`/product/${product.id}`)}
+                        onClick={() => navigate(`/product/${product._id}`)}
                         className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                         aria-label="Quick view product"
                       >
@@ -609,35 +430,34 @@ const Printing = () => {
                 </div>
               ))}
             </div>
-
-            {/* Empty State */}
-            {filteredProducts.length === 0 && (
-              <div className="text-center py-12">
-                <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.562M15 6.306a7.962 7.962 0 00-6 0m6 0V5a2 2 0 00-2-2H9a2 2 0 00-2 2v1.306m8 0V7a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2h8a2 2 0 012-2z" />
-                </svg>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-600">Try adjusting your search or filter criteria</p>
-              </div>
-            )}
-          </div>
-          
-          {/* Mobile Filter Toggle State */}
-          <div className="lg:hidden">
-            {showFilters && (
-              <button 
-                onClick={() => setShowFilters(false)}
-                className="fixed top-4 right-4 z-50 bg-gray-800 text-white p-2 rounded-full shadow-lg"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
+          ) : (
+            <div className="text-center py-12">
+              <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.562M15 6.306a7.962 7.962 0 00-6 0m6 0V5a2 2 0 00-2-2H9a2 2 0 00-2 2v1.306m8 0V7a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2h8a2 2 0 012-2z" />
+              </svg>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+              <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+    
+    {/* Mobile Filter Toggle State */}
+    <div className="lg:hidden">
+      {showFilters && (
+        <button 
+          onClick={() => setShowFilters(false)}
+          className="fixed top-4 right-4 z-50 bg-gray-800 text-white p-2 rounded-full shadow-lg"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      )}
+    </div>
+  </div>
+</div>
       {/* Printing Process Showcase Section */}
       <div className="bg-gradient-to-br from-purple-50 to-indigo-100 py-16">
         <div className="max-w-7xl mx-auto px-4">
