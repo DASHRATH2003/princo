@@ -6,8 +6,7 @@ import { getProductsByCategory } from '../services/productService'
 const LocalMarket = () => {
   const { addToCart } = useCart()
   const navigate = useNavigate()
-  const [pageTitle] = useState('Local Market')
-  const [pageDescription] = useState('Fresh Local Products & Groceries')
+ 
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [priceRange, setPriceRange] = useState([10, 5000])
   const [showFilters, setShowFilters] = useState(false)
@@ -59,13 +58,8 @@ const LocalMarket = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div className="mb-4 md:mb-0">
-              <h1 className="text-3xl font-bold text-gray-900">{pageTitle}</h1>
-              <p className="text-gray-600 mt-1">{pageDescription}</p>
-            </div>
-          </div>
+        <div className="max-w-7xl mx-auto px-2 py-2">
+          
         </div>
       </div>
 

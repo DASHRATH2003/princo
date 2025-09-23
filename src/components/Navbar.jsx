@@ -20,7 +20,7 @@ const Navbar = () => {
       <div
         className="container-responsive transition-all duration-500 bg-gradient-to-r from-blue-900 to-purple-600"
       >
-        <div className="flex justify-between items-center py-1">
+        <div className="flex justify-between items-center py-0.5">
           {/* Logo and Brand */}
           <div className="flex items-center space-x-3">
             <div className="relative transform transition-transform duration-300 hover:scale-110">
@@ -170,11 +170,11 @@ const Navbar = () => {
         </div>
       </div>
 
-       <div className="border-t border-gray-200">
+       <div className="border-t border-gray-100">
         <div className="container-responsive">
-          <div className="flex items-center justify-between py-3">
+          <div className="flex items-center justify-between py-1">
             {/* Navigation Links - Hidden on mobile, visible on desktop */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-6">
               <Link
                 to="/"
                 className={`text-blue-700 hover:text-purple-500 font-medium relative ${
@@ -183,7 +183,7 @@ const Navbar = () => {
               >
                 Home
                 {location.pathname === "/" && (
-                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                  <span className="absolute bottom-[-6px] left-0 w-full h-[2px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
                 <Link
@@ -194,7 +194,7 @@ const Navbar = () => {
               >
                 E-Market
                 {location.pathname === "/e-market" && (
-                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                  <span className="absolute bottom-[-6px] left-0 w-full h-[2px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
                <Link
@@ -205,7 +205,7 @@ const Navbar = () => {
               >
                 Local Market
                 {location.pathname === "/local-market" && (
-                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                  <span className="absolute bottom-[-6px] left-0 w-full h-[2px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
               <Link
@@ -216,7 +216,7 @@ const Navbar = () => {
               >
                 Printing
                 {location.pathname === "/printing" && (
-                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                  <span className="absolute bottom-[-6px] left-0 w-full h-[2px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
             
@@ -229,7 +229,7 @@ const Navbar = () => {
               >
                 NEWS TODAY
                 {location.pathname === "/news-today" && (
-                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                  <span className="absolute bottom-[-6px] left-0 w-full h-[2px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
             </nav>
@@ -237,7 +237,7 @@ const Navbar = () => {
             {/* Search and Actions - Hidden on mobile */}
             <div className="hidden md:flex items-center space-x-3">
               {/* Search Bar - White background */}
-              <div className="flex items-center bg-white border border-gray-400 rounded-lg px-3 py-2">
+              <div className="flex items-center bg-white border border-gray-400 rounded-lg px-3 py-1">
                 <input
                   type="text"
                   placeholder="Search bar"
@@ -354,13 +354,13 @@ const Navbar = () => {
 
       {/* Mobile Menu - Dropdown */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <div className="px-4 py-2 space-y-2">
+        <div className="md:hidden bg-white border-t border-gray-100">
+          <div className="px-4 py-1 space-y-1">
             {/* Mobile Navigation Links */}
-            <nav className="flex flex-col space-y-2">
+            <nav className="flex flex-col space-y-1">
               <Link
                 to="/"
-                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                className={`text-gray-700 hover:text-purple-600 font-medium py-1 border-b border-gray-50 ${
                   location.pathname === "/" ? "text-purple-600" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -369,7 +369,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/printing"
-                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                className={`text-gray-700 hover:text-purple-600 font-medium py-1 border-b border-gray-50 ${
                   location.pathname === "/printing" ? "text-purple-600" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -378,7 +378,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/e-market"
-                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                className={`text-gray-700 hover:text-purple-600 font-medium py-1 border-b border-gray-50 ${
                   location.pathname === "/e-market" ? "text-purple-600" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -387,7 +387,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/local-market"
-                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                className={`text-gray-700 hover:text-purple-600 font-medium py-1 border-b border-gray-50 ${
                   location.pathname === "/local-market" ? "text-purple-600" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -396,7 +396,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/news-today"
-                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                className={`text-gray-700 hover:text-purple-600 font-medium py-1 border-b border-gray-50 ${
                   location.pathname === "/news-today" ? "text-purple-600" : ""
                 }`}
                 onClick={() => setIsMenuOpen(false)}
