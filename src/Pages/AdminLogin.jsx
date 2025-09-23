@@ -111,13 +111,7 @@ const AdminLogin = () => {
               ) : (
                 'Sign In'
               )}
-            </button>
-
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                Demo credentials: admin@printo.com / admin123
-              </p>
-            </div>
+            </button> 
           </form>
         </div>
       </div>
