@@ -191,7 +191,8 @@ const LocalMarket = () => {
                       <img
                         src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
                         alt={product.name}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200 cursor-pointer"
+                        onClick={() => navigate(`/product/${product._id}`)}
                       />
                       {product.discount > 0 && (
                         <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium">

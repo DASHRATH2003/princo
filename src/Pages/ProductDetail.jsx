@@ -11,71 +11,57 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
-  
-  // Find the product from the EMarket products
-  // This is a simplified approach - in a real app, you would fetch from an API
-  const products = [
-    // Business Cards
-    {
-      id: "1",
-      name: 'Premium Business Cards',
-      price: 2159,
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: true,
-      onSale: false,
-      description: 'High-quality premium business cards printed on thick card stock with a professional finish. Perfect for making a lasting impression with clients and partners.',
-      colors: ['White', 'Black', 'Cream'],
-      sizes: ['Standard', 'Square', 'Mini'],
-      brand: 'PrintCo Premium',
-      material: '350gsm Art Card',
-      inStock: true
-    },
-    {
-      id: "2",
-      name: 'Matte Finish Business Cards',
-      price: 2491,
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: false,
-      onSale: true,
-      description: 'Elegant matte finish business cards that provide a sophisticated look and feel. The non-glossy surface makes them easy to write on.',
-      colors: ['White', 'Black', 'Gray'],
-      sizes: ['Standard', 'Square'],
-      brand: 'PrintCo Matte',
-      material: '300gsm Matte Card',
-      inStock: true
-    },
-    {
-      id: "3",
-      name: 'Glossy Business Cards',
-      price: 1909,
-      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-      category: 'Business Cards',
-      isNew: false,
-      onSale: false,
-      description: 'Vibrant glossy business cards that make your colors pop. Perfect for designs with photos or bold graphics.',
-      colors: ['White', 'Ivory', 'Blue'],
-      sizes: ['Standard', 'Mini'],
-      brand: 'PrintCo Glossy',
-      material: '300gsm Glossy Card',
-      inStock: true
-    }
-  ];
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Find the product based on productId
+  // Fetch product details from backend API
   useEffect(() => {
-    const foundProduct = products.find(p => p.id === productId);
-    if (foundProduct) {
-      setProduct(foundProduct);
-      if (foundProduct.colors && foundProduct.colors.length > 0) {
-        setSelectedColor(foundProduct.colors[0]);
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        
+        // Only add authorization header if token exists
+        const token = localStorage.getItem('adminToken');
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/products/single/${productId}`, {
+          method: 'GET',
+          headers: headers
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data.success && data.data) {
+          const productData = data.data;
+          setProduct(productData);
+          if (productData.colors && productData.colors.length > 0) {
+            setSelectedColor(productData.colors[0]);
+          }
+          if (productData.sizes && productData.sizes.length > 0) {
+            setSelectedSize(productData.sizes[0]);
+          }
+        } else {
+          setProduct(null);
+        }
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
       }
-      if (foundProduct.sizes && foundProduct.sizes.length > 0) {
-        setSelectedSize(foundProduct.sizes[0]);
-      }
+    };
+
+    if (productId) {
+      fetchProduct();
     }
-    setLoading(false);
   }, [productId]);
 
   // Get cart item quantity for this product
@@ -89,6 +75,7 @@ const ProductDetail = () => {
     if (product) {
       const productToAdd = {
         ...product,
+        id: product._id || product.id, // Ensure we have the correct ID
         selectedColor,
         selectedSize,
         quantity
@@ -131,28 +118,78 @@ const ProductDetail = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Product Image */}
+        {/* Product Image Gallery */}
         <div className="md:w-1/2">
           <div className="bg-white rounded-lg overflow-hidden shadow-lg">
-            <img 
-              src={product.imageUrl || product.image || 'https://via.placeholder.com/400x300?text=Product+Image'} 
-              alt={product.name} 
-              className="w-full h-auto object-cover"
-              onError={(e) => {
-                console.log('Product detail image failed to load:', product.name, 'Image URL:', product.imageUrl || product.image);
-                e.target.src = 'https://via.placeholder.com/400x300?text=Product+Image';
-              }}
-            />
-            {product.isNew && (
-              <div className="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
-                NEW
+            {/* Main Image Display */}
+            <div className="relative">
+              <img 
+                src={
+                  selectedImageIndex === 0 ? (product.imageUrl || product.image) :
+                  product.images && product.images.length >= selectedImageIndex ? product.images[selectedImageIndex - 1] :
+                  (product.imageUrl || product.image || 'https://via.placeholder.com/400x300?text=Product+Image')
+                } 
+                alt={product.name} 
+                className="w-full h-96 object-cover"
+                onError={(e) => {
+                  console.log('Product detail image failed to load:', product.name, 'Image URL:', product.imageUrl || product.image);
+                  e.target.src = 'https://via.placeholder.com/400x300?text=Product+Image';
+                }}
+              />
+              {product.isNew && (
+                <div className="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded">
+                  NEW
+                </div>
+              )}
+              {product.onSale && (
+                <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                  SALE
+                </div>
+              )}
+            </div>
+            
+            {/* Thumbnail Gallery */}
+            {(product.images && product.images.length > 0) || product.imageUrl || product.image ? (
+              <div className="flex space-x-2 p-4 bg-gray-50 overflow-x-auto">
+                {/* Main product image thumbnail */}
+                {(product.imageUrl || product.image) && (
+                  <div 
+                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 ${
+                      selectedImageIndex === 0 ? 'border-purple-600' : 'border-gray-300'
+                    }`}
+                    onClick={() => setSelectedImageIndex(0)}
+                  >
+                    <img 
+                      src={product.imageUrl || product.image}
+                      alt={`${product.name} main`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/60x60?text=Image';
+                      }}
+                    />
+                  </div>
+                )}
+                {/* Additional images thumbnails */}
+                {product.images && product.images.map((img, index) => (
+                  <div 
+                    key={index}
+                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 ${
+                      selectedImageIndex === index + 1 ? 'border-purple-600' : 'border-gray-300'
+                    }`}
+                    onClick={() => setSelectedImageIndex(index + 1)}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`${product.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/60x60?text=Image';
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
-            )}
-            {product.onSale && (
-              <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                SALE
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -181,8 +218,13 @@ const ProductDetail = () => {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">{product.name}</h1>
           
           <div className="flex items-center mb-4">
-            <span className="text-2xl font-bold text-purple-600">₹{product.price.toLocaleString()}</span>
-            {product.onSale && (
+            <span className="text-2xl font-bold text-purple-600">
+              ₹{product.discountedPrice ? product.discountedPrice.toLocaleString() : product.price.toLocaleString()}
+            </span>
+            {product.discountedPrice && product.discountedPrice < product.price && (
+              <span className="ml-2 text-sm text-gray-500 line-through">₹{product.price.toLocaleString()}</span>
+            )}
+            {product.onSale && !product.discountedPrice && (
               <span className="ml-2 text-sm text-gray-500 line-through">₹{Math.round(product.price * 1.2).toLocaleString()}</span>
             )}
           </div>
@@ -204,20 +246,40 @@ const ProductDetail = () => {
                 <span className="font-medium w-24 text-gray-700">Category:</span>
                 <span className="text-gray-600">{product.category}</span>
               </li>
-              <li className="flex">
-                <span className="font-medium w-24 text-gray-700">Brand:</span>
-                <span className="text-gray-600">{product.brand}</span>
-              </li>
-              <li className="flex">
-                <span className="font-medium w-24 text-gray-700">Material:</span>
-                <span className="text-gray-600">{product.material}</span>
-              </li>
-              <li className="flex">
-                <span className="font-medium w-24 text-gray-700">In Stock:</span>
-                <span className={product.inStock ? "text-green-600" : "text-red-600"}>
-                  {product.inStock ? "Yes" : "No"}
-                </span>
-              </li>
+              {product.subcategory && (
+                <li className="flex">
+                  <span className="font-medium w-24 text-gray-700">Subcategory:</span>
+                  <span className="text-gray-600">{product.subcategory}</span>
+                </li>
+              )}
+              {product.brand && (
+                <li className="flex">
+                  <span className="font-medium w-24 text-gray-700">Brand:</span>
+                  <span className="text-gray-600">{product.brand}</span>
+                </li>
+              )}
+              {product.material && (
+                <li className="flex">
+                  <span className="font-medium w-24 text-gray-700">Material:</span>
+                  <span className="text-gray-600">{product.material}</span>
+                </li>
+              )}
+              {product.stock && (
+                <li className="flex">
+                  <span className="font-medium w-24 text-gray-700">Stock:</span>
+                  <span className={product.stock > 0 ? "text-green-600" : "text-red-600"}>
+                    {product.stock > 0 ? `${product.stock} available` : "Out of Stock"}
+                  </span>
+                </li>
+              )}
+              {product.inStock !== undefined && (
+                <li className="flex">
+                  <span className="font-medium w-24 text-gray-700">In Stock:</span>
+                  <span className={product.inStock ? "text-green-600" : "text-red-600"}>
+                    {product.inStock ? "Yes" : "No"}
+                  </span>
+                </li>
+              )}
             </ul>
           </div>
 

@@ -16,8 +16,10 @@ const ProductForm = ({ category: initialCategory, onClose, onSubmit, product: ed
     colorLayer3: editMode && editProduct && editProduct.colorVariants ? editProduct.colorVariants.layer3 : "",
   });
   const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [existingImage, setExistingImage] = useState(editMode && editProduct ? editProduct.image || editProduct.imageUrl : "");
+  const [existingImages, setExistingImages] = useState(editMode && editProduct ? editProduct.images || [] : []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,6 +46,15 @@ const ProductForm = ({ category: initialCategory, onClose, onSubmit, product: ed
     setImage(file);
   };
 
+  const handleMultipleImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(prevImages => [...prevImages, ...files]);
+  };
+
+  const removeImage = (index) => {
+    setImages(prevImages => prevImages.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -62,6 +73,7 @@ const ProductForm = ({ category: initialCategory, onClose, onSubmit, product: ed
           layer3: formData.colorLayer3,
         },
         image: image,
+        images: images,
       };
 
       let result;
@@ -324,6 +336,53 @@ const ProductForm = ({ category: initialCategory, onClose, onSubmit, product: ed
             {editMode && (
               <p className="text-xs text-gray-500 mt-1">Leave empty to keep current image</p>
             )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Additional Product Images (Multiple)
+            </label>
+            {existingImages && existingImages.length > 0 && (
+              <div className="mb-3">
+                <div className="flex flex-wrap gap-2">
+                  {existingImages.map((img, index) => (
+                    <img key={index} src={img} alt={`Product image ${index + 1}`} className="w-20 h-20 object-cover rounded-lg border" />
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Current additional images</p>
+              </div>
+            )}
+            {images.length > 0 && (
+              <div className="mb-3">
+                <div className="flex flex-wrap gap-2">
+                  {images.map((file, index) => (
+                    <div key={index} className="relative group">
+                      <img 
+                        src={URL.createObjectURL(file)} 
+                        alt={`Selected image ${index + 1}`} 
+                        className="w-20 h-20 object-cover rounded-lg border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">New images to upload</p>
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleMultipleImagesChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            />
+            <p className="text-xs text-gray-500 mt-1">Select multiple images (hold Ctrl/Cmd to select multiple)</p>
           </div>
 
           {/* Simplified form - no category-specific fields */}
