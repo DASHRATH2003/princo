@@ -18,15 +18,29 @@ const FileDownloads = () => {
       const response = await fetch(`${API_BASE_URL}/api/files/public`);
       
       if (response.ok) {
-        const data = await response.json();
-        setFiles(data);
+        const responseData = await response.json();
+        console.log('API Response:', responseData); // Debug log
         
-        // Extract unique categories
-        const uniqueCategories = [...new Set(data.map(file => file.category))];
-        setCategories(uniqueCategories);
+        const filesData = responseData.files || responseData;
+        console.log('Files data:', filesData); // Debug log
+        
+        if (Array.isArray(filesData)) {
+          setFiles(filesData);
+          
+          // Extract unique categories
+          const uniqueCategories = [...new Set(filesData.map(file => file.category))];
+          setCategories(uniqueCategories);
+        } else {
+          console.error('Files data is not an array:', filesData);
+          setFiles([]);
+        }
+      } else {
+        console.error('API request failed with status:', response.status);
+        setFiles([]);
       }
     } catch (error) {
       console.error('Error fetching files:', error);
+      setFiles([]);
     } finally {
       setLoading(false);
     }

@@ -344,6 +344,17 @@ const AdminDashboard = () => {
       const token = localStorage.getItem('adminToken');
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
       
+      // Show downloading notification
+      const downloadingToast = document.createElement('div');
+      downloadingToast.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
+      downloadingToast.innerHTML = `
+        <div class="flex items-center space-x-3">
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          <span>Downloading ${fileName}...</span>
+        </div>
+      `;
+      document.body.appendChild(downloadingToast);
+
       const response = await fetch(`${API_BASE_URL}/api/files/download/${fileId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -360,7 +371,32 @@ const AdminDashboard = () => {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
+        
+        // Update notification to success
+        downloadingToast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
+        downloadingToast.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>${fileName} downloaded successfully!</span>
+          </div>
+        `;
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+          document.body.removeChild(downloadingToast);
+        }, 3000);
+        
+        // Update download count in the UI
+        setFiles(prevFiles => 
+          prevFiles.map(file => 
+            file._id === fileId ? { ...file, downloadCount: (file.downloadCount || 0) + 1 } : file
+          )
+        );
+        
       } else {
+        document.body.removeChild(downloadingToast);
         alert('Failed to download file');
       }
     } catch (error) {
@@ -992,6 +1028,43 @@ const AdminDashboard = () => {
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Downloads Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200/50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-800">Recent Downloads</h3>
+                <div className="flex items-center space-x-2">
+                  <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border border-green-200/30">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">Files are downloaded to your browser's default download folder</p>
+                    <p className="text-xs text-gray-600 mt-1">💡 Tip: You can change your browser's download settings to specify a custom folder</p>
+                  </div>
+                </div>
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="bg-white/70 p-3 rounded-lg">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">For Chrome:</h4>
+                    <p className="text-xs text-gray-600">Settings → Advanced → Downloads → Location</p>
+                  </div>
+                  <div className="bg-white/70 p-3 rounded-lg">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">For Firefox:</h4>
+                    <p className="text-xs text-gray-600">Settings → General → Files and Applications</p>
                   </div>
                 </div>
               </div>
