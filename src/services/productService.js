@@ -3,12 +3,19 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 // Get all products by category
 export const getProductsByCategory = async (category) => {
   try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    // Only add authorization header if token exists
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(`${API_BASE_URL}/products/category/${category}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-      }
+      headers: headers
     });
 
     if (!response.ok) {
@@ -26,12 +33,19 @@ export const getProductsByCategory = async (category) => {
 // Get all products
 export const getAllProducts = async () => {
   try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    // Only add authorization header if token exists
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(`${API_BASE_URL}/products`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-      }
+      headers: headers
     });
 
     if (!response.ok) {

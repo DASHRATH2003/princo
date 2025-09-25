@@ -50,12 +50,11 @@ const EMarket = () => {
 
   const categories = [
     'All Products',
-   'electronics',
-    'gadgets',
-    'accessories',
-    'mobiles',
-    'laptops',
-    'tablets'
+    'All product',
+    'Emart',
+    'My Product',
+    'newadmin',
+    'Newbusiness'
   ]
 
   const legs = ['Steel', 'Aluminium', 'Custom', 'Wood']
