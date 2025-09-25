@@ -73,12 +73,12 @@ const EMarket = () => {
     )
   }
 
-  // Filter products based on search, category, and price range
+  // Filter products based on search, category/subcategory, and price range
   const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'All Products' || product.subcategory === selectedCategory
+    const matchesFilter = selectedCategory === 'All Products' || product.subcategory === selectedCategory
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
-    return matchesCategory && matchesSearch && matchesPrice
+    return matchesFilter && matchesSearch && matchesPrice
   })
 
   return (
@@ -207,7 +207,7 @@ const EMarket = () => {
             {/* Category Tabs */}
             <div className="mb-4 lg:mb-6">
               <div className="flex overflow-x-auto space-x-1 bg-gray-100 p-1 rounded-lg scrollbar-hide">
-                {['Services', 'Business Cards', 'Brochures', 'Posters', 'Flyers', 'Banners'].map((tab) => (
+                {['All Products', 'electronics', 'gadgets', 'accessories', 'mobiles', 'laptops', 'tablets'].map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setSelectedCategory(tab)}

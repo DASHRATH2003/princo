@@ -120,7 +120,7 @@ export const updateProduct = async (productId, productData) => {
       }
     });
 
-    const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    const response = await fetch(`${API_BASE_URL}/products/update/${productId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
@@ -143,7 +143,7 @@ export const updateProduct = async (productId, productData) => {
 // Delete product
 export const deleteProduct = async (productId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    const response = await fetch(`${API_BASE_URL}/products/delete/${productId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

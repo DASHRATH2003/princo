@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
 import ProductForm from '../components/ProductForm';
-import { getProductsByCategory, deleteProduct, toggleProductStatus } from '../services/productService';
+import { getProductsByCategory, deleteProduct } from '../services/productService';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -25,6 +25,8 @@ const AdminDashboard = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState(null);
   const [products, setProducts] = useState({
     emart: [],
     localmarket: [],
@@ -164,7 +166,8 @@ const AdminDashboard = () => {
       const productPromises = categories.map(async (category) => {
         try {
           const response = await getProductsByCategory(category);
-          return { category, products: response.products || [] };
+          console.log(`Fetched ${category} products:`, response); // Debug log
+          return { category, products: response.data || [] };
         } catch (error) {
           console.error(`Error fetching ${category} products:`, error);
           return { category, products: [] };
@@ -177,6 +180,7 @@ const AdminDashboard = () => {
         newProducts[category] = products;
       });
       
+      console.log('All products fetched:', newProducts); // Debug log
       setProducts(newProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -193,7 +197,7 @@ const AdminDashboard = () => {
         const response = await getProductsByCategory(category);
         setProducts(prev => ({
           ...prev,
-          [category]: response.products || []
+          [category]: response.data || []
         }));
         alert('Product deleted successfully!');
       } catch (error) {
@@ -203,19 +207,12 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleToggleProductStatus = async (productId, category) => {
-    try {
-      await toggleProductStatus(productId);
-      // Refresh products for this category
-      const response = await getProductsByCategory(category);
-      setProducts(prev => ({
-        ...prev,
-        [category]: response.products || []
-      }));
-    } catch (error) {
-      console.error('Error toggling product status:', error);
-      alert('Error updating product status. Please try again.');
-    }
+
+
+  const handleEditProduct = (product) => {
+    setCurrentProduct(product);
+    setEditMode(true);
+    setShowProductForm(true);
   };
 
   const updateOrderStatus = async (orderId, newStatus) => {
@@ -394,22 +391,23 @@ const AdminDashboard = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-      </div>
-    );
-  }
+        </div>
+  );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex relative">
+      
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`fixed lg:sticky top-0 left-0 z-40 w-64 lg:w-60 h-screen bg-gradient-to-b from-white/95 to-blue-50/90 backdrop-blur-md shadow-xl border-r border-blue-200/50 flex flex-col transition-transform duration-300 ease-in-out ${
+      <div className={`fixed lg:sticky top-0 left-0 z-40 w-72 lg:w-60 h-screen bg-gradient-to-b from-white/95 to-blue-50/90 backdrop-blur-md shadow-xl border-r border-blue-200/50 flex flex-col transition-transform duration-300 ease-in-out ${
         isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         {/* Header */}
@@ -433,6 +431,7 @@ const AdminDashboard = () => {
               { key: 'overview', label: 'Overview', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
               { key: 'customers', label: 'Customers', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z' },
               { key: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
+              { key: 'products', label: 'Products', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
               { key: 'files', label: 'Files', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
             ].map((tab) => (
               <button
@@ -460,7 +459,11 @@ const AdminDashboard = () => {
         {/* Add Product Button */}
         <div className="p-4">
           <button
-            onClick={() => setShowProductForm(true)}
+            onClick={() => {
+              setCurrentProduct(null);
+              setEditMode(false);
+              setShowProductForm(true);
+            }}
             className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 font-medium text-sm transform hover:scale-105"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -520,23 +523,23 @@ const AdminDashboard = () => {
         </div>
 
         {/* Mobile Header */}
-        <div className="lg:hidden bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200/50 p-4">
+        <div className="lg:hidden bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200/50 p-3">
           <div className="flex items-center justify-between">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors touch-manipulation"
             >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <div className="flex items-center space-x-2">
               <div className="p-1.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-lg">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Dashboard</h1>
+              <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Admin Dashboard</h1>
             </div>
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -553,7 +556,7 @@ const AdminDashboard = () => {
         {activeTab === 'overview' && (
           <div className="space-y-4">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 lg:gap-4">
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-lg p-4 border border-blue-200/50 hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center justify-between">
                   <div>
@@ -657,8 +660,8 @@ const AdminDashboard = () => {
                   <h3 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Recent Orders</h3>
                 </div>
               </div>
-              <div className="overflow-x-auto">
-                <div className="max-h-80 overflow-y-auto">
+              <div className="overflow-x-auto -mx-3 lg:mx-0">
+                <div className="min-w-[600px] lg:min-w-0 max-h-80 overflow-y-auto">
                   <table className="min-w-full divide-y divide-gray-200/50">
                     <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
                       <tr>
@@ -727,8 +730,9 @@ const AdminDashboard = () => {
                 <h3 className="text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">All Customers</h3>
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200/30">
+            <div className="overflow-x-auto -mx-3 lg:mx-0">
+              <div className="min-w-[700px] lg:min-w-0">
+                <table className="min-w-full divide-y divide-gray-200/30">
                 <thead className="bg-gradient-to-r from-green-50 to-blue-50">
                   <tr>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Name</th>
@@ -759,8 +763,9 @@ const AdminDashboard = () => {
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 font-medium">{new Date(customer.createdAt).toLocaleDateString()}</td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -778,8 +783,9 @@ const AdminDashboard = () => {
                 <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">All Orders</h3>
               </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200/30">
+            <div className="overflow-x-auto -mx-3 lg:mx-0">
+              <div className="min-w-[800px] lg:min-w-0">
+                <table className="min-w-full divide-y divide-gray-200/30">
                 <thead className="bg-gradient-to-r from-purple-50 to-pink-50">
                   <tr>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Customer Details</th>
@@ -837,9 +843,109 @@ const AdminDashboard = () => {
                       </td>
                     </tr>
                   ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Products Tab */}
+        {activeTab === 'products' && (
+          <div className="bg-white/70 backdrop-blur-sm rounded-lg shadow-lg border border-white/20">
+
+            <div className="px-4 py-3 border-b border-gray-200/30">
+              <div className="flex items-center space-x-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">All Products</h3>
+                <div className="ml-auto text-sm text-gray-600 font-medium">
+                  Total Products: {Object.values(products).flat().length}
+                </div>
+              </div>
+            </div>
+            <div className="overflow-x-auto -mx-3 lg:mx-0">
+              <div className="min-w-[900px] lg:min-w-0">
+                <table className="min-w-full divide-y divide-gray-200/30">
+                <thead className="bg-gradient-to-r from-blue-50 to-purple-50">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Product</th>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Price</th>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Colors</th>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white/50 divide-y divide-gray-200/30">
+                  {Object.entries(products).flatMap(([category, categoryProducts]) => 
+                    categoryProducts.map((product) => (
+                      <tr key={`${category}-${product._id}`} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold text-xs">
+                              {product.name?.charAt(0) || 'P'}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-900 text-sm">{product.name}</div>
+                              <div className="text-xs text-gray-500 mt-1 max-w-xs truncate">{product.description}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <div>
+                            <div className="font-semibold text-gray-900 text-sm capitalize">{category}</div>
+                            <div className="text-xs text-gray-500">{product.subcategory}</div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">₹{product.price}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <div className="flex space-x-1">
+                            {product.colorLayer1 && (
+                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorLayer1 }} title={product.colorLayer1}></div>
+                            )}
+                            {product.colorLayer2 && (
+                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorLayer2 }} title={product.colorLayer2}></div>
+                            )}
+                            {product.colorLayer3 && (
+                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorLayer3 }} title={product.colorLayer3}></div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {product.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEditProduct(product)}
+                              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation min-w-[80px]"
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              onClick={() => handleDeleteProduct(product._id, category)}
+                              className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation min-w-[80px]"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
+          </div>
           </div>
         )}
 
@@ -929,8 +1035,9 @@ const AdminDashboard = () => {
               <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200/50">
                 <h3 className="text-lg font-bold text-gray-800">All Files ({files.length})</h3>
               </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200/50">
+              <div className="overflow-x-auto -mx-3 lg:mx-0">
+                <div className="min-w-[800px] lg:min-w-0">
+                  <table className="min-w-full divide-y divide-gray-200/50">
                   <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">File</th>
@@ -977,13 +1084,13 @@ const AdminDashboard = () => {
                           <div className="flex space-x-2">
                             <button
                               onClick={() => handleDownloadFile(file._id, file.originalName)}
-                              className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                              className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation min-w-[90px]"
                             >
                               Download
                             </button>
                             <button
                               onClick={() => handleDeleteFile(file._id)}
-                              className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                              className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation min-w-[80px]"
                             >
                               Delete
                             </button>
@@ -996,23 +1103,13 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
+          </div>
         )}
-
-
-
-
-
-
-
-
-
-
-      </div>
 
       {/* Order Details Modal */}
       {showOrderModal && selectedOrder && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-8 w-11/12 md:w-3/4 lg:w-1/2 shadow-2xl rounded-2xl bg-white/90 backdrop-blur-md border border-white/20">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-auto p-4 sm:p-6 lg:p-8 shadow-2xl rounded-2xl bg-white/90 backdrop-blur-md border border-white/20">
             <div className="mt-3">
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center space-x-3">
@@ -1025,7 +1122,7 @@ const AdminDashboard = () => {
                 </div>
                 <button
                   onClick={closeOrderModal}
-                  className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-all duration-200"
+                  className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full p-3 transition-all duration-200 touch-manipulation"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1033,8 +1130,8 @@ const AdminDashboard = () => {
                 </button>
               </div>
               
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4 lg:space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                   <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-6 rounded-xl border border-blue-200/30">
                     <div className="flex items-center space-x-2 mb-4">
                       <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -1122,10 +1219,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
               
-              <div className="mt-8 flex justify-end">
+              <div className="mt-6 lg:mt-8 flex justify-end">
                 <button
                   onClick={closeOrderModal}
-                  className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium"
+                  className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-medium touch-manipulation w-full sm:w-auto"
                 >
                   Close
                 </button>
@@ -1138,18 +1235,25 @@ const AdminDashboard = () => {
       {/* Product Form Modal */}
       {showProductForm && (
         <ProductForm 
-          onClose={() => setShowProductForm(false)}
+          onClose={() => {
+            setShowProductForm(false);
+            setEditMode(false);
+            setCurrentProduct(null);
+          }}
           onSubmit={async (result) => {
             setShowProductForm(false);
+            setEditMode(false);
+            setCurrentProduct(null);
             // Refresh products for all categories
             await fetchAllProducts();
           }}
+          editMode={editMode}
+          product={currentProduct}
         />
       )}
-
-
-      </div>
     </div>
+  </div>
+  </div>
   );
 };
 
