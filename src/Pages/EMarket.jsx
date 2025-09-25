@@ -75,8 +75,8 @@ const EMarket = () => {
   // Filter products based on search, category/subcategory, and price range
   const filteredProducts = products.filter(product => {
     const matchesFilter = selectedCategory === 'All Products' || 
-                         product.subcategory === selectedCategory || 
-                         product.category === selectedCategory
+                         product.subcategory?.toLowerCase() === selectedCategory.toLowerCase() || 
+                         product.category?.toLowerCase() === selectedCategory.toLowerCase()
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     return matchesFilter && matchesSearch && matchesPrice
