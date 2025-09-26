@@ -14,7 +14,23 @@ const EMarket = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [categories, setCategories] = useState(['All Products'])
   const { items: cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart()
+
+  // Extract unique subcategories from products (only subcategories, not main categories)
+  const extractCategories = (products) => {
+    const uniqueCategories = new Set()
+    uniqueCategories.add('All Products')
+    
+    products.forEach(product => {
+      // Only add subcategories, not main categories
+      if (product.subcategory && product.subcategory.trim() !== '') {
+        uniqueCategories.add(product.subcategory)
+      }
+    })
+    
+    return Array.from(uniqueCategories)
+  }
 
   // Fetch products from backend
   useEffect(() => {
@@ -24,12 +40,17 @@ const EMarket = () => {
         const response = await getProductsByCategory('emart')
         if (response.success && response.data) {
           setProducts(response.data)
+          // Extract categories from products
+          const uniqueCategories = extractCategories(response.data)
+          setCategories(uniqueCategories)
         } else {
           setProducts([])
+          setCategories(['All Products'])
         }
       } catch (error) {
         console.error('Error fetching emart products:', error)
         setProducts([])
+        setCategories(['All Products'])
       } finally {
         setLoading(false)
       }
@@ -48,15 +69,6 @@ const EMarket = () => {
     return cart.reduce((total, item) => total + item.quantity, 0)
   }
 
-  const categories = [
-    'All Products',
-    'All product',
-    'Emart',
-    'My Product',
-    'newadmin',
-    'Newbusiness'
-  ]
-
   const legs = ['Steel', 'Aluminium', 'Custom', 'Wood']
   const durations = ['-', '1-3 days', '1 week', '2 weeks', '1 month']
 
@@ -72,11 +84,10 @@ const EMarket = () => {
     )
   }
 
-  // Filter products based on search, category/subcategory, and price range
+  // Filter products based on search, subcategory only, and price range
   const filteredProducts = products.filter(product => {
     const matchesFilter = selectedCategory === 'All Products' || 
-                         product.subcategory?.toLowerCase() === selectedCategory.toLowerCase() || 
-                         product.category?.toLowerCase() === selectedCategory.toLowerCase()
+                         (product.subcategory && product.subcategory.toLowerCase() === selectedCategory.toLowerCase())
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     return matchesFilter && matchesSearch && matchesPrice
@@ -99,8 +110,8 @@ const EMarket = () => {
         </div>
       </div>
 
-      <div className="container-responsive py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="max-w-full mx-auto px-2 py-6">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* Mobile Filter Toggle */}
           <div className="lg:hidden mb-4">
             <button 
@@ -115,7 +126,7 @@ const EMarket = () => {
           </div>
           
           {/* Sidebar */}
-          <div className={`w-full lg:w-64 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+    <div className={`w-full lg:w-72 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Categories */}
             <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4 mb-4 lg:mb-6">
               <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Categories</h3>
@@ -231,14 +242,14 @@ const EMarket = () => {
             </div>
 
             {/* Products Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {filteredProducts.map((product) => (
                 <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative">
                     <img
                       src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
                       alt={product.name}
-                      className="w-full h-40 lg:h-48 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                      className="w-full h-40 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
                       onClick={() => navigate(`/product/${product._id}`)}
                     />
                     {product.isNew && (
@@ -252,7 +263,7 @@ const EMarket = () => {
                       </span>
                     )}
                   </div>
-                  <div className="p-3 lg:p-4">
+                  <div className="p-4">
                     <h3 className="font-medium text-gray-900 mb-2 text-sm lg:text-base line-clamp-2">{product.name}</h3>
                     <p className="text-base lg:text-lg font-semibold text-gray-900 mb-3">₹ {product.price}</p>
                     

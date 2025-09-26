@@ -13,11 +13,22 @@ const LocalMarket = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [categories, setCategories] = useState(['All'])
 
-  // Categories for local market
-  const categories = [
-    'All', 'Vegetables', 'Fruits', 'Groceries', 'Dairy', 'Bakery', 'Meat & Fish', 'Spices'
-  ]
+  // Extract unique subcategories from products (only subcategories, not main categories)
+  const extractCategories = (products) => {
+    const uniqueCategories = new Set()
+    uniqueCategories.add('All')
+    
+    products.forEach(product => {
+      // Only add subcategories, not main categories
+      if (product.subcategory && product.subcategory.trim() !== '') {
+        uniqueCategories.add(product.subcategory)
+      }
+    })
+    
+    return Array.from(uniqueCategories)
+  }
 
   // Product freshness levels
   const freshnessLevels = ['Fresh Today', 'Farm Fresh', 'Organic']
@@ -33,11 +44,16 @@ const LocalMarket = () => {
         const response = await getProductsByCategory('localmarket')
         if (response.success) {
           setProducts(response.data)
+          // Extract categories from products
+          const uniqueCategories = extractCategories(response.data)
+          setCategories(uniqueCategories)
         } else {
           console.error('Failed to fetch products:', response.message)
+          setCategories(['All'])
         }
       } catch (error) {
         console.error('Error fetching products:', error)
+        setCategories(['All'])
       } finally {
         setLoading(false)
       }
@@ -46,9 +62,10 @@ const LocalMarket = () => {
     fetchProducts()
   }, [])
 
-  // Filter products based on search, category, and price range
+  // Filter products based on search, subcategory only, and price range
   const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'All' || product.subcategory === selectedCategory
+    const matchesCategory = selectedCategory === 'All' || 
+                          (product.subcategory && product.subcategory === selectedCategory)
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     return matchesSearch && matchesCategory && matchesPrice
@@ -58,13 +75,13 @@ const LocalMarket = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-2 py-2">
+        <div className="max-w-full mx-auto px-2 py-2">
           
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="max-w-full mx-auto px-2 py-6">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* Mobile Filter Toggle */}
           <div className="lg:hidden mb-4">
             <button 
@@ -79,9 +96,9 @@ const LocalMarket = () => {
           </div>
           
           {/* Sidebar Filters */}
-          <div className={`w-full lg:w-64 space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          <div className={`w-full lg:w-72 space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Categories */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Categories</h3>
               <div className="space-y-2">
                 {categories.map((category) => (
@@ -101,7 +118,7 @@ const LocalMarket = () => {
             </div>
 
             {/* Freshness Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Freshness</h3>
               <div className="space-y-2">
                 {freshnessLevels.map((level) => (
@@ -114,7 +131,7 @@ const LocalMarket = () => {
             </div>
 
             {/* Delivery Time Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Delivery Time</h3>
               <div className="space-y-2">
                 {deliveryOptions.map((option) => (
@@ -127,7 +144,7 @@ const LocalMarket = () => {
             </div>
 
             {/* Price Range */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-sm p-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Price Range</h3>
               <div className="space-y-4">
                 <input
@@ -184,14 +201,14 @@ const LocalMarket = () => {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                 {filteredProducts.map((product) => (
                   <div key={product._id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group">
                     <div className="relative">
                       <img
                         src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
                         alt={product.name}
-                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200 cursor-pointer"
+                        className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-200 cursor-pointer"
                         onClick={() => navigate(`/product/${product._id}`)}
                       />
                       {product.discount > 0 && (

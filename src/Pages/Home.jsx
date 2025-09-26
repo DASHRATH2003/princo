@@ -6,8 +6,9 @@ import { getAllProducts } from '../services/productService';
 const Home = () => {
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   
   const images = [
     "https://trios.qa/wp-content/uploads/2024/10/Printing.jpeg",
@@ -22,7 +23,6 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        setLoading(true);
         const response = await getAllProducts();
         console.log('Products response:', response); // Debug log
         if (response && response.data) {
@@ -32,11 +32,9 @@ const Home = () => {
         } else if (response && response.products) {
           setProducts(response.products);
         }
-        setLoading(false);
       } catch (err) {
         console.error('Error fetching products:', err);
         setError('Failed to load products. Please try again later.');
-        setLoading(false);
       }
     };
 
@@ -59,16 +57,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden">
-      {/* Loading State */}
-      {loading && (
-        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading products...</p>
-          </div>
-        </div>
-      )}
-
       {/* Error State */}
       {error && (
         <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
@@ -88,6 +76,7 @@ const Home = () => {
           </div>
         </div>
       )}
+
       {/* Hero Section */}
       <div className="relative w-full h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] overflow-hidden">
       {images.map((img, index) => (
@@ -119,7 +108,7 @@ const Home = () => {
         {/* Product Boxes Overlay with Auto Scroll */}
         <div className="container-responsive">
           <div className="relative overflow-hidden mask-gradient">
-            <div className="flex animate-scroll-horizontal space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5" style={{width: '200%'}}>
+            <div className={`flex space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5 ${displayProducts.length > 6 ? 'animate-scroll-horizontal' : ''}`} style={{width: displayProducts.length > 6 ? '200%' : '100%'}}>
               {/* First set of products */}
               {displayProducts.length > 0 ? displayProducts.map((product, index) => (
                 <Link 
@@ -147,8 +136,8 @@ const Home = () => {
                 </div>
               )}
               
-              {/* Duplicate set for infinite scroll */}
-              {displayProducts.length > 0 && displayProducts.map((product, index) => (
+              {/* Duplicate set for infinite scroll - only show if we have enough products */}
+              {displayProducts.length > 3 && displayProducts.map((product, index) => (
                 <Link 
                   to={`/${product.category === 'emart' ? 'e-market' : product.category === 'localmarket' ? 'local-market' : product.category === 'news' ? 'news-today' : product.category.toLowerCase()}`}
                   key={`second-${product.id || product._id}`}

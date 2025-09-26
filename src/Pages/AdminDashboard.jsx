@@ -940,14 +940,17 @@ const AdminDashboard = () => {
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">₹{product.price}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <div className="flex space-x-1">
-                            {product.colorLayer1 && (
-                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorLayer1 }} title={product.colorLayer1}></div>
+                            {product.colorVariants?.layer1 && (
+                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorVariants.layer1 }} title={product.colorVariants.layer1}></div>
                             )}
-                            {product.colorLayer2 && (
-                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorLayer2 }} title={product.colorLayer2}></div>
+                            {product.colorVariants?.layer2 && (
+                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorVariants.layer2 }} title={product.colorVariants.layer2}></div>
                             )}
-                            {product.colorLayer3 && (
-                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorLayer3 }} title={product.colorLayer3}></div>
+                            {product.colorVariants?.layer3 && (
+                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorVariants.layer3 }} title={product.colorVariants.layer3}></div>
+                            )}
+                            {!product.colorVariants?.layer1 && !product.colorVariants?.layer2 && !product.colorVariants?.layer3 && (
+                              <span className="text-xs text-gray-500">No colors</span>
                             )}
                           </div>
                         </td>

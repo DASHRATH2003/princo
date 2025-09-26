@@ -42,8 +42,10 @@ const ProductDetail = () => {
         if (data.success && data.data) {
           const productData = data.data;
           setProduct(productData);
-          if (productData.colors && productData.colors.length > 0) {
-            setSelectedColor(productData.colors[0]);
+          if (productData.colorVariants && Object.keys(productData.colorVariants).length > 0) {
+            // Set initial color from colorVariants
+            const firstColor = Object.values(productData.colorVariants)[0];
+            setSelectedColor(firstColor);
           }
           if (productData.sizes && productData.sizes.length > 0) {
             setSelectedSize(productData.sizes[0]);
@@ -283,14 +285,14 @@ const ProductDetail = () => {
             </ul>
           </div>
 
-          {/* Color Selection */}
-          {product.colors && product.colors.length > 0 && (
+          {/* Color Selection - Updated to use colorVariants from backend */}
+          {product.colorVariants && Object.keys(product.colorVariants).length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Color</h3>
               <div className="flex space-x-2">
-                {product.colors.map(color => (
+                {Object.entries(product.colorVariants).map(([layer, color]) => (
                   <button
-                    key={color}
+                    key={layer}
                     onClick={() => setSelectedColor(color)}
                     className={`px-4 py-2 border rounded-md ${
                       selectedColor === color 

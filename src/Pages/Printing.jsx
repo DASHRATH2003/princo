@@ -173,29 +173,43 @@ const Printing = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [categories, setCategories] = useState(['All Products'])
 
-  const categories = [
-    'All Products',
-    'Business Cards',
-    'Brochures & Flyers',
-    'Posters & Banners',
-    'Stickers & Labels',
-    'Letterheads',
-    'Invitations',
-    'Booklets & Catalogs',
-    'Photo Printing',
-    'Custom Printing'
-  ]
+  // Extract unique subcategories from products (only subcategories, not main categories)
+  const extractCategories = (products) => {
+    const uniqueCategories = new Set()
+    uniqueCategories.add('All Products')
+    
+    products.forEach(product => {
+      // Only add subcategories, not main categories
+      if (product.subcategory && product.subcategory.trim() !== '') {
+        uniqueCategories.add(product.subcategory)
+      }
+    })
+    
+    return Array.from(uniqueCategories)
+  }
 
   // Dynamic products from backend - loaded in useEffect
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true)
         const response = await getProductsByCategory('printing')
-        setProducts(response.data)
-        setLoading(false)
+        if (response && response.data) {
+          setProducts(response.data)
+          // Extract categories from products
+          const uniqueCategories = extractCategories(response.data)
+          setCategories(uniqueCategories)
+        } else {
+          setProducts([])
+          setCategories(['All Products'])
+        }
       } catch (error) {
         console.error('Error fetching printing products:', error)
+        setProducts([])
+        setCategories(['All Products'])
+      } finally {
         setLoading(false)
       }
     }
@@ -204,7 +218,8 @@ const Printing = () => {
   }, [])
 
   const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'All Products' || product.subcategory === selectedCategory
+    const matchesCategory = selectedCategory === 'All Products' || 
+                          (product.subcategory && product.subcategory === selectedCategory)
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesCategory && matchesPrice && matchesSearch
@@ -213,8 +228,8 @@ const Printing = () => {
   return (
     <div className="min-h-screen bg-gray-50">
      
-<div className="container-responsive py-6">
-  <div className="flex flex-col lg:flex-row gap-6">
+<div className="max-w-full mx-auto px-2 py-6">
+  <div className="flex flex-col lg:flex-row gap-4">
     {/* Mobile Filter Toggle */}
     <div className="lg:hidden mb-4">
       <button 
@@ -229,7 +244,7 @@ const Printing = () => {
     </div>
     
     {/* Sidebar */}
-    <div className={`w-full lg:w-64 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+    <div className={`w-full lg:w-72 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
       {/* Categories */}
       <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
         <h3 className="font-semibold text-gray-800 mb-4">Categories</h3>
@@ -314,9 +329,9 @@ const Printing = () => {
 
     {/* Main Content */}
     <div className="flex-1">
-      {/* Category Tabs */}
+      {/* Category Tabs - Show only subcategories */}
       <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg overflow-x-auto">
-        {['Business Cards', 'Brochures & Flyers', 'Posters & Banners', 'Stickers & Labels', 'Photo Printing'].map((tab) => (
+        {categories.slice(0, 6).map((tab) => (
           <button
             key={tab}
             onClick={() => setSelectedCategory(tab)}
@@ -353,14 +368,14 @@ const Printing = () => {
         <>
           {/* Products Grid या Empty State */}
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
               {filteredProducts.map((product) => (
                 <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
                   <div className="relative">
                     <img
                       src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
                       alt={product.name}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
                       onClick={() => navigate(`/product/${product._id}`)}
                     />
                     {product.isNew && (
