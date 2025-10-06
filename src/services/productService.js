@@ -60,10 +60,46 @@ export const getAllProducts = async () => {
   }
 };
 
+// Search products by text query
+export const searchProducts = async (search) => {
+  try {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    // fetch a reasonable number to show results
+    params.set('limit', '100');
+
+    const response = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
+      method: 'GET',
+      headers: headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error searching products:', error);
+    throw error;
+  }
+};
+
 // Create new product
 export const createProduct = async (productData) => {
   try {
     const formData = new FormData();
+    
+    console.log('🔄 Creating product with data:', productData);
     
     // Append all product data to FormData
     Object.keys(productData).forEach(key => {
@@ -76,7 +112,6 @@ export const createProduct = async (productData) => {
         // Handle single image file
         formData.append('image', productData[key]);
       } else if (productData[key] !== null && productData[key] !== undefined) {
-        // Stringify objects and arrays for backend processing
         if (typeof productData[key] === 'object' && !Array.isArray(productData[key])) {
           formData.append(key, JSON.stringify(productData[key]));
         } else if (Array.isArray(productData[key])) {
@@ -87,6 +122,12 @@ export const createProduct = async (productData) => {
       }
     });
 
+    // Debug FormData
+    console.log('📋 Create FormData entries:');
+    for (let pair of formData.entries()) {
+      console.log(`  ${pair[0]}: ${pair[1]}`);
+    }
+
     const response = await fetch(`${API_BASE_URL}/products`, {
       method: 'POST',
       headers: {
@@ -96,6 +137,8 @@ export const createProduct = async (productData) => {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Server error response:', errorText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -107,10 +150,12 @@ export const createProduct = async (productData) => {
   }
 };
 
-// Update product
+// ✅ FIXED: Update product with proper variants handling
 export const updateProduct = async (productId, productData) => {
   try {
     const formData = new FormData();
+    
+    console.log('🔄 Updating product with data:', productData);
     
     // Append all product data to FormData
     Object.keys(productData).forEach(key => {
@@ -123,7 +168,6 @@ export const updateProduct = async (productId, productData) => {
         // Handle single image file
         formData.append('image', productData[key]);
       } else if (productData[key] !== null && productData[key] !== undefined) {
-        // Stringify objects and arrays for backend processing
         if (typeof productData[key] === 'object' && !Array.isArray(productData[key])) {
           formData.append(key, JSON.stringify(productData[key]));
         } else if (Array.isArray(productData[key])) {
@@ -134,6 +178,12 @@ export const updateProduct = async (productId, productData) => {
       }
     });
 
+    // Debug FormData
+    console.log('📋 Update FormData entries:');
+    for (let pair of formData.entries()) {
+      console.log(`  ${pair[0]}: ${pair[1]}`);
+    }
+
     const response = await fetch(`${API_BASE_URL}/products/update/${productId}`, {
       method: 'PUT',
       headers: {
@@ -143,6 +193,8 @@ export const updateProduct = async (productId, productData) => {
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Server error response:', errorText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -180,7 +232,7 @@ export const deleteProduct = async (productId) => {
 // Toggle product status
 export const toggleProductStatus = async (productId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/${productId}/toggle-status`, {
+    const response = await fetch(`${API_BASE_URL}/products/toggle-status/${productId}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

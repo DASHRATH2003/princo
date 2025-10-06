@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { OrderProvider } from './context/OrderContext'
 import Navbar from './components/Navbar'
+import ErrorBoundary from './components/ErrorBoundary'
 import Footer from './components/Footer'
 import CartNotification from './components/CartNotification'
 import LoginModal from './components/LoginModal'
@@ -25,6 +26,7 @@ import FileDownloads from './Pages/FileDownloads'
 import ProductDetail from './Pages/ProductDetail'
 import Contact from './Pages/Contact'
 import NotFound from './Pages/NotFound'
+import SearchResults from './Pages/SearchResults'
 
 const App = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -55,37 +57,40 @@ const App = () => {
           <Routes>
             {/* Admin routes without navbar/footer */}
             <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard" element={<ErrorBoundary><AdminDashboard /></ErrorBoundary>} />
             
             {/* Regular routes with navbar/footer */}
             <Route path="/*" element={
-              <div className="min-h-screen bg-white flex flex-col">
-                <Navbar />
-                <CartNotification />
-                <LoginModal isOpen={showLoginModal} onClose={handleCloseModal} />
-                <main className="flex-1">
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/printing" element={<Printing />} />
-                    <Route path="/e-market" element={<EMarket />} />
-                    <Route path="/local-market" element={<LocalMarket />} />
-                    <Route path="/news-today" element={<NewsToday />} />
-                    <Route path="/login" element={<UserLogin />} />
-                    <Route path="/register" element={<UserRegister />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/order-success" element={<OrderSuccess />} />
-                    <Route path="/terms-of-service" element={<TermsOfService />} />
-                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="/cookie-policy" element={<CookiePolicy />} />
-                    <Route path="/file-downloads" element={<FileDownloads />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/product/:productId" element={<ProductDetail />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-                <Footer />
-              </div>
+              <ErrorBoundary>
+                <div className="min-h-screen bg-white flex flex-col">
+                  <Navbar />
+                  <CartNotification />
+                  <LoginModal isOpen={showLoginModal} onClose={handleCloseModal} />
+                  <main className="flex-1">
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/printing" element={<Printing />} />
+                      <Route path="/e-market" element={<EMarket />} />
+                      <Route path="/local-market" element={<LocalMarket />} />
+                      <Route path="/news-today" element={<NewsToday />} />
+                      <Route path="/login" element={<UserLogin />} />
+                      <Route path="/register" element={<UserRegister />} />
+                      <Route path="/cart" element={<Cart />} />
+                      <Route path="/checkout" element={<Checkout />} />
+                      <Route path="/order-success" element={<OrderSuccess />} />
+                      <Route path="/terms-of-service" element={<TermsOfService />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                      <Route path="/cookie-policy" element={<CookiePolicy />} />
+                      <Route path="/file-downloads" element={<FileDownloads />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/product/:productId" element={<ProductDetail />} />
+                      <Route path="/search" element={<SearchResults />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+                  <Footer />
+                </div>
+              </ErrorBoundary>
             } />
           </Routes>
         </Router>

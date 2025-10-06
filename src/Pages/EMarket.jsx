@@ -8,7 +8,7 @@ const EMarket = () => {
   const pageTitle = "E-Market"
   const pageDescription = "Online marketplace for electronics and gadgets"
   const [selectedCategory, setSelectedCategory] = useState('All Products')
-  const [priceRange, setPriceRange] = useState([999, 332500])
+  const [priceRange, setPriceRange] = useState([0, 332500])
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -17,6 +17,13 @@ const EMarket = () => {
   const [categories, setCategories] = useState(['All Products'])
   const { items: cart, addToCart, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart()
 
+  const getSubcategoryName = (sc) => {
+    if (sc && typeof sc === 'object') {
+      return sc.name || '';
+    }
+    return typeof sc === 'string' ? sc : '';
+  };
+
   // Extract unique subcategories from products (only subcategories, not main categories)
   const extractCategories = (products) => {
     const uniqueCategories = new Set()
@@ -24,8 +31,9 @@ const EMarket = () => {
     
     products.forEach(product => {
       // Only add subcategories, not main categories
-      if (product.subcategory && product.subcategory.trim() !== '') {
-        uniqueCategories.add(product.subcategory)
+      const subName = getSubcategoryName(product.subcategory)
+      if (subName && subName.trim() !== '') {
+        uniqueCategories.add(subName)
       }
     })
     
@@ -86,8 +94,9 @@ const EMarket = () => {
 
   // Filter products based on search, subcategory only, and price range
   const filteredProducts = products.filter(product => {
+    const subName = getSubcategoryName(product.subcategory)
     const matchesFilter = selectedCategory === 'All Products' || 
-                         (product.subcategory && product.subcategory.toLowerCase() === selectedCategory.toLowerCase())
+                         (subName && subName.toLowerCase() === selectedCategory.toLowerCase())
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     return matchesFilter && matchesSearch && matchesPrice
@@ -247,9 +256,10 @@ const EMarket = () => {
                 <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative">
                     <img
-                      src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
+                      src={product.image || '/no-image.svg'}
                       alt={product.name}
-                      className="w-full h-40 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                      className="w-full h-40 object-contain bg-white cursor-pointer hover:scale-105 transition-transform duration-200"
+                      onError={(e) => { e.currentTarget.src = '/no-image.svg' }}
                       onClick={() => navigate(`/product/${product._id}`)}
                     />
                     {product.isNew && (
@@ -265,7 +275,7 @@ const EMarket = () => {
                   </div>
                   <div className="p-4">
                     <h3 className="font-medium text-gray-900 mb-2 text-sm lg:text-base line-clamp-2">{product.name}</h3>
-                    <p className="text-base lg:text-lg font-semibold text-gray-900 mb-3">₹ {product.price}</p>
+                    <p className="text-base lg:text-lg font-semibold text-gray-900 mb-3">₹ {(product.offerPrice ?? product.price)}</p>
                     
                     {/* Add to Cart Section */}
                     <div className="flex items-center justify-between">
@@ -291,7 +301,12 @@ const EMarket = () => {
                         </div>
                       ) : (
                         <button
-                          onClick={() => addToCart({...product, id: product._id})}
+                          onClick={() => {
+                            const effectivePrice = (product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0)
+                              ? product.offerPrice
+                              : product.price;
+                            addToCart({ ...product, id: product._id, price: effectivePrice });
+                          }}
                           className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-3 lg:px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-1 lg:space-x-2 text-sm lg:text-base h-10 lg:h-12"
                         >
                          

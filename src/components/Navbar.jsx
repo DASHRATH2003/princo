@@ -1,15 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import logo from "../assets/newadd.png";
+import { getCurrentUser, logoutUser } from "../services/authService";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchTerm, setSearchTerm] = useState("");
   const { getCartItemsCount, items, removeFromCart, updateQuantity, getCartTotal, clearCorruptedCart } = useCart();
   const cartItemsCount = getCartItemsCount();
+
+  useEffect(() => {
+    const user = getCurrentUser();
+    setCurrentUser(user);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="bg-white shadow-sm">
@@ -59,24 +81,84 @@ const Navbar = () => {
                   />
                 </svg>
               </button>
-              <button 
-                onClick={() => navigate('/login')}
-                className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
-              >
-                <svg
-                  className="w-4 h-4 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-              </button>
+              {/* Desktop User / Profile */}
+              <div className="relative" ref={profileRef}>
+                {!currentUser ? (
+                  <button 
+                    onClick={() => navigate('/login')}
+                    className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
+                  >
+                    <svg
+                      className="w-4 h-4 text-purple-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
+                    title={currentUser?.name || currentUser?.email}
+                  >
+                    <svg
+                      className="w-4 h-4 text-purple-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </button>
+                )}
+                {isProfileOpen && currentUser && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-3 z-40">
+                    <div className="flex items-center space-x-3 pb-3 border-b">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                        <span className="text-purple-700 font-bold">
+                          {(currentUser?.name || currentUser?.email || 'U').charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{currentUser?.name || 'User'}</p>
+                        <p className="text-xs text-gray-600 truncate">{currentUser?.email}</p>
+                      </div>
+                    </div>
+                    <div className="py-2 space-y-1">
+                      
+                      <button
+                        onClick={() => { setIsProfileOpen(false); navigate('/file-downloads'); }}
+                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      >
+                        My Files
+                      </button>
+                      <button
+                        onClick={() => {
+                          logoutUser();
+                          setIsProfileOpen(false);
+                          setCurrentUser(null);
+                          navigate('/');
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
               <button 
                 onClick={() => setIsCartOpen(!isCartOpen)}
                 className="relative w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
@@ -127,25 +209,47 @@ const Navbar = () => {
                 />
               </svg>
             </button>
-            {/* Mobile Login Icon */}
-            <button 
-              onClick={() => navigate('/login')}
-              className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
-            >
-              <svg
-                className="w-4 h-4 text-purple-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {/* Mobile Login/Profile Icon */}
+            {!currentUser ? (
+              <button 
+                onClick={() => navigate('/login')}
+                className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="w-4 h-4 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </button>
+            ) : (
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
+                title={currentUser?.name || currentUser?.email}
+              >
+                <svg
+                  className="w-4 h-4 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </button>
+            )}
             {/* Mobile Cart Icon */}
             <button 
               onClick={() => setIsCartOpen(!isCartOpen)}
@@ -264,9 +368,23 @@ const Navbar = () => {
                 <input
                   type="text"
                   placeholder="Search bar"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const q = searchTerm.trim();
+                      navigate(`/search?q=${encodeURIComponent(q)}`);
+                    }
+                  }}
                   className="bg-transparent outline-none text-sm w-48 text-gray-500"
                 />
-                <button className="ml-2 p-1 bg-blue-400 text-white rounded">
+                <button
+                  className="ml-2 p-1 bg-blue-400 text-white rounded"
+                  onClick={() => {
+                    const q = searchTerm.trim();
+                    navigate(`/search?q=${encodeURIComponent(q)}`);
+                  }}
+                >
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -363,7 +481,7 @@ const Navbar = () => {
               </div>
 
               <Link 
-                to="/contact"
+                to="/register"
                 className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200 whitespace-nowrap inline-block text-center"
               >
                 Join US
@@ -434,9 +552,25 @@ const Navbar = () => {
                 <input
                   type="text"
                   placeholder="Search..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const q = searchTerm.trim();
+                      setIsMenuOpen(false);
+                      navigate(`/search?q=${encodeURIComponent(q)}`);
+                    }
+                  }}
                   className="bg-transparent outline-none text-sm flex-1 text-gray-500"
                 />
-                <button className="ml-2 p-1 bg-blue-400 text-white rounded">
+                <button
+                  className="ml-2 p-1 bg-blue-400 text-white rounded"
+                  onClick={() => {
+                    const q = searchTerm.trim();
+                    setIsMenuOpen(false);
+                    navigate(`/search?q=${encodeURIComponent(q)}`);
+                  }}
+                >
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -457,7 +591,10 @@ const Navbar = () => {
             {/* Mobile Actions */}
             <div className="pt-4 space-y-2">
 
-              <button className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-center">
+              <button
+                onClick={() => navigate('/register')}
+                className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-center"
+              >
                 Join US
               </button>
               <div className="flex space-x-4 pt-2">

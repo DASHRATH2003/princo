@@ -8,12 +8,19 @@ const LocalMarket = () => {
   const navigate = useNavigate()
  
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [priceRange, setPriceRange] = useState([10, 5000])
+  const [priceRange, setPriceRange] = useState([0, 5000])
   const [showFilters, setShowFilters] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [categories, setCategories] = useState(['All'])
+
+  const getSubcategoryName = (sc) => {
+    if (sc && typeof sc === 'object') {
+      return sc.name || '';
+    }
+    return typeof sc === 'string' ? sc : '';
+  };
 
   // Extract unique subcategories from products (only subcategories, not main categories)
   const extractCategories = (products) => {
@@ -22,8 +29,9 @@ const LocalMarket = () => {
     
     products.forEach(product => {
       // Only add subcategories, not main categories
-      if (product.subcategory && product.subcategory.trim() !== '') {
-        uniqueCategories.add(product.subcategory)
+      const subName = getSubcategoryName(product.subcategory)
+      if (subName && subName.trim() !== '') {
+        uniqueCategories.add(subName)
       }
     })
     
@@ -64,8 +72,9 @@ const LocalMarket = () => {
 
   // Filter products based on search, subcategory only, and price range
   const filteredProducts = products.filter(product => {
+    const subName = getSubcategoryName(product.subcategory)
     const matchesCategory = selectedCategory === 'All' || 
-                          (product.subcategory && product.subcategory === selectedCategory)
+                          (subName && subName === selectedCategory)
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     return matchesSearch && matchesCategory && matchesPrice
@@ -206,9 +215,10 @@ const LocalMarket = () => {
                   <div key={product._id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group">
                     <div className="relative">
                       <img
-                        src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
+                        src={product.image || '/no-image.svg'}
                         alt={product.name}
-                        className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-200 cursor-pointer"
+                        className="w-full h-40 object-contain bg-white group-hover:scale-105 transition-transform duration-200 cursor-pointer"
+                        onError={(e) => { e.currentTarget.src = '/no-image.svg' }}
                         onClick={() => navigate(`/product/${product._id}`)}
                       />
                       {product.discount > 0 && (
@@ -254,8 +264,8 @@ const LocalMarket = () => {
                       
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
-                          {product.originalPrice > product.price && (
+                          <span className="text-lg font-bold text-gray-900">₹{(product.offerPrice ?? product.price)}</span>
+                          {product.originalPrice > (product.offerPrice ?? product.price) && (
                             <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
                           )}
                         </div>
@@ -263,7 +273,12 @@ const LocalMarket = () => {
                       </div>
                       
                       <button 
-                        onClick={() => addToCart({...product, id: product._id})}
+                        onClick={() => {
+                          const effectivePrice = (product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0)
+                            ? product.offerPrice
+                            : product.price;
+                          addToCart({ ...product, id: product._id, price: effectivePrice });
+                        }}
                         className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors duration-200 font-medium"
                       >
                         Add to Cart

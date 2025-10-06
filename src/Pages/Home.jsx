@@ -112,17 +112,17 @@ const Home = () => {
               {/* First set of products */}
               {displayProducts.length > 0 ? displayProducts.map((product, index) => (
                 <Link 
-                  to={`/${product.category === 'emart' ? 'e-market' : product.category === 'localmarket' ? 'local-market' : product.category === 'news' ? 'news-today' : product.category.toLowerCase()}`}
+                  to={`/product/${product._id || product.id}`}
                   key={`first-${product.id || product._id}`}
                   className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
                 >
-                  <img 
-                    src={product.imageUrl || product.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9Ijc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOUI5QjlCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo='} 
-                    alt={product.name} 
-                    className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-cover"
+                  <img
+                    src={product.imageUrl || product.image || '/no-image.svg'}
+                    alt={product.name}
+                    className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-contain bg-white"
                     onError={(e) => {
                       console.log('Image failed to load for product:', product.name, 'Image URL:', product.imageUrl || product.image);
-                      e.target.src = 'https://via.placeholder.com/150?text=Product+Image';
+                      e.target.src = '/no-image.svg';
                     }}
                   />
                   <div className="p-1 sm:p-2 lg:p-3">
@@ -139,17 +139,17 @@ const Home = () => {
               {/* Duplicate set for infinite scroll - only show if we have enough products */}
               {displayProducts.length > 3 && displayProducts.map((product, index) => (
                 <Link 
-                  to={`/${product.category === 'emart' ? 'e-market' : product.category === 'localmarket' ? 'local-market' : product.category === 'news' ? 'news-today' : product.category.toLowerCase()}`}
+                  to={`/product/${product._id || product.id}`}
                   key={`second-${product.id || product._id}`}
                   className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
                 >
-                  <img 
-                    src={product.imageUrl || product.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxNTAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9Ijc1IiB5PSI3NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOUI5QjlCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo='} 
-                    alt={product.name} 
-                    className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-cover"
+                  <img
+                    src={product.imageUrl || product.image || '/no-image.svg'}
+                    alt={product.name}
+                    className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-contain bg-white"
                     onError={(e) => {
                       console.log('Image failed to load for product (second set):', product.name, 'Image URL:', product.imageUrl || product.image);
-                      e.target.src = 'https://via.placeholder.com/150?text=Product+Image';
+                      e.target.src = '/no-image.svg';
                     }}
                   />
                   <div className="p-1 sm:p-2 lg:p-3">
@@ -426,8 +426,8 @@ const Home = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {otherProducts.map((product, index) => (
               <Link 
-                to={`/product/${product.id}`}
-                key={product.id} 
+                to={`/product/${product._id || product.id}`}
+                key={product._id || product.id || index} 
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
                 {/* Product Image */}
@@ -477,14 +477,19 @@ const Home = () => {
                   {/* Price */}
                   <div className="flex items-center justify-between mb-2 sm:mb-3">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">
-                      <span className="text-sm sm:text-lg font-bold text-gray-900">₹{product.price}</span>
-                    <span className="text-xs sm:text-sm text-gray-500 line-through">₹{product.price + 50}</span>
+                      <span className="text-sm sm:text-lg font-bold text-gray-900">₹{(product.offerPrice ?? product.price)}</span>
+                      <span className="text-xs sm:text-sm text-gray-500 line-through">₹{(product.price + 50)}</span>
                     </div>
                   </div>
                   
                   {/* Add to Cart Button */}
                   <button 
-                    onClick={() => addToCart({...product, image: product.imageUrl})}
+                    onClick={() => {
+                      const effectivePrice = (product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0)
+                        ? product.offerPrice
+                        : product.price;
+                      addToCart({ ...product, image: product.imageUrl, price: effectivePrice });
+                    }}
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 flex items-center justify-center space-x-1"
                   >
                     <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -516,7 +521,7 @@ const Home = () => {
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
             {featuredProducts.map((product, index) => (
               <Link 
-                to={`/${product.category === 'emart' ? 'e-market' : product.category === 'localmarket' ? 'local-market' : product.category === 'news' ? 'news-today' : product.category.toLowerCase()}`}
+                to={`/product/${product._id || product.id}`}
                 key={product.id} 
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
@@ -567,14 +572,19 @@ const Home = () => {
                   {/* Price */}
                   <div className="flex items-center justify-between mb-2 sm:mb-3">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">
-                      <span className="text-sm sm:text-lg font-bold text-gray-900">₹{product.price}</span>
-                      <span className="text-xs sm:text-sm text-gray-500 line-through">₹{product.price + 100}</span>
+                      <span className="text-sm sm:text-lg font-bold text-gray-900">₹{(product.offerPrice ?? product.price)}</span>
+                      <span className="text-xs sm:text-sm text-gray-500 line-through">₹{(product.price + 100)}</span>
                     </div>
                   </div>
                   
                   {/* Add to Cart Button */}
                   <button 
-                    onClick={() => addToCart({...product, image: product.imageUrl})}
+                    onClick={() => {
+                      const effectivePrice = (product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0)
+                        ? product.offerPrice
+                        : product.price;
+                      addToCart({ ...product, image: product.imageUrl, price: effectivePrice });
+                    }}
                     className="w-full bg-purple-600 hover:bg-purple-700 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 flex items-center justify-center space-x-1"
                   >
                     <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
-import ProductForm from '../components/ProductForm';
 import { getProductsByCategory, deleteProduct } from '../services/productService';
+import AddProductModal from '../components/AddProductModal';
+import { getAllSubcategoriesAdmin, createSubcategory, deleteSubcategory } from '../services/subcategoryService';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -24,9 +25,6 @@ const AdminDashboard = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
-  const [showProductForm, setShowProductForm] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null);
   const [products, setProducts] = useState({
     emart: [],
     localmarket: [],
@@ -35,8 +33,49 @@ const AdminDashboard = () => {
   });
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProductsMenuOpen, setIsProductsMenuOpen] = useState(false);
+  const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [showManageSubModal, setShowManageSubModal] = useState(false);
+  const [subList, setSubList] = useState([]);
+  const [subForm, setSubForm] = useState({ name: '', category: '' });
+  const subCategories = ['emart', 'localmarket', 'printing', 'news'];
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
+
+  const getSubcategoryName = (sc) => {
+    if (sc && typeof sc === 'object') {
+      return sc.name || '';
+    }
+    return typeof sc === 'string' ? sc : '';
+  };
+
+  // Safely format variant values which may be strings, numbers, arrays or objects
+  const formatVariant = (variant) => {
+    if (variant === null || variant === undefined) return '';
+    if (Array.isArray(variant)) {
+      const items = variant
+        .map((v) => {
+          if (v === null || v === undefined) return '';
+          if (typeof v === 'string' || typeof v === 'number') return String(v);
+          if (typeof v === 'object') {
+            if (v.name) return String(v.name);
+            if (v.label) return String(v.label);
+            if (v.value) return String(v.value);
+            return JSON.stringify(v);
+          }
+          return String(v);
+        })
+        .filter(Boolean);
+      return items.join(', ');
+    }
+    if (typeof variant === 'object') {
+      if (variant.name) return String(variant.name);
+      if (variant.label) return String(variant.label);
+      if (variant.value) return String(variant.value);
+      return JSON.stringify(variant);
+    }
+    return String(variant);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -189,6 +228,49 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleProductAdded = () => {
+    // Refresh all products after adding a new one
+    fetchAllProducts();
+    setShowAddProductModal(false);
+  };
+
+  const loadAdminSubcategories = async () => {
+    try {
+      const subs = await getAllSubcategoriesAdmin();
+      setSubList(subs || []);
+    } catch (err) {
+      console.error('Error loading subcategories', err);
+      setSubList([]);
+    }
+  };
+
+  const handleOpenManageSub = async () => {
+    await loadAdminSubcategories();
+    setShowManageSubModal(true);
+  };
+
+  const handleCreateSub = async (e) => {
+    e.preventDefault();
+    if (!subForm.name.trim() || !subForm.category) return;
+    try {
+      await createSubcategory({ name: subForm.name.trim(), category: subForm.category });
+      setSubForm({ name: '', category: '' });
+      await loadAdminSubcategories();
+    } catch (err) {
+      alert(err.message || 'Failed to create subcategory');
+    }
+  };
+
+  const handleDeleteSub = async (id) => {
+    if (!window.confirm('Delete this subcategory?')) return;
+    try {
+      await deleteSubcategory(id);
+      await loadAdminSubcategories();
+    } catch (err) {
+      alert(err.message || 'Failed to delete subcategory');
+    }
+  };
+
   const handleDeleteProduct = async (productId, category) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
@@ -209,11 +291,7 @@ const AdminDashboard = () => {
 
 
 
-  const handleEditProduct = (product) => {
-    setCurrentProduct(product);
-    setEditMode(true);
-    setShowProductForm(true);
-  };
+
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
@@ -463,51 +541,107 @@ const AdminDashboard = () => {
         {/* Navigation */}
         <div className="flex-1 p-4">
           <nav className="space-y-2">
-            {[
-              { key: 'overview', label: 'Overview', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-              { key: 'customers', label: 'Customers', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z' },
-              { key: 'orders', label: 'Orders', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
-              { key: 'products', label: 'Products', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-              { key: 'files', label: 'Files', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' }
-            ].map((tab) => (
-              <button
-              key={tab.key}
-              onClick={() => {
-                setActiveTab(tab.key);
-                // Close mobile menu when tab is selected
-                setIsMobileMenuOpen(false);
-              }}
+            {/* Overview */}
+            <button
+              onClick={() => { setActiveTab('overview'); setIsMobileMenuOpen(false); }}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
-                activeTab === tab.key
+                activeTab === 'overview'
                   ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md'
               }`}
             >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={tab.icon} />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <span>Overview</span>
+            </button>
+
+            {/* Customers */}
+            <button
+              onClick={() => { setActiveTab('customers'); setIsMobileMenuOpen(false); }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                activeTab === 'customers'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              </svg>
+              <span>Customers</span>
+            </button>
+
+            {/* Orders */}
+            <button
+              onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                activeTab === 'orders'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <span>Orders</span>
+            </button>
+
+            {/* Products with dropdown */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setIsProductsMenuOpen((prev) => !prev)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                  activeTab === 'products'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md'
+                }`}
+              >
+                <span className="flex items-center space-x-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                  <span>Products</span>
+                </span>
+                <svg className={`w-4 h-4 transition-transform ${isProductsMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
-                <span>{tab.label}</span>
               </button>
-            ))}
+              {isProductsMenuOpen && (
+                <div className="ml-6 space-y-2">
+                  <button
+                    onClick={() => { setActiveTab('products'); setShowManageSubModal(true); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50"
+                  >
+                    Manage Subcategories
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('products'); setShowAddProductModal(true); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50"
+                  >
+                    Add Product
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Files */}
+            <button
+              onClick={() => { setActiveTab('files'); setIsMobileMenuOpen(false); }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                activeTab === 'files'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span>Files</span>
+            </button>
           </nav>
         </div>
 
-        {/* Add Product Button */}
-        <div className="p-4">
-          <button
-            onClick={() => {
-              setCurrentProduct(null);
-              setEditMode(false);
-              setShowProductForm(true);
-            }}
-            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 font-medium text-sm transform hover:scale-105"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span>Add Product</span>
-          </button>
-        </div>
+
 
         {/* Logout Button */}
         <div className="p-4 border-t border-gray-200/50">
@@ -898,8 +1032,28 @@ const AdminDashboard = () => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">All Products</h3>
-                <div className="ml-auto text-sm text-gray-600 font-medium">
-                  Total Products: {Object.values(products).flat().length}
+                <div className="ml-auto flex items-center space-x-3">
+                  <div className="text-sm text-gray-600 font-medium">
+                    Total Products: {Object.values(products).flat().length}
+                  </div>
+                  <button
+                    onClick={handleOpenManageSub}
+                    className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h12M3 17h6" />
+                    </svg>
+                    <span>Manage Subcategories</span>
+                  </button>
+                  <button
+                    onClick={() => setShowAddProductModal(true)}
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Add Product</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -911,7 +1065,8 @@ const AdminDashboard = () => {
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Product</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Price</th>
-                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Colors</th>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Color variants</th>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Size variants</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -934,23 +1089,29 @@ const AdminDashboard = () => {
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <div>
                             <div className="font-semibold text-gray-900 text-sm capitalize">{category}</div>
-                            <div className="text-xs text-gray-500">{product.subcategory}</div>
+                            <div className="text-xs text-gray-500">{getSubcategoryName(product.subcategory)}</div>
                           </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">₹{product.price}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          <div className="flex space-x-1">
-                            {product.colorVariants?.layer1 && (
-                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorVariants.layer1 }} title={product.colorVariants.layer1}></div>
-                            )}
-                            {product.colorVariants?.layer2 && (
-                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorVariants.layer2 }} title={product.colorVariants.layer2}></div>
-                            )}
-                            {product.colorVariants?.layer3 && (
-                              <div className="w-4 h-4 rounded-full border border-gray-300" style={{ backgroundColor: product.colorVariants.layer3 }} title={product.colorVariants.layer3}></div>
-                            )}
-                            {!product.colorVariants?.layer1 && !product.colorVariants?.layer2 && !product.colorVariants?.layer3 && (
+                          <div className="flex items-center space-x-2">
+                            {Array.isArray(product.colorVarients) && product.colorVarients.length > 0 ? (
+                              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                {product.colorVarients.join(', ')}
+                              </span>
+                            ) : (
                               <span className="text-xs text-gray-500">No colors</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <div className="flex items-center space-x-2">
+                            {Array.isArray(product.sizeVarients) && product.sizeVarients.length > 0 ? (
+                              <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                {product.sizeVarients.join(', ')}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-gray-500">No sizes</span>
                             )}
                           </div>
                         </td>
@@ -963,13 +1124,6 @@ const AdminDashboard = () => {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleEditProduct(product)}
-                              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation min-w-[80px]"
-                            >
-                              Edit
-                            </button>
-
                             <button
                               onClick={() => handleDeleteProduct(product._id, category)}
                               className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation min-w-[80px]"
@@ -985,6 +1139,92 @@ const AdminDashboard = () => {
               </table>
             </div>
           </div>
+          </div>
+        )}
+
+        {showManageSubModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-indigo-600 to-purple-600">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-white">Manage Subcategories</h2>
+                  <button onClick={() => setShowManageSubModal(false)} className="text-white hover:text-gray-200 transition-colors">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="p-6 space-y-6">
+                <form onSubmit={handleCreateSub} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                    <select
+                      value={subForm.category}
+                      onChange={(e) => setSubForm(prev => ({ ...prev, category: e.target.value }))}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="">Select Category</option>
+                      {subCategories.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="md:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Subcategory Name *</label>
+                    <input
+                      type="text"
+                      value={subForm.name}
+                      onChange={(e) => setSubForm(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="e.g., Laptops, Stationery"
+                    />
+                  </div>
+                  <div className="md:col-span-1 flex items-end">
+                    <button type="submit" className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-indigo-600 hover:to-purple-700 transition-all duration-200">
+                      Add Subcategory
+                    </button>
+                  </div>
+                </form>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Existing Subcategories</h3>
+                  <div className="overflow-x-auto -mx-3 lg:mx-0">
+                    <div className="min-w-[600px] lg:min-w-0">
+                      <table className="min-w-full divide-y divide-gray-200/30">
+                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                          <tr>
+                            <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
+                            <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Subcategory</th>
+                            <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200/30">
+                          {subList.map(sub => (
+                            <tr key={sub._id} className="hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-gray-50/50 transition-all duration-200">
+                              <td className="px-4 py-2 text-sm capitalize">{sub.category}</td>
+                              <td className="px-4 py-2 text-sm">{sub.name}</td>
+                              <td className="px-4 py-2 text-sm">
+                                <button
+                                  onClick={() => handleDeleteSub(sub._id)}
+                                  className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200"
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                          {subList.length === 0 && (
+                            <tr>
+                              <td className="px-4 py-3 text-sm text-gray-500" colSpan={3}>No subcategories yet</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -1308,25 +1548,15 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Product Form Modal */}
-      {showProductForm && (
-        <ProductForm 
-          onClose={() => {
-            setShowProductForm(false);
-            setEditMode(false);
-            setCurrentProduct(null);
-          }}
-          onSubmit={async (result) => {
-            setShowProductForm(false);
-            setEditMode(false);
-            setCurrentProduct(null);
-            // Refresh products for all categories
-            await fetchAllProducts();
-          }}
-          editMode={editMode}
-          product={currentProduct}
+      {/* Add Product Modal */}
+      {showAddProductModal && (
+        <AddProductModal
+          isOpen={showAddProductModal}
+          onClose={() => setShowAddProductModal(false)}
+          onProductAdded={handleProductAdded}
         />
       )}
+
     </div>
   </div>
   </div>

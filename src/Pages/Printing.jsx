@@ -168,12 +168,19 @@ const Printing = () => {
   const navigate = useNavigate()
   const { addToCart } = useCart()
   const [selectedCategory, setSelectedCategory] = useState('All Products')
-  const [priceRange, setPriceRange] = useState([99, 25000])
+  const [priceRange, setPriceRange] = useState([0, 25000])
   const [showFilters, setShowFilters] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [categories, setCategories] = useState(['All Products'])
+
+  const getSubcategoryName = (sc) => {
+    if (sc && typeof sc === 'object') {
+      return sc.name || '';
+    }
+    return typeof sc === 'string' ? sc : '';
+  };
 
   // Extract unique subcategories from products (only subcategories, not main categories)
   const extractCategories = (products) => {
@@ -182,8 +189,9 @@ const Printing = () => {
     
     products.forEach(product => {
       // Only add subcategories, not main categories
-      if (product.subcategory && product.subcategory.trim() !== '') {
-        uniqueCategories.add(product.subcategory)
+      const subName = getSubcategoryName(product.subcategory)
+      if (subName && subName.trim() !== '') {
+        uniqueCategories.add(subName)
       }
     })
     
@@ -218,8 +226,9 @@ const Printing = () => {
   }, [])
 
   const filteredProducts = products.filter(product => {
+    const subName = getSubcategoryName(product.subcategory)
     const matchesCategory = selectedCategory === 'All Products' || 
-                          (product.subcategory && product.subcategory === selectedCategory)
+                          (subName && subName === selectedCategory)
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesCategory && matchesPrice && matchesSearch
@@ -373,10 +382,11 @@ const Printing = () => {
                 <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
                   <div className="relative">
                     <img
-                      src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
+                      src={product.image || '/no-image.svg'}
                       alt={product.name}
-                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
+                      className="w-full h-40 object-contain bg-white group-hover:scale-105 transition-transform duration-300 cursor-pointer"
                       onClick={() => navigate(`/product/${product._id}`)}
+                      onError={(e) => { e.target.src = '/no-image.svg'; }}
                     />
                     {product.isNew && (
                       <span className="absolute top-2 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded">
@@ -407,8 +417,8 @@ const Printing = () => {
                     {/* Price */}
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg font-semibold text-gray-900">₹ {product.price}</span>
-                        {product.originalPrice && (
+                        <span className="text-lg font-semibold text-gray-900">₹ {(product.offerPrice ?? product.price)}</span>
+                        {product.originalPrice && product.originalPrice > (product.offerPrice ?? product.price) && (
                           <span className="text-sm text-gray-400 line-through">₹ {product.originalPrice}</span>
                         )}
                       </div>
@@ -423,7 +433,12 @@ const Printing = () => {
                     {/* Action Buttons */}
                     <div className="flex space-x-2">
                       <button 
-                        onClick={() => addToCart({...product, id: product._id})}
+                        onClick={() => {
+                          const effectivePrice = (product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0)
+                            ? product.offerPrice
+                            : product.price;
+                          addToCart({ ...product, id: product._id, price: effectivePrice });
+                        }}
                         className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors flex items-center justify-center gap-2"
                       >
                         <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
