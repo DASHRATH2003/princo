@@ -41,7 +41,7 @@ const Cart = () => {
           <div className="p-6">
             <div className="space-y-6">
               {items.map((item) => (
-                <div key={item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                <div key={item.uid || item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
                   <img
                     src={item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjQwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSIjOUI5QjlCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo='}
                     alt={item.name}
@@ -67,7 +67,10 @@ const Cart = () => {
                   
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => updateQuantity(item.uid || item.id, item.quantity - 1)}
+                      onClick={() => {
+                        console.log('Decreasing quantity for:', item.uid || item.id);
+                        updateQuantity(item.uid || item.id, item.quantity - 1);
+                      }}
                       className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,7 +79,10 @@ const Cart = () => {
                     </button>
                     <span className="w-8 text-center font-medium">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.uid || item.id, item.quantity + 1)}
+                      onClick={() => {
+                        console.log('Increasing quantity for:', item.uid || item.id);
+                        updateQuantity(item.uid || item.id, item.quantity + 1);
+                      }}
                       className="w-8 h-8 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

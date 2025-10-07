@@ -14,7 +14,7 @@ const CART_ACTIONS = {
   HIDE_NOTIFICATION: 'HIDE_NOTIFICATION'
 }
 
-// Cart Reducer
+// Cart Reducer - FIXED VERSION
 const cartReducer = (state, action) => {
   switch (action.type) {
     case CART_ACTIONS.ADD_ITEM: {
@@ -26,11 +26,23 @@ const cartReducer = (state, action) => {
       if (existingItem) {
         newItems = state.items.map(item =>
           (item.uid || item.id) === targetUid
-            ? { ...item, quantity: (item.quantity || 0) + 1 }
+            ? { 
+                ...item, 
+                quantity: (item.quantity || 0) + (action.payload.quantity || 1),
+                // Ensure color/size are preserved when updating existing item
+                selectedColor: action.payload.selectedColor || item.selectedColor,
+                selectedSize: action.payload.selectedSize || item.selectedSize
+              }
             : item
         );
       } else {
-        newItems = [...state.items, { ...action.payload, quantity: 1 }];
+        newItems = [...state.items, { 
+          ...action.payload, 
+          quantity: action.payload.quantity || 1,
+          // Ensure new items have color/size
+          selectedColor: action.payload.selectedColor || '',
+          selectedSize: action.payload.selectedSize || ''
+        }];
       }
 
       const totalItems = newItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
@@ -40,7 +52,7 @@ const cartReducer = (state, action) => {
         items: newItems,
         notification: {
           show: true,
-          message: `${totalItems} cart`
+          message: `${totalItems} items in cart`
         }
       };
     }
@@ -51,17 +63,22 @@ const cartReducer = (state, action) => {
         items: state.items.filter(item => (item.uid || item.id) !== action.payload)
       };
     
-    case CART_ACTIONS.UPDATE_QUANTITY:
+    case CART_ACTIONS.UPDATE_QUANTITY: {
+      // FIXED: Handle both uid and id properly
+      const { id, uid, quantity } = action.payload;
+      const targetId = uid || id;
+      
       return {
         ...state,
         items: state.items
           .map(item =>
-            (item.uid || item.id) === action.payload.id
-              ? { ...item, quantity: action.payload.quantity }
+            (item.uid || item.id) === targetId
+              ? { ...item, quantity: Math.max(0, quantity) } // Ensure quantity doesn't go below 0
               : item
           )
-          .filter(item => (item.quantity || 0) > 0)
+          .filter(item => (item.quantity || 0) > 0) // Remove items with 0 quantity
       };
+    }
     
     case CART_ACTIONS.CLEAR_CART:
       return {
@@ -107,7 +124,7 @@ const initialState = {
   }
 };
 
-// Cart Provider Component
+// Cart Provider Component - FIXED VERSION
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
@@ -136,7 +153,7 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(state.items));
   }, [state.items]);
 
-  // Cart Actions
+  // Cart Actions - FIXED VERSION
   const addToCart = (product) => {
     // Validate product has proper price
     if (!product || typeof product.price !== 'number' || isNaN(product.price) || product.price <= 0) {
@@ -159,7 +176,12 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (productId, quantity) => {
-    dispatch({ type: CART_ACTIONS.UPDATE_QUANTITY, payload: { id: productId, quantity } });
+    // FIXED: Pass both uid and id to handle both cases
+    const payload = typeof productId === 'string' && productId.includes('::') 
+      ? { uid: productId, quantity } 
+      : { id: productId, quantity };
+    
+    dispatch({ type: CART_ACTIONS.UPDATE_QUANTITY, payload });
   };
 
   const clearCart = () => {
@@ -192,11 +214,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const getCartItemsCount = () => {
-    return state.items.reduce((count, item) => count + item.quantity, 0);
+    return state.items.reduce((count, item) => count + (item.quantity || 0), 0);
   };
 
   const getCartItem = (productId) => {
-    return state.items.find(item => item.id === productId);
+    return state.items.find(item => (item.uid || item.id) === productId);
   };
 
   const value = {

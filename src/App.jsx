@@ -27,6 +27,9 @@ import ProductDetail from './Pages/ProductDetail'
 import Contact from './Pages/Contact'
 import NotFound from './Pages/NotFound'
 import SearchResults from './Pages/SearchResults'
+import OrderDetails from './components/OrderDetails';
+import MyOrders from './Pages/MyOrders.jsx' // ✅ .jsx 
+// EXTENSION ADD KARO
 
 const App = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -78,6 +81,7 @@ const App = () => {
                       <Route path="/cart" element={<Cart />} />
                       <Route path="/checkout" element={<Checkout />} />
                       <Route path="/order-success" element={<OrderSuccess />} />
+                      <Route path="/my-orders" element={<MyOrders />} /> {/* ✅ YEH ROUTE ADD KARO */}
                       <Route path="/terms-of-service" element={<TermsOfService />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                       <Route path="/cookie-policy" element={<CookiePolicy />} />
@@ -86,6 +90,8 @@ const App = () => {
                       <Route path="/product/:productId" element={<ProductDetail />} />
                       <Route path="/search" element={<SearchResults />} />
                       <Route path="*" element={<NotFound />} />
+                      <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
+
                     </Routes>
                   </main>
                   <Footer />

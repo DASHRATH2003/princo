@@ -153,15 +153,15 @@ const Navbar = () => {
                       >
                         My Files
                       </button>
-                      <button
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          navigate("/orderDetails");
-                        }}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-                      >
-                        My Order
-                      </button>
+                   <button
+  onClick={() => {
+    setIsProfileOpen(false);
+    navigate("/my-orders"); // YEH LINE CHANGE KARO
+  }}
+  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+>
+  My Orders
+</button>
                       <button
                         onClick={() => {
                           logoutUser();
