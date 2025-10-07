@@ -18,21 +18,23 @@ const CART_ACTIONS = {
 const cartReducer = (state, action) => {
   switch (action.type) {
     case CART_ACTIONS.ADD_ITEM: {
-      const existingItem = state.items.find(item => item.id === action.payload.id);
+      // Prefer merging by variant uid if provided; fallback to product id
+      const targetUid = action.payload.uid || action.payload.id;
+      const existingItem = state.items.find(item => (item.uid || item.id) === targetUid);
       let newItems;
-      
+
       if (existingItem) {
         newItems = state.items.map(item =>
-          item.id === action.payload.id
-            ? { ...item, quantity: item.quantity + 1 }
+          (item.uid || item.id) === targetUid
+            ? { ...item, quantity: (item.quantity || 0) + 1 }
             : item
         );
       } else {
         newItems = [...state.items, { ...action.payload, quantity: 1 }];
       }
-      
-      const totalItems = newItems.reduce((sum, item) => sum + item.quantity, 0);
-      
+
+      const totalItems = newItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+
       return {
         ...state,
         items: newItems,
@@ -46,17 +48,19 @@ const cartReducer = (state, action) => {
     case CART_ACTIONS.REMOVE_ITEM:
       return {
         ...state,
-        items: state.items.filter(item => item.id !== action.payload)
+        items: state.items.filter(item => (item.uid || item.id) !== action.payload)
       };
     
     case CART_ACTIONS.UPDATE_QUANTITY:
       return {
         ...state,
-        items: state.items.map(item =>
-          item.id === action.payload.id
-            ? { ...item, quantity: action.payload.quantity }
-            : item
-        ).filter(item => item.quantity > 0)
+        items: state.items
+          .map(item =>
+            (item.uid || item.id) === action.payload.id
+              ? { ...item, quantity: action.payload.quantity }
+              : item
+          )
+          .filter(item => (item.quantity || 0) > 0)
       };
     
     case CART_ACTIONS.CLEAR_CART:

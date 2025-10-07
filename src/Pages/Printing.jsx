@@ -253,7 +253,7 @@ const Printing = () => {
     </div>
     
     {/* Sidebar */}
-    <div className={`w-full lg:w-72 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+    <div className={`w-full lg:w-56 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
       {/* Categories */}
       <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
         <h3 className="font-semibold text-gray-800 mb-4">Categories</h3>

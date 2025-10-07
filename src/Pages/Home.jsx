@@ -488,7 +488,7 @@ const Home = () => {
                       const effectivePrice = (product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0)
                         ? product.offerPrice
                         : product.price;
-                      addToCart({ ...product, image: product.imageUrl, price: effectivePrice });
+                      addToCart({ ...product, id: product._id || product.id, image: product.imageUrl, price: effectivePrice });
                     }}
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 flex items-center justify-center space-x-1"
                   >
@@ -583,7 +583,7 @@ const Home = () => {
                       const effectivePrice = (product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0)
                         ? product.offerPrice
                         : product.price;
-                      addToCart({ ...product, image: product.imageUrl, price: effectivePrice });
+                      addToCart({ ...product, id: product._id || product.id, image: product.imageUrl, price: effectivePrice });
                     }}
                     className="w-full bg-purple-600 hover:bg-purple-700 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-200 flex items-center justify-center space-x-1"
                   >

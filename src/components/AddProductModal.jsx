@@ -21,7 +21,34 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
   const [errors, setErrors] = useState({});
   const [imagePreview, setImagePreview] = useState(null);
   const [multipleImagePreviews, setMultipleImagePreviews] = useState([]);
+  // Map image index -> assigned color (string)
+  const [imageColorAssignments, setImageColorAssignments] = useState({});
   const [subcategories, setSubcategories] = useState([]);
+  // Control per-color expanded state to allow re-selection
+  const [expandedColors, setExpandedColors] = useState({});
+
+  // Ensure uniqueness: only one image may be assigned to a given color
+  const assignColorToImage = (index, color) => {
+    setImageColorAssignments(prev => {
+      const next = { ...prev };
+      const normalizedColor = (color || '').trim();
+      // Clear previous assignment for this color from other images
+      if (normalizedColor) {
+        Object.keys(next).forEach((key) => {
+          const k = Number(key);
+          if (k !== index && (next[k] || '').trim().toLowerCase() === normalizedColor.toLowerCase()) {
+            next[k] = '';
+          }
+        });
+      }
+      // Set current image assignment
+      next[index] = normalizedColor;
+      return next;
+    });
+    // Collapse the color section after selecting
+    const lower = (color || '').trim().toLowerCase();
+    if (lower) setExpandedColors(prev => ({ ...prev, [lower]: false }));
+  };
 
   // Category options
   const categories = [
@@ -121,6 +148,16 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
             const mergedPrev = [...prev, ...newPreviews].slice(0, 10);
             return mergedPrev;
           });
+          // Initialize assignment placeholders for newly added indices (no color yet)
+          setImageColorAssignments(prev => {
+            const startIndex = (formData.images || []).length; // previous length before merge
+            const next = { ...prev };
+            for (let i = 0; i < newPreviews.length && (startIndex + i) < 10; i++) {
+              const idx = startIndex + i;
+              if (next[idx] === undefined) next[idx] = '';
+            }
+            return next;
+          });
         }
       };
       reader.readAsDataURL(file);
@@ -147,6 +184,18 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
       const updatedPrev = [...prev];
       updatedPrev.splice(index, 1);
       return updatedPrev;
+    });
+    // Reindex imageColorAssignments after removal
+    setImageColorAssignments(prev => {
+      const next = {};
+      const total = (multipleImagePreviews?.length || 0) - 1; // after removal
+      let shift = 0;
+      for (let i = 0; i < total + 1; i++) {
+        if (i === index) { shift = 1; continue; }
+        const newIdx = i - shift;
+        if (newIdx >= 0) next[newIdx] = prev[i] ?? '';
+      }
+      return next;
     });
   };
 
@@ -188,6 +237,30 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
         .map(v => (v || '').trim())
         .filter(Boolean)
     };
+    // Build imagesColorMap: { normalizedColor: [imageIndexes] }
+    const imagesColorMap = {};
+    Object.entries(imageColorAssignments || {}).forEach(([idxStr, color]) => {
+      const idx = Number(idxStr);
+      const c = (color || '').trim().toLowerCase();
+      if (!c) return;
+      if (!imagesColorMap[c]) imagesColorMap[c] = [];
+      imagesColorMap[c].push(idx);
+    });
+
+    // Strict validation: each color must have exactly one assigned image
+    const colorsListNorm = (submissionData.colorVarients || []).map(c => (c || '').trim().toLowerCase());
+    const missing = colorsListNorm.filter(c => !imagesColorMap[c] || imagesColorMap[c].length === 0);
+    const multi = colorsListNorm.filter(c => (imagesColorMap[c] || []).length > 1);
+    if (missing.length || multi.length) {
+      const msgParts = [];
+      if (missing.length) msgParts.push(`इन रंगों के लिए इमेज चुनें: ${missing.join(', ')}`);
+      if (multi.length) msgParts.push(`हर रंग के लिए सिर्फ एक इमेज चुने (अभी एक से ज़्यादा चुना है: ${multi.join(', ')})`);
+      setErrors({ submit: msgParts.join(' | ') });
+      return;
+    }
+    if (Object.keys(imagesColorMap).length) {
+      submissionData.imagesColorMap = imagesColorMap;
+    }
     console.log('Form data being submitted:', submissionData);
     
     setLoading(true);
@@ -225,6 +298,7 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
     setErrors({});
     setImagePreview(null);
     setMultipleImagePreviews([]);
+    setImageColorAssignments({});
   };
 
   const handleClose = () => {
@@ -402,7 +476,68 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
                     Add
                   </button>
                 </div>
-              </div>
+
+                {/* Color-wise image assignment helper */}
+                {(multipleImagePreviews.length > 0 && (Array.isArray(formData.colorVarients) ? formData.colorVarients : []).some(v => (v || '').trim())) && (
+                  <div className="mt-4 space-y-3">
+                    <p className="text-xs text-gray-600">Assign exactly one image to each color:</p>
+                    {(Array.isArray(formData.colorVarients) ? formData.colorVarients : [])
+                      .map(v => (v || '').trim())
+                      .filter(Boolean)
+                      .map((color, ci) => (
+                         <div key={`${color}-${ci}`} className="border rounded p-2">
+                           <div className="flex items-center justify-between mb-2">
+                             <div className="text-sm font-medium">{color}</div>
+                             {(() => {
+                               const lower = color.trim().toLowerCase();
+                               const assignedIndex = Object.keys(imageColorAssignments).find((idx) => (
+                                 (imageColorAssignments[idx] || '').trim().toLowerCase() === lower
+                               ));
+                               if (assignedIndex && !expandedColors[lower]) {
+                                 return (
+                                   <button
+                                     type="button"
+                                     className="text-xs text-blue-600 hover:underline"
+                                     onClick={() => setExpandedColors(prev => ({ ...prev, [lower]: true }))}
+                                   >
+                                     Change
+                                   </button>
+                                 );
+                               }
+                               return null;
+                             })()}
+                           </div>
+                           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                             {(() => {
+                               const lower = color.trim().toLowerCase();
+                               const assignedIndex = Object.keys(imageColorAssignments).find((idx) => (
+                                 (imageColorAssignments[idx] || '').trim().toLowerCase() === lower
+                               ));
+                               const showOnlyAssigned = !!assignedIndex && !expandedColors[lower];
+                               const previewsToRender = showOnlyAssigned
+                                 ? multipleImagePreviews.map((p, i) => ({ p, i })).filter(({ i }) => String(i) === String(assignedIndex))
+                                 : multipleImagePreviews.map((p, i) => ({ p, i }));
+                               return previewsToRender.map(({ p: preview, i: index }) => {
+                                 const assigned = (imageColorAssignments[index] || '').trim().toLowerCase() === lower;
+                                 return (
+                                   <label key={index} className="flex items-center gap-2">
+                                     <input
+                                       type="radio"
+                                       name={`color-image-${color}`}
+                                       checked={assigned}
+                                       onChange={() => assignColorToImage(index, color)}
+                                     />
+                                     <img src={preview} alt={`img-${index + 1}`} className="w-12 h-12 object-cover rounded" />
+                                   </label>
+                                 );
+                               });
+                             })()}
+                           </div>
+                         </div>
+                       ))}
+                   </div>
+                 )}
+               </div>
 
               {/* Size variant chips */}
               <div>
@@ -534,6 +669,23 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </button>
+                            {/* Color assignment dropdown */}
+                            <div className="mt-1">
+                              <select
+                                value={imageColorAssignments[index] ?? ''}
+                                onChange={(e) => assignColorToImage(index, e.target.value)}
+                                className="w-full px-2 py-1 text-xs border rounded bg-white"
+                                aria-label={`Assign color to image ${index + 1}`}
+                              >
+                                <option value="">Assign color…</option>
+                                {(Array.isArray(formData.colorVarients) ? formData.colorVarients : [])
+                                  .map(v => (v || '').trim())
+                                  .filter(Boolean)
+                                  .map((colorOpt, i) => (
+                                    <option key={`${colorOpt}-${i}`} value={colorOpt}>{colorOpt}</option>
+                                  ))}
+                              </select>
+                            </div>
                           </div>
                         ))}
                       </div>

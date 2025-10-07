@@ -135,7 +135,7 @@ const EMarket = () => {
           </div>
           
           {/* Sidebar */}
-    <div className={`w-full lg:w-72 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+    <div className={`w-full lg:w-56 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Categories */}
             <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4 mb-4 lg:mb-6">
               <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Categories</h3>
@@ -372,7 +372,7 @@ const EMarket = () => {
                 ) : (
                   <div className="space-y-4">
                     {cart.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
+                      <div key={(item.uid || item.id)} className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
                         <img 
                           src={item.image} 
                           alt={item.name}
@@ -380,11 +380,18 @@ const EMarket = () => {
                         />
                         <div className="flex-1">
                           <h3 className="font-medium text-gray-900 text-sm">{item.name}</h3>
+                          {(item.selectedColor || item.selectedSize) && (
+                            <p className="text-xs text-gray-700">
+                              {item.selectedColor && (<span>Color: <span className="font-medium">{item.selectedColor}</span></span>)}
+                              {item.selectedColor && item.selectedSize && <span className="mx-1">•</span>}
+                              {item.selectedSize && (<span>Size: <span className="font-medium">{item.selectedSize}</span></span>)}
+                            </p>
+                          )}
                           <p className="text-purple-600 font-semibold">₹ {item.price}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity((item.uid || item.id), item.quantity - 1)}
                             className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -393,7 +400,7 @@ const EMarket = () => {
                           </button>
                           <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity((item.uid || item.id), item.quantity + 1)}
                             className="w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -402,7 +409,7 @@ const EMarket = () => {
                           </button>
                         </div>
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart((item.uid || item.id))}
                           className="p-1 text-red-500 hover:text-red-700 transition-colors"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

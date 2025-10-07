@@ -13,7 +13,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
-  const { getCartItemsCount, items, removeFromCart, updateQuantity, getCartTotal, clearCorruptedCart } = useCart();
+  const {
+    getCartItemsCount,
+    items,
+    removeFromCart,
+    updateQuantity,
+    getCartTotal,
+    clearCorruptedCart,
+  } = useCart();
   const cartItemsCount = getCartItemsCount();
 
   useEffect(() => {
@@ -27,21 +34,18 @@ const Navbar = () => {
         setIsProfileOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
     <div className="bg-white shadow-sm">
       {/* Navigation Menu */}
-     
 
       {/* Top Header */}
-      <div
-        className="container-responsive transition-all duration-500 bg-gradient-to-r from-blue-900 to-purple-600"
-      >
+      <div className="container-responsive transition-all duration-500 bg-gradient-to-r from-blue-900 to-purple-600">
         <div className="flex justify-between items-center py-1">
           {/* Logo and Brand */}
           <div className="flex items-center space-x-3">
@@ -50,21 +54,18 @@ const Navbar = () => {
                 src={logo}
                 alt="E-Mart Logo"
                 className="w-14 h-14 sm:w-40 sm:h-16 object-contain transition-all duration-300 hover:brightness-110 hover:drop-shadow-lg cursor-pointer"
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
               />
             </div>
           </div>
-          
 
           {/* Contact and Icons - Hidden on mobile */}
           <div className="hidden md:flex items-center space-x-6">
-             <div className="text-lg text-white font-bold">
-        📞 9880444189
-      </div>
-     
+            <div className="text-lg text-white font-bold">📞 9880444189</div>
+
             <div className="flex space-x-3">
-              <button 
-                onClick={() => navigate('/')}
+              <button
+                onClick={() => navigate("/")}
                 className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
               >
                 <svg
@@ -84,8 +85,8 @@ const Navbar = () => {
               {/* Desktop User / Profile */}
               <div className="relative" ref={profileRef}>
                 {!currentUser ? (
-                  <button 
-                    onClick={() => navigate('/login')}
+                  <button
+                    onClick={() => navigate("/login")}
                     className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
                   >
                     <svg
@@ -128,28 +129,45 @@ const Navbar = () => {
                     <div className="flex items-center space-x-3 pb-3 border-b">
                       <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                         <span className="text-purple-700 font-bold">
-                          {(currentUser?.name || currentUser?.email || 'U').charAt(0).toUpperCase()}
+                          {(currentUser?.name || currentUser?.email || "U")
+                            .charAt(0)
+                            .toUpperCase()}
                         </span>
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 truncate">{currentUser?.name || 'User'}</p>
-                        <p className="text-xs text-gray-600 truncate">{currentUser?.email}</p>
+                        <p className="text-sm font-semibold text-gray-900 truncate">
+                          {currentUser?.name || "User"}
+                        </p>
+                        <p className="text-xs text-gray-600 truncate">
+                          {currentUser?.email}
+                        </p>
                       </div>
                     </div>
                     <div className="py-2 space-y-1">
-                      
                       <button
-                        onClick={() => { setIsProfileOpen(false); navigate('/file-downloads'); }}
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          navigate("/file-downloads");
+                        }}
                         className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       >
                         My Files
                       </button>
                       <button
                         onClick={() => {
+                          setIsProfileOpen(false);
+                          navigate("/orderDetails");
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      >
+                        My Order
+                      </button>
+                      <button
+                        onClick={() => {
                           logoutUser();
                           setIsProfileOpen(false);
                           setCurrentUser(null);
-                          navigate('/');
+                          navigate("/");
                         }}
                         className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded"
                       >
@@ -159,7 +177,7 @@ const Navbar = () => {
                   </div>
                 )}
               </div>
-              <button 
+              <button
                 onClick={() => setIsCartOpen(!isCartOpen)}
                 className="relative w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
               >
@@ -178,7 +196,7 @@ const Navbar = () => {
                 </svg>
                 {cartItemsCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                    {cartItemsCount > 99 ? '99+' : cartItemsCount}
+                    {cartItemsCount > 99 ? "99+" : cartItemsCount}
                   </span>
                 )}
               </button>
@@ -187,12 +205,10 @@ const Navbar = () => {
 
           {/* Mobile Contact - Visible only on mobile */}
           <div className="md:hidden flex items-center space-x-2">
-            <div className="text-lg text-white font-bold">
-              📞 9880444189
-            </div>
+            <div className="text-lg text-white font-bold">📞 9880444189</div>
             {/* Mobile Home Icon */}
-            <button 
-              onClick={() => navigate('/')}
+            <button
+              onClick={() => navigate("/")}
               className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
             >
               <svg
@@ -211,8 +227,8 @@ const Navbar = () => {
             </button>
             {/* Mobile Login/Profile Icon */}
             {!currentUser ? (
-              <button 
-                onClick={() => navigate('/login')}
+              <button
+                onClick={() => navigate("/login")}
                 className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
               >
                 <svg
@@ -230,7 +246,7 @@ const Navbar = () => {
                 </svg>
               </button>
             ) : (
-              <button 
+              <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
                 title={currentUser?.name || currentUser?.email}
@@ -251,7 +267,7 @@ const Navbar = () => {
               </button>
             )}
             {/* Mobile Cart Icon */}
-            <button 
+            <button
               onClick={() => setIsCartOpen(!isCartOpen)}
               className="relative w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
             >
@@ -270,7 +286,7 @@ const Navbar = () => {
               </svg>
               {cartItemsCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                  {cartItemsCount > 99 ? '99+' : cartItemsCount}
+                  {cartItemsCount > 99 ? "99+" : cartItemsCount}
                 </span>
               )}
             </button>
@@ -297,7 +313,7 @@ const Navbar = () => {
         </div>
       </div>
 
-       <div className="border-t border-gray-200">
+      <div className="border-t border-gray-200">
         <div className="container-responsive">
           <div className="flex items-center justify-between py-3">
             {/* Navigation Links - Hidden on mobile, visible on desktop */}
@@ -313,7 +329,7 @@ const Navbar = () => {
                   <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
-                <Link
+              <Link
                 to="/e-market"
                 className={`text-blue-700 hover:text-purple-500 font-medium relative ${
                   location.pathname === "/e-market" ? "active-nav-item" : ""
@@ -324,7 +340,7 @@ const Navbar = () => {
                   <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
-               <Link
+              <Link
                 to="/local-market"
                 className={`text-blue-700 hover:text-purple-500 font-medium relative ${
                   location.pathname === "/local-market" ? "active-nav-item" : ""
@@ -346,8 +362,7 @@ const Navbar = () => {
                   <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
-            
-             
+
               <Link
                 to="/news-today"
                 className={`text-blue-700 hover:text-purple-500 font-medium relative ${
@@ -371,7 +386,7 @@ const Navbar = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       const q = searchTerm.trim();
                       navigate(`/search?q=${encodeURIComponent(q)}`);
                     }
@@ -427,40 +442,53 @@ const Navbar = () => {
                       if (files.length > 0) {
                         try {
                           const formData = new FormData();
-                          files.forEach(file => formData.append('files', file));
-                          
+                          files.forEach((file) =>
+                            formData.append("files", file)
+                          );
+
                           // Get token from localStorage
-                          const token = localStorage.getItem('token');
+                          const token = localStorage.getItem("token");
                           const headers = {};
                           if (token) {
                             headers.Authorization = `Bearer ${token}`;
                           }
-                          
-                          const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
-                          const response = await fetch(`${API_BASE_URL}/api/files/upload-multiple-public`, {
-                            method: 'POST',
-                            headers: headers,
-                            body: formData
-                          });
-                          
+
+                          const API_BASE_URL =
+                            import.meta.env.VITE_API_URL?.replace("/api", "") ||
+                            "http://localhost:5000";
+                          const response = await fetch(
+                            `${API_BASE_URL}/api/files/upload-multiple-public`,
+                            {
+                              method: "POST",
+                              headers: headers,
+                              body: formData,
+                            }
+                          );
+
                           if (response.ok) {
                             const result = await response.json();
-                            alert(`Successfully uploaded ${result.files.length} files to Cloudinary!`);
+                            alert(
+                              `Successfully uploaded ${result.files.length} files to Cloudinary!`
+                            );
                           } else {
                             const errorData = await response.json();
-                            alert(`Failed to upload files: ${errorData.message || 'Unknown error'}`);
+                            alert(
+                              `Failed to upload files: ${
+                                errorData.message || "Unknown error"
+                              }`
+                            );
                           }
                         } catch (error) {
-                          console.error('Error uploading files:', error);
-                          alert('Error uploading files');
+                          console.error("Error uploading files:", error);
+                          alert("Error uploading files");
                         }
                       }
-                      e.target.value = '';
+                      e.target.value = "";
                     }}
                   />
                 </label>
                 <button
-                  onClick={() => navigate('/file-downloads')}
+                  onClick={() => navigate("/file-downloads")}
                   className="flex items-center text-gray-700 hover:text-purple-600 text-sm cursor-pointer transition duration-200"
                 >
                   <svg
@@ -480,7 +508,7 @@ const Navbar = () => {
                 </button>
               </div>
 
-              <Link 
+              <Link
                 to="/register"
                 className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200 whitespace-nowrap inline-block text-center"
               >
@@ -490,8 +518,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-
 
       {/* Mobile Menu - Dropdown */}
       {isMenuOpen && (
@@ -555,7 +581,7 @@ const Navbar = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       const q = searchTerm.trim();
                       setIsMenuOpen(false);
                       navigate(`/search?q=${encodeURIComponent(q)}`);
@@ -590,9 +616,8 @@ const Navbar = () => {
 
             {/* Mobile Actions */}
             <div className="pt-4 space-y-2">
-
               <button
-                onClick={() => navigate('/register')}
+                onClick={() => navigate("/register")}
                 className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-center"
               >
                 Join US
@@ -622,40 +647,53 @@ const Navbar = () => {
                       if (files.length > 0) {
                         try {
                           const formData = new FormData();
-                          files.forEach(file => formData.append('files', file));
-                          
+                          files.forEach((file) =>
+                            formData.append("files", file)
+                          );
+
                           // Get token from localStorage
-                          const token = localStorage.getItem('token');
+                          const token = localStorage.getItem("token");
                           const headers = {};
                           if (token) {
                             headers.Authorization = `Bearer ${token}`;
                           }
-                          
-                          const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-                          const response = await fetch(`${API_BASE_URL}/api/files/upload-multiple-public`, {
-                            method: 'POST',
-                            headers: headers,
-                            body: formData
-                          });
-                          
+
+                          const API_BASE_URL =
+                            import.meta.env.VITE_API_BASE_URL ||
+                            "http://localhost:5000";
+                          const response = await fetch(
+                            `${API_BASE_URL}/api/files/upload-multiple-public`,
+                            {
+                              method: "POST",
+                              headers: headers,
+                              body: formData,
+                            }
+                          );
+
                           if (response.ok) {
                             const result = await response.json();
-                            alert(`Successfully uploaded ${result.files.length} files to Cloudinary!`);
+                            alert(
+                              `Successfully uploaded ${result.files.length} files to Cloudinary!`
+                            );
                           } else {
                             const errorData = await response.json();
-                            alert(`Failed to upload files: ${errorData.message || 'Unknown error'}`);
+                            alert(
+                              `Failed to upload files: ${
+                                errorData.message || "Unknown error"
+                              }`
+                            );
                           }
                         } catch (error) {
-                          console.error('Error uploading files:', error);
-                          alert('Error uploading files');
+                          console.error("Error uploading files:", error);
+                          alert("Error uploading files");
                         }
                       }
-                      e.target.value = '';
+                      e.target.value = "";
                     }}
                   />
                 </label>
                 <button
-                  onClick={() => navigate('/file-downloads')}
+                  onClick={() => navigate("/file-downloads")}
                   className="flex items-center text-gray-700 hover:text-purple-600 text-sm cursor-pointer"
                 >
                   <svg
@@ -679,23 +717,36 @@ const Navbar = () => {
         </div>
       )}
 
-
-
       {/* Cart Dropdown/Sidebar */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 overflow-hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsCartOpen(false)}></div>
+          <div
+            className="absolute inset-0 bg-black bg-opacity-50"
+            onClick={() => setIsCartOpen(false)}
+          ></div>
           <div className="absolute right-0 top-0 h-full w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
             <div className="flex flex-col h-full">
               {/* Cart Header */}
               <div className="flex items-center justify-between p-4 border-b bg-purple-600">
-                <h2 className="text-lg font-semibold text-white">Shopping Cart ({cartItemsCount})</h2>
-                <button 
+                <h2 className="text-lg font-semibold text-white">
+                  Shopping Cart ({cartItemsCount})
+                </h2>
+                <button
                   onClick={() => setIsCartOpen(false)}
                   className="p-2 hover:bg-purple-700 rounded-full transition-colors text-white"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -704,11 +755,21 @@ const Navbar = () => {
               <div className="flex-1 overflow-y-auto p-4">
                 {items.length === 0 ? (
                   <div className="text-center py-8">
-                    <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                    <svg
+                      className="w-16 h-16 text-gray-300 mx-auto mb-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"
+                      />
                     </svg>
                     <p className="text-gray-500 mb-4">Your cart is empty</p>
-                    <button 
+                    <button
                       onClick={() => setIsCartOpen(false)}
                       className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors"
                     >
@@ -718,42 +779,116 @@ const Navbar = () => {
                 ) : (
                   <div className="space-y-4">
                     {items.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                      <div
+                        key={item.uid || item.id}
+                        className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                      >
                         <img
                           src={item.image}
                           alt={item.name}
                           className="w-16 h-16 object-cover rounded-md flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-gray-900 truncate">{item.name}</h3>
-                          <p className="text-xs text-gray-600 truncate">{item.description}</p>
-                          <p className="text-sm font-bold text-purple-600">₹{item.price.toLocaleString()}</p>
+                          <h3 className="text-sm font-semibold text-gray-900 truncate">
+                            {item.name}
+                          </h3>
+                          <p className="text-xs text-gray-600 truncate">
+                            {item.description}
+                          </p>
+                          {(item.selectedColor || item.selectedSize) && (
+                            <p className="text-xs text-gray-700 truncate">
+                              {item.selectedColor && (
+                                <span>
+                                  Color:{" "}
+                                  <span className="font-medium">
+                                    {item.selectedColor}
+                                  </span>
+                                </span>
+                              )}
+                              {item.selectedColor && item.selectedSize && (
+                                <span className="mx-1">•</span>
+                              )}
+                              {item.selectedSize && (
+                                <span>
+                                  Size:{" "}
+                                  <span className="font-medium">
+                                    {item.selectedSize}
+                                  </span>
+                                </span>
+                              )}
+                            </p>
+                          )}
+                          <p className="text-sm font-bold text-purple-600">
+                            ₹{item.price.toLocaleString()}
+                          </p>
                         </div>
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(
+                                item.uid || item.id,
+                                item.quantity - 1
+                              )
+                            }
                             className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
                           >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                            <svg
+                              className="w-3 h-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M20 12H4"
+                              />
                             </svg>
                           </button>
-                          <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
+                          <span className="w-6 text-center text-sm font-medium">
+                            {item.quantity}
+                          </span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(
+                                item.uid || item.id,
+                                item.quantity + 1
+                              )
+                            }
                             className="w-6 h-6 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
                           >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            <svg
+                              className="w-3 h-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                              />
                             </svg>
                           </button>
                         </div>
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.uid || item.id)}
                           className="p-1 text-red-500 hover:text-red-700 transition-colors flex-shrink-0"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -766,35 +901,39 @@ const Navbar = () => {
               {items.length > 0 && (
                 <div className="border-t p-4 space-y-4 bg-gray-50">
                   <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-gray-900">Total:</span>
-                    <span className="text-xl font-bold text-purple-600">₹{getCartTotal().toLocaleString()}</span>
+                    <span className="text-lg font-semibold text-gray-900">
+                      Total:
+                    </span>
+                    <span className="text-xl font-bold text-purple-600">
+                      ₹{getCartTotal().toLocaleString()}
+                    </span>
                   </div>
                   <div className="space-y-2">
-                    <button 
+                    <button
                       onClick={() => {
                         setIsCartOpen(false);
-                        navigate('/checkout');
+                        navigate("/checkout");
                       }}
                       className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors"
                     >
                       Checkout Now
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         setIsCartOpen(false);
-                        navigate('/cart');
+                        navigate("/cart");
                       }}
                       className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition-colors"
                     >
                       View Full Cart
                     </button>
-                    <button 
+                    <button
                       onClick={() => setIsCartOpen(false)}
                       className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-lg font-medium transition-colors"
                     >
                       Continue Shopping
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         clearCorruptedCart();
                         setIsCartOpen(false);

@@ -6,6 +6,7 @@ const Checkout = () => {
   const { items, getCartTotal, clearCart } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('online');
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     email: '',
@@ -147,9 +148,9 @@ const Checkout = () => {
             // Clear cart AFTER preparing data
             clearCart();
             
-            // Navigate to success page with payment data
+            // Navigate within SPA and pass state (keeps same origin for sessionStorage)
             sessionStorage.setItem('orderSuccessData', JSON.stringify(navigationData));
-            window.location.href = '/order-success';
+            navigate('/order-success', { state: navigationData });
             
           } catch (verifyError) {
             console.error('Payment verification error:', verifyError);
@@ -188,6 +189,58 @@ const Checkout = () => {
       alert(`Payment failed: ${error.message}. Please try again.`);
       setLoading(false);
     }
+  };
+
+  // Cash on Delivery flow
+  const handleCod = async () => {
+    if (!customerInfo.name || !customerInfo.phone || !customerInfo.address) {
+      alert('Please fill all required fields');
+      return;
+    }
+    try {
+      setLoading(true);
+      const amount = getCartTotal();
+      const ts = Date.now();
+      const orderId = `ORD${ts}`;
+      const paymentId = `COD${ts}`;
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      const payload = {
+        orderId,
+        paymentId,
+        total: amount,
+        items,
+        customerName: customerInfo.name,
+        customerEmail: customerInfo.email || '',
+        customerPhone: customerInfo.phone || '',
+        customerAddress: customerInfo.address || '',
+        customerCity: customerInfo.city || '',
+        customerPincode: customerInfo.pincode || ''
+      };
+      const res = await fetch(`${API_BASE_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error(`Failed to place COD order: ${res.status} - ${t}`);
+      }
+      const navData = { paymentId, orderId, amount, items, customerInfo };
+      clearCart();
+      // Navigate within SPA and pass state so OrderSuccess reads it reliably
+      sessionStorage.setItem('orderSuccessData', JSON.stringify(navData));
+      navigate('/order-success', { state: navData });
+    } catch (err) {
+      console.error('💥 COD order error:', err);
+      alert(`COD order failed: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    if (paymentMethod === 'cod') return handleCod();
+    return handlePayment();
   };
 
   if (items.length === 0) {
@@ -317,6 +370,31 @@ const Checkout = () => {
             </div>
             
             <div className="border-t pt-4">
+              {/* Payment Method */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('online')}
+                    className={`flex-1 px-4 py-2 rounded-lg border ${paymentMethod === 'online' ? 'border-purple-600 text-purple-700 bg-purple-50' : 'border-gray-300 text-gray-700'} hover:border-purple-500`}
+                  >
+                    Online Payment (Razorpay)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('cod')}
+                    className={`flex-1 px-4 py-2 rounded-lg border ${paymentMethod === 'cod' ? 'border-green-600 text-green-700 bg-green-50' : 'border-gray-300 text-gray-700'} hover:border-green-500`}
+                  >
+                    Cash on Delivery (COD)
+                  </button>
+                </div>
+                {paymentMethod === 'cod' ? (
+                  <p className="mt-2 text-sm text-green-700">Order abhi place hoga. Payment delivery ke waqt collect hoga.</p>
+                ) : (
+                  <p className="mt-2 text-sm text-purple-700">Secure online payment via Razorpay (Cards, UPI, Wallets).</p>
+                )}
+              </div>
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-semibold text-gray-900">Subtotal:</span>
                 <span className="text-lg font-bold text-gray-900">₹{getCartTotal().toLocaleString()}</span>
@@ -333,7 +411,7 @@ const Checkout = () => {
               </div>
               
               <button
-                onClick={handlePayment}
+                onClick={handlePlaceOrder}
                 disabled={loading}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
@@ -347,23 +425,31 @@ const Checkout = () => {
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
-                    Pay with Razorpay
+                    {paymentMethod === 'cod' ? 'Place Order (COD)' : 'Pay with Razorpay'}
                   </>
                 )}
               </button>
               
               <div className="mt-4 text-center">
-                <p className="text-sm text-gray-500">
-                  Secure payment powered by Razorpay
-                </p>
+                {paymentMethod === 'online' ? (
+                  <p className="text-sm text-gray-500">Secure payment powered by Razorpay</p>
+                ) : (
+                  <p className="text-sm text-gray-500">COD available: Payment on delivery.</p>
+                )}
                 <div className="flex justify-center items-center mt-2 space-x-4">
-                  <span className="text-xs text-gray-400">We accept:</span>
-                  <div className="flex space-x-2">
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Cards</span>
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">UPI</span>
-                    <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Wallets</span>
-                    <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Net Banking</span>
-                  </div>
+                  {paymentMethod === 'online' ? (
+                    <>
+                      <span className="text-xs text-gray-400">We accept:</span>
+                      <div className="flex space-x-2">
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Cards</span>
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">UPI</span>
+                        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Wallets</span>
+                        <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Net Banking</span>
+                      </div>
+                    </>
+                  ) : (
+                    <span className="text-xs text-gray-400">Pay on delivery</span>
+                  )}
                 </div>
               </div>
             </div>

@@ -55,12 +55,19 @@ const Cart = () => {
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
                     <p className="text-gray-600">{item.description}</p>
+                    {(item.selectedColor || item.selectedSize) && (
+                      <p className="text-sm text-gray-700">
+                        {item.selectedColor && (<span>Color: <span className="font-medium">{item.selectedColor}</span></span>)}
+                        {item.selectedColor && item.selectedSize && <span className="mx-2">•</span>}
+                        {item.selectedSize && (<span>Size: <span className="font-medium">{item.selectedSize}</span></span>)}
+                      </p>
+                    )}
                     <p className="text-lg font-bold text-purple-600">₹{item.price.toLocaleString()}</p>
                   </div>
                   
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => updateQuantity(item.uid || item.id, item.quantity - 1)}
                       className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +76,7 @@ const Cart = () => {
                     </button>
                     <span className="w-8 text-center font-medium">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(item.uid || item.id, item.quantity + 1)}
                       className="w-8 h-8 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,7 +88,7 @@ const Cart = () => {
                   <div className="text-right">
                     <p className="text-lg font-bold text-gray-900">₹{(item.price * item.quantity).toLocaleString()}</p>
                     <button
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => removeFromCart(item.uid || item.id)}
                       className="mt-2 text-red-600 hover:text-red-800 text-sm font-medium"
                     >
                       Remove

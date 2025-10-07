@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
 import { getProductsByCategory, deleteProduct } from '../services/productService';
+// Edit modal will use updateProduct from productService
+// (imported inside modal component to keep dashboard lean)
 import AddProductModal from '../components/AddProductModal';
+import EditProductModal from '../components/EditProductModal';
 import { getAllSubcategoriesAdmin, createSubcategory, deleteSubcategory } from '../services/subcategoryService';
 
 const AdminDashboard = () => {
@@ -35,6 +38,8 @@ const AdminDashboard = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProductsMenuOpen, setIsProductsMenuOpen] = useState(false);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
+  const [showEditProductModal, setShowEditProductModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [showManageSubModal, setShowManageSubModal] = useState(false);
   const [subList, setSubList] = useState([]);
   const [subForm, setSubForm] = useState({ name: '', category: '' });
@@ -234,6 +239,18 @@ const AdminDashboard = () => {
     setShowAddProductModal(false);
   };
 
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    setShowEditProductModal(true);
+  };
+
+  const handleProductUpdated = () => {
+    // Refresh products after update
+    fetchAllProducts();
+    setShowEditProductModal(false);
+    setEditingProduct(null);
+  };
+
   const loadAdminSubcategories = async () => {
     try {
       const subs = await getAllSubcategoriesAdmin();
@@ -296,7 +313,7 @@ const AdminDashboard = () => {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       const token = localStorage.getItem('adminToken');
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
       const response = await fetch(`${API_BASE_URL}/api/dashboard/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
@@ -357,7 +374,7 @@ const AdminDashboard = () => {
 
     try {
       const token = localStorage.getItem('adminToken');
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
       
       const formData = new FormData();
       files.forEach(file => {
@@ -396,7 +413,7 @@ const AdminDashboard = () => {
 
     try {
       const token = localStorage.getItem('adminToken');
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
       
       const response = await fetch(`${API_BASE_URL}/api/files/${fileId}`, {
         method: 'DELETE',
@@ -420,7 +437,7 @@ const AdminDashboard = () => {
   const handleDownloadFile = async (fileId, fileName) => {
     try {
       const token = localStorage.getItem('adminToken');
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
       
       // Show downloading notification
       const downloadingToast = document.createElement('div');
@@ -1097,7 +1114,10 @@ const AdminDashboard = () => {
                           <div className="flex items-center space-x-2">
                             {Array.isArray(product.colorVarients) && product.colorVarients.length > 0 ? (
                               <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                {product.colorVarients.join(', ')}
+                                {product.colorVarients
+                                  .map((v) => (typeof v === 'string' ? v : (v?.color || '')))
+                                  .filter(Boolean)
+                                  .join(', ')}
                               </span>
                             ) : (
                               <span className="text-xs text-gray-500">No colors</span>
@@ -1124,6 +1144,12 @@ const AdminDashboard = () => {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEditProduct({ ...product, category })}
+                              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation min-w-[80px]"
+                            >
+                              Edit
+                            </button>
                             <button
                               onClick={() => handleDeleteProduct(product._id, category)}
                               className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 touch-manipulation min-w-[80px]"
@@ -1554,6 +1580,16 @@ const AdminDashboard = () => {
           isOpen={showAddProductModal}
           onClose={() => setShowAddProductModal(false)}
           onProductAdded={handleProductAdded}
+        />
+      )}
+
+      {/* Edit Product Modal */}
+      {showEditProductModal && editingProduct && (
+        <EditProductModal
+          isOpen={showEditProductModal}
+          onClose={() => { setShowEditProductModal(false); setEditingProduct(null); }}
+          product={editingProduct}
+          onProductUpdated={handleProductUpdated}
         />
       )}
 

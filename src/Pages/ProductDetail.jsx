@@ -58,11 +58,24 @@ const ProductDetail = () => {
   }, [product]);
 
   const toList = (val) => {
-    if (Array.isArray(val)) return val.filter(Boolean);
+    // Normalize to a list of strings for rendering
+    if (Array.isArray(val)) {
+      // If this is an array of objects (e.g., colorVarients as { color, images }), pick the color names
+      if (val.length > 0 && typeof val[0] === "object" && val[0] !== null) {
+        return val.map((v) => (typeof v === "string" ? v : (v?.color || ""))).filter(Boolean);
+      }
+      return val.filter(Boolean);
+    }
     if (typeof val === "string") {
       try {
         const parsed = JSON.parse(val);
-        if (Array.isArray(parsed)) return parsed.filter(Boolean);
+        if (Array.isArray(parsed)) {
+          // If parsed array contains objects, map to color names
+          if (parsed.length > 0 && typeof parsed[0] === "object" && parsed[0] !== null) {
+            return parsed.map((v) => (typeof v === "string" ? v : (v?.color || ""))).filter(Boolean);
+          }
+          return parsed.filter(Boolean);
+        }
       } catch {}
       return val.split(",").map((s) => s.trim()).filter(Boolean);
     }
@@ -83,9 +96,23 @@ const ProductDetail = () => {
         ? product.offerPrice
         : product.price;
 
+    // Build a variant UID when size/color are chosen so variants remain distinct in cart
+    const variantParts = [];
+    if (selectedColor) variantParts.push(`color:${selectedColor}`);
+    if (selectedSize) variantParts.push(`size:${selectedSize}`);
+    const uid = variantParts.length
+      ? `${product._id || product.id}::${variantParts.join('::')}`
+      : undefined;
+
+    // Ensure the image we add to cart matches the currently displayed image
+    const allImages = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
+    const selectedImageSrc = allImages[selectedImageIndex] || product.imageUrl || product.image;
+
     addToCart({
       ...product,
       id: product._id || product.id,
+      uid,
+      image: selectedImageSrc,
       price: effectivePrice,
       quantity,
       selectedSize,
@@ -95,6 +122,31 @@ const ProductDetail = () => {
 
   const incrementQuantity = () => setQuantity((q) => q + 1);
   const decrementQuantity = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
+
+  // When a color is selected, switch the main image to the corresponding one
+  const handleSelectColor = (color) => {
+    setSelectedColor(color);
+    if (!product) return;
+    // If colorVarients are objects with images, switch to the first image for that color when available
+    const variants = Array.isArray(product.colorVarients) ? product.colorVarients : [];
+    const allImages = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
+    const match = variants.find((v) => {
+      const name = typeof v === "string" ? v : (v?.color || "");
+      return name.toLowerCase() === (color || "").toLowerCase();
+    });
+    const firstImage = match && typeof match !== "string" ? (match.images?.[0] || null) : null;
+    if (firstImage) {
+      const idx = allImages.findIndex((img) => img === firstImage);
+      if (idx >= 0) setSelectedImageIndex(idx);
+    } else {
+      // Fallback: try by position of color name among normalized list
+      const colors = toList(product.colorVarients);
+      const idx = colors.findIndex((c) => (c || "").toLowerCase() === (color || "").toLowerCase());
+      // Map color index to product.images index; add 1 because allImages[0] is the main image
+      const mappedIndex = idx >= 0 ? (idx + 1) : -1;
+      if (mappedIndex >= 0 && mappedIndex < allImages.length) setSelectedImageIndex(mappedIndex);
+    }
+  };
 
   // Fetch related products based on same category and matching subcategory
   useEffect(() => {
@@ -197,8 +249,14 @@ const ProductDetail = () => {
 
         {/* RIGHT - Details */}
         <div className="md:w-1/2 bg-white p-6 rounded-xl shadow-md border border-gray-200">
-          <div className="border-b pb-4 mb-4">
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Product Details</h3>
+          <div className="border-b pb-4 mb-4 flex items-center justify-between">
+            <h3 className="text-2xl font-bold text-gray-900">Product Details</h3>
+            <button
+              onClick={() => navigate('/e-market')}
+              className="px-4 py-2 text-sm font-medium rounded-md border border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100"
+            >
+              Continue Shopping
+            </button>
           </div>
 
           <h1 className="text-2xl font-semibold text-gray-800 mb-3">
@@ -257,7 +315,7 @@ const ProductDetail = () => {
                   {toList(product.colorVarients).map((color) => (
                     <button
                       key={color}
-                      onClick={() => setSelectedColor(color)}
+                      onClick={() => handleSelectColor(color)}
                       className={`px-4 py-2 rounded-md border text-sm font-medium transition ${
                         selectedColor === color
                           ? "border-purple-600 bg-purple-50 text-purple-700"
