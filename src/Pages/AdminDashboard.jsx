@@ -1561,6 +1561,7 @@ const AdminDashboard = () => {
                     <table className="min-w-full divide-y divide-gray-200/30">
                       <thead className="bg-gradient-to-r from-orange-100 to-red-100">
                         <tr>
+                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Image</th>
                           <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Item</th>
                           <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Quantity</th>
                           <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Price</th>
@@ -1570,6 +1571,18 @@ const AdminDashboard = () => {
                       <tbody className="bg-white/50 divide-y divide-gray-200/30">
                         {selectedOrder.items?.map((item, index) => (
                           <tr key={index} className="hover:bg-orange-50/50 transition-all duration-200">
+                            <td className="px-6 py-3">
+                              <div className="w-12 h-12 rounded-md overflow-hidden border border-gray-200 bg-gray-50">
+                                <img
+                                  src={(item.image || '').replace(/`/g, '').trim() || '/no-image.svg'}
+                                  alt={item.name || 'Product image'}
+                                  className="w-full h-full object-cover"
+                                  loading="lazy"
+                                  referrerPolicy="no-referrer"
+                                  onError={(e) => { e.currentTarget.src = '/no-image.svg'; }}
+                                />
+                              </div>
+                            </td>
                             <td className="px-6 py-4 text-sm font-semibold text-gray-900">
                               <div>{item.name}</div>
                               {(item.size || item.color) && (

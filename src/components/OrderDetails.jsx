@@ -137,10 +137,15 @@ const OrderDetails = () => {
               {order.items?.map((item, index) => (
                 <div key={index} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                   <div className="flex items-center space-x-4">
-                    <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center">
-                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                      </svg>
+                    <div className="w-16 h-16 rounded overflow-hidden border border-gray-200 bg-white">
+                      <img
+                        src={(item?.image || item?.imageUrl || '').trim() || '/no-image.svg'}
+                        alt={item?.name || 'Product image'}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => { e.currentTarget.src = '/no-image.svg'; }}
+                      />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">{item.name}</p>
