@@ -43,15 +43,26 @@ const Checkout = () => {
     });
   };
 
-  // Fixed: Items with size and color
-  const getFormattedItems = () => {
+  // ✅ FIXED: Razorpay compatible items format
+  const getRazorpayItems = () => {
+    return items.map((item, index) => ({
+      id: String(item._id || item.id || `item_${index}`),
+      name: String(item.name || 'Product').substring(0, 100), // Razorpay has length limits
+      price: Math.round((item.price || 0) * 100), // Convert to paise
+      quantity: Math.max(1, item.quantity || 1)
+    }));
+  };
+
+  // ✅ For your order records (with all details)
+  const getOrderItems = () => {
     return items.map(item => ({
       name: item.name,
       quantity: item.quantity,
       price: item.price,
-      size: item.selectedSize || null,
-      color: item.selectedColor || null,
-      image: item.image || null
+      size: item.selectedSize,
+      color: item.selectedColor,
+      image: item.image,
+      productId: item._id || item.id
     }));
   };
 
@@ -81,7 +92,23 @@ const Checkout = () => {
       }
 
       const amount = getCartTotal();
-      const formattedItems = getFormattedItems();
+      
+      // ✅ FIXED: Use Razorpay compatible items
+      const razorpayItems = getRazorpayItems();
+      const orderItems = getOrderItems(); // For your records
+
+      console.log("📦 Razorpay Items:", razorpayItems);
+      console.log("📦 Order Items:", orderItems);
+
+      // Validate items before sending to Razorpay
+      const invalidItems = razorpayItems.filter(item => 
+        !item.id || !item.name || isNaN(item.price) || isNaN(item.quantity)
+      );
+
+      if (invalidItems.length > 0) {
+        console.error("❌ Invalid items found:", invalidItems);
+        throw new Error("Some items have invalid format. Please check your cart.");
+      }
 
       // Create payment order through backend
       const API_BASE_URL =
@@ -100,11 +127,12 @@ const Checkout = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            amount: amount,
+            amount: amount, // ✅ Send rupees; backend converts to paise
             currency: "INR",
             receipt: `receipt_${Date.now()}`,
             customerInfo: customerInfo,
-            items: formattedItems,
+            items: razorpayItems, // ✅ Use Razorpay compatible items
+            orderItems: orderItems // ✅ Keep detailed items for your records
           }),
         }
       );
@@ -147,7 +175,7 @@ const Checkout = () => {
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
                   customerInfo: customerInfo,
-                  items: formattedItems,
+                  items: orderItems, // ✅ Use detailed items for order creation
                   amount: amount,
                 }),
               }
@@ -165,7 +193,7 @@ const Checkout = () => {
               paymentId: response.razorpay_payment_id,
               orderId: verifyData.orderId,
               amount: amount,
-              items: formattedItems,
+              items: orderItems, // ✅ Use detailed items
               customerInfo: customerInfo,
             };
 
@@ -237,13 +265,13 @@ const Checkout = () => {
         import.meta.env.VITE_API_URL?.replace("/api", "") ||
         "http://localhost:5000";
       
-      const formattedItems = getFormattedItems();
+      const orderItems = getOrderItems(); // ✅ Use detailed items
       
       const payload = {
         orderId,
         paymentId,
         total: amount,
-        items: formattedItems,
+        items: orderItems, // ✅ Use detailed items
         customerName: customerInfo.name,
         customerEmail: customerInfo.email || "",
         customerPhone: customerInfo.phone || "",
@@ -272,7 +300,7 @@ const Checkout = () => {
         paymentId, 
         orderId, 
         amount, 
-        items: formattedItems,
+        items: orderItems, // ✅ Use detailed items
         customerInfo 
       };
       
@@ -552,7 +580,7 @@ const Checkout = () => {
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" aria-hidden="true"></div>
                     Processing...
                   </>
                 ) : (

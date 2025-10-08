@@ -145,6 +145,16 @@ const OrderDetails = () => {
                     <div>
                       <p className="font-medium text-gray-900">{item.name}</p>
                       <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                      {(item.size || item.color) && (
+                        <div className="flex space-x-2 mt-1">
+                          {item.size && (
+                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Size: {item.size}</span>
+                          )}
+                          {item.color && (
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Color: {item.color}</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="text-right">

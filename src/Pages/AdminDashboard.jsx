@@ -46,6 +46,7 @@ const AdminDashboard = () => {
   const subCategories = ['emart', 'localmarket', 'printing', 'news'];
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
+  const [statusUpdate, setStatusUpdate] = useState('pending');
 
   const getSubcategoryName = (sc) => {
     if (sc && typeof sc === 'object') {
@@ -314,7 +315,7 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
-      const response = await fetch(`${API_BASE_URL}/api/dashboard/orders/${orderId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -344,7 +345,8 @@ const AdminDashboard = () => {
 
 
   const getStatusColor = (status) => {
-    switch (status) {
+    const s = (status || '').toLowerCase();
+    switch (s) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'processing': return 'bg-blue-100 text-blue-800';
       case 'shipped': return 'bg-purple-100 text-purple-800';
@@ -356,6 +358,7 @@ const AdminDashboard = () => {
 
   const openOrderModal = (order) => {
     setSelectedOrder(order);
+    setStatusUpdate((order.status || 'pending').toLowerCase());
     setShowOrderModal(true);
   };
 
@@ -1491,6 +1494,28 @@ const AdminDashboard = () => {
                           {selectedOrder.status}
                         </span>
                       </p>
+                      {/* Status Update Controls */}
+                      <div className="mt-4">
+                        <label className="text-sm font-semibold text-gray-700">Update Status</label>
+                        <div className="flex items-center space-x-2 mt-2">
+                          <select
+                            value={statusUpdate}
+                            onChange={(e) => setStatusUpdate(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                          <button
+                            onClick={() => updateOrderStatus(selectedOrder.id, statusUpdate)}
+                            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                          >
+                            Update
+                          </button>
+                        </div>
+                      </div>
                       <p className="text-sm"><span className="font-semibold text-gray-700">Total Amount:</span> <span className="text-green-600 font-bold text-lg">₹{selectedOrder.total}</span></p>
                       <p className="text-sm"><span className="font-semibold text-gray-700">Order Date:</span> <span className="text-gray-600">{selectedOrder.paymentDate ? new Date(selectedOrder.paymentDate).toLocaleDateString() : new Date(selectedOrder.createdAt).toLocaleDateString()}</span></p>
                     </div>
@@ -1545,7 +1570,19 @@ const AdminDashboard = () => {
                       <tbody className="bg-white/50 divide-y divide-gray-200/30">
                         {selectedOrder.items?.map((item, index) => (
                           <tr key={index} className="hover:bg-orange-50/50 transition-all duration-200">
-                            <td className="px-6 py-4 text-sm font-semibold text-gray-900">{item.name}</td>
+                            <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+                              <div>{item.name}</div>
+                              {(item.size || item.color) && (
+                                <div className="flex space-x-2 mt-1">
+                                  {item.size && (
+                                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Size: {item.size}</span>
+                                  )}
+                                  {item.color && (
+                                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Color: {item.color}</span>
+                                  )}
+                                </div>
+                              )}
+                            </td>
                             <td className="px-6 py-4 text-sm text-gray-700">
                               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                                 {item.quantity}

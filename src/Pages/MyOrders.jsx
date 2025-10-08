@@ -69,6 +69,45 @@ const MyOrders = () => {
     }
   };
 
+  const cancelOrder = async (orderId) => {
+    try {
+      const API_BASE_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login to cancel your order.");
+        navigate("/user/login");
+        return;
+      }
+
+      const confirmCancel = confirm(
+        "Are you sure you want to cancel this order?"
+      );
+      if (!confirmCancel) return;
+
+      const response = await fetch(`${API_BASE_URL}/orders/${orderId}/cancel`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert("Order cancelled successfully.");
+        // Refresh orders list
+        fetchOrders();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        alert(err.message || "Failed to cancel order.");
+      }
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      alert("Error cancelling order.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4">
@@ -197,6 +236,20 @@ const MyOrders = () => {
                             <p className="text-sm text-gray-600">
                               Quantity: {item.quantity}
                             </p>
+                            {(item.size || item.color) && (
+                              <div className="flex space-x-2 mt-1">
+                                {item.size && (
+                                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                    Size: {item.size}
+                                  </span>
+                                )}
+                                {item.color && (
+                                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                                    Color: {item.color}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
                           <div className="text-right">
                             <p className="font-semibold text-gray-900">
@@ -213,44 +266,46 @@ const MyOrders = () => {
 
                   {/* Customer Info */}
                   <div className="border-t pt-4 mt-4">
-                    <h4 className="font-semibold text-gray-900 mb-3">
-                      Delivery Information
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-600">
-                          Customer: {order.customerName}
-                        </p>
-                        {order.customerEmail && (
-                          <p className="text-gray-600">
-                            Email: {order.customerEmail}
-                          </p>
-                        )}
-                        {order.customerPhone && (
-                          <p className="text-gray-600">
-                            Phone: {order.customerPhone}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        {order.customerAddress && (
-                          <p className="text-gray-600">
-                            Address: {order.customerAddress}
-                          </p>
-                        )}
-                        {order.customerCity && (
-                          <p className="text-gray-600">
-                            City: {order.customerCity}
-                          </p>
-                        )}
-                        {order.customerPincode && (
-                          <p className="text-gray-600">
-                            PIN: {order.customerPincode}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+  <h4 className="font-semibold text-gray-900 mb-3">
+    Delivery Information
+  </h4>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+    <div>
+      <p className="text-gray-600">
+        <span className="font-semibold">Customer:</span> {order.customerName}
+      </p>
+      {order.customerEmail && (
+        <p className="text-gray-600">
+          <span className="font-semibold">Email:</span> {order.customerEmail}
+        </p>
+      )}
+      {order.customerPhone && (
+        <p className="text-gray-600">
+          <span className="font-semibold">Phone:</span> {order.customerPhone}
+        </p>
+      )}
+    </div>
+
+    <div>
+      {order.customerAddress && (
+        <p className="text-gray-600">
+          <span className="font-semibold">Address:</span> {order.customerAddress}
+        </p>
+      )}
+      {order.customerCity && (
+        <p className="text-gray-600">
+          <span className="font-semibold">City:</span> {order.customerCity}
+        </p>
+      )}
+      {order.customerPincode && (
+        <p className="text-gray-600">
+          <span className="font-semibold">PIN:</span> {order.customerPincode}
+        </p>
+      )}
+    </div>
+  </div>
+</div>
+
 
                   {/* View Details Button - YEH ADD KIYA HAI */}
                   <div className="border-t pt-4 mt-4 flex justify-end">
@@ -264,6 +319,22 @@ const MyOrders = () => {
                     >
                       View Order Details
                     </button>
+                    {(() => {
+                      const canCancel = ["pending", "processing"].includes(String(order.status || "").toLowerCase());
+                      const baseClasses = "ml-3 px-6 py-2 rounded-lg font-medium transition-colors";
+                      const enabledClasses = "bg-red-600 hover:bg-red-700 text-white";
+                      const disabledClasses = "bg-gray-200 text-gray-500 cursor-not-allowed";
+                      return (
+                        <button
+                          onClick={() => cancelOrder(order._id || order.id)}
+                          disabled={!canCancel}
+                          title={!canCancel ? "Cancel only for Pending/Processing orders" : ""}
+                          className={`${baseClasses} ${canCancel ? enabledClasses : disabledClasses}`}
+                        >
+                          Cancel Order
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
               ))}
