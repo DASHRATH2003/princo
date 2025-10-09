@@ -29,7 +29,24 @@ import NotFound from './Pages/NotFound'
 import SearchResults from './Pages/SearchResults'
 import OrderDetails from './components/OrderDetails';
 import MyOrders from './Pages/MyOrders.jsx' // ✅ .jsx 
-// EXTENSION ADD KARO
+import SellerDashboard from './Pages/SellerDashboard.jsx';
+
+
+import SellerLogin from './Pages/SellerLogin.jsx';
+import SellerRegister from './Pages/SellerRegister.jsx';
+import { getCurrentUser } from './services/authService';
+
+// Route guard component for seller pages to ensure fresh evaluation on navigation
+const SellerRouteElement = () => {
+  const user = getCurrentUser();
+  if (!user) return <SellerLogin />;
+  if (user.role !== 'seller') return <NotFound />;
+  const status = String(user.verificationStatus || 'pending').toLowerCase();
+  if (status !== 'approved') {
+    return <SellerRegister />;
+  }
+  return <SellerDashboard />;
+};
 
 const App = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -62,6 +79,15 @@ const App = () => {
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<ErrorBoundary><AdminDashboard /></ErrorBoundary>} />
             
+            {/* ✅ Seller routes WITHOUT navbar/footer */}
+            <Route path="/seller/login" element={<SellerLogin />} />
+
+            <Route path="/seller/register" element={<SellerRegister />} />
+            <Route path="/seller" element={<SellerRouteElement />} />
+            <Route path="/seller/dashboard" element={<SellerRouteElement />} />
+            
+            
+
             {/* Regular routes with navbar/footer */}
             <Route path="/*" element={
               <ErrorBoundary>
@@ -81,17 +107,18 @@ const App = () => {
                       <Route path="/cart" element={<Cart />} />
                       <Route path="/checkout" element={<Checkout />} />
                       <Route path="/order-success" element={<OrderSuccess />} />
-                      <Route path="/my-orders" element={<MyOrders />} /> {/* ✅ YEH ROUTE ADD KARO */}
+                      <Route path="/my-orders" element={<MyOrders />} /> 
                       <Route path="/terms-of-service" element={<TermsOfService />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                       <Route path="/cookie-policy" element={<CookiePolicy />} />
                       <Route path="/file-downloads" element={<FileDownloads />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/product/:productId" element={<ProductDetail />} />
+                     
                       <Route path="/search" element={<SearchResults />} />
                       <Route path="*" element={<NotFound />} />
                       <Route path="/orderDetails/:orderId" element={<OrderDetails />} />
-
+                      
                     </Routes>
                   </main>
                   <Footer />

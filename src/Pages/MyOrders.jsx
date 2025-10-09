@@ -18,11 +18,20 @@ const MyOrders = () => {
       const API_BASE_URL =
         import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-      // Backend se orders fetch karo
-      const response = await fetch(`${API_BASE_URL}/orders`, {
+      // Authenticated customer orders fetch karo
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setOrders([]);
+        setLoading(false);
+        navigate("/user/login");
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/orders/my`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -31,7 +40,10 @@ const MyOrders = () => {
       if (response.ok) {
         const ordersData = await response.json();
         console.log("Orders data received:", ordersData);
-        setOrders(ordersData);
+        setOrders(Array.isArray(ordersData) ? ordersData : []);
+      } else if (response.status === 401) {
+        navigate("/user/login");
+        setOrders([]);
       } else {
         console.error("Failed to fetch orders:", response.status);
         setOrders([]);

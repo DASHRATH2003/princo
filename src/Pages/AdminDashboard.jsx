@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
-import { getProductsByCategory, deleteProduct } from '../services/productService';
+import { getAdminProductsByCategory, deleteProduct } from '../services/productService';
 // Edit modal will use updateProduct from productService
 // (imported inside modal component to keep dashboard lean)
 import AddProductModal from '../components/AddProductModal';
@@ -43,6 +43,9 @@ const AdminDashboard = () => {
   const [showManageSubModal, setShowManageSubModal] = useState(false);
   const [subList, setSubList] = useState([]);
   const [subForm, setSubForm] = useState({ name: '', category: '' });
+  // Sellers state
+  const [sellers, setSellers] = useState([]);
+  const [selectedSeller, setSelectedSeller] = useState(null);
   const subCategories = ['emart', 'localmarket', 'printing', 'news'];
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
@@ -194,6 +197,17 @@ const AdminDashboard = () => {
         console.error('Error fetching customers:', error);
       }
 
+      // Fetch sellers (admin)
+      try {
+        const sellersResponse = await fetch(`${API_BASE_URL}/api/dashboard/sellers`, { headers });
+        if (sellersResponse.ok) {
+          const sellersData = await sellersResponse.json();
+          setSellers(sellersData);
+        }
+      } catch (error) {
+        console.error('Error fetching sellers:', error);
+      }
+
       // Fetch products for all categories
       await fetchAllProducts();
       
@@ -210,7 +224,7 @@ const AdminDashboard = () => {
       const categories = ['emart', 'localmarket', 'printing', 'news'];
       const productPromises = categories.map(async (category) => {
         try {
-          const response = await getProductsByCategory(category);
+          const response = await getAdminProductsByCategory(category);
           console.log(`Fetched ${category} products:`, response); // Debug log
           return { category, products: response.data || [] };
         } catch (error) {
@@ -503,6 +517,83 @@ const AdminDashboard = () => {
     }
   };
 
+  // Sellers handlers
+  const handleSelectSeller = async (sellerId) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      const response = await fetch(`${API_BASE_URL}/api/dashboard/sellers/${sellerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const sellerDetails = await response.json();
+        // API returns shape: { seller, summary }
+        setSelectedSeller(sellerDetails?.seller || sellerDetails);
+      } else {
+        alert('Failed to fetch seller details');
+      }
+    } catch (error) {
+      console.error('Error fetching seller details:', error);
+      alert('Error fetching seller details');
+    }
+  };
+
+  // Verify/approve/reject a seller's verification
+  const handleVerifySeller = async (sellerId, action = 'approve') => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('Admin session not found. Please login again.');
+        navigate('/admin/login');
+        return;
+      }
+
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      // Normalize action to API expected values: 'approve' | 'reject'
+      const actionLower = String(action).toLowerCase();
+      const normalizedAction =
+        actionLower === 'approved' ? 'approve' :
+        actionLower === 'rejected' ? 'reject' :
+        actionLower;
+
+      const response = await fetch(`${API_BASE_URL}/api/dashboard/sellers/${sellerId}/verification`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: normalizedAction })
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) {
+        alert(data.message || 'Seller verification updated successfully');
+        // Refresh dashboard lists
+        await fetchDashboardData();
+        // If details modal is open for this seller, update it inline
+        setSelectedSeller(prev => {
+          if (!prev || prev._id !== sellerId) return prev;
+          return {
+            ...prev,
+            verificationStatus: data?.data?.verificationStatus || (normalizedAction === 'approve' ? 'approved' : 'rejected'),
+            verification: {
+              ...(prev.verification || {}),
+              reviewedAt: data?.data?.verification?.reviewedAt || new Date(),
+              reviewerNote: data?.data?.verification?.reviewerNote || ''
+            }
+          };
+        });
+      } else {
+        alert(data.message || 'Failed to update seller verification');
+      }
+    } catch (error) {
+      console.error('Error verifying seller:', error);
+      alert('Error verifying seller');
+    }
+  };
+
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -656,7 +747,22 @@ const AdminDashboard = () => {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span>Files</span>
+            <span>Files</span>
+          </button>
+
+            {/* Sellers */}
+            <button
+              onClick={() => { setActiveTab('sellers'); setIsMobileMenuOpen(false); }}
+              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                activeTab === 'sellers'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5V4a2 2 0 00-2-2H7a2 2 0 00-2 2v16h5m7-10a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <span>Sellers</span>
             </button>
           </nav>
         </div>
@@ -1451,6 +1557,288 @@ const AdminDashboard = () => {
           </div>
         )}
 
+        {/* Sellers Tab */}
+       
+
+{/* Sellers Tab */}
+{activeTab === 'sellers' && (
+  <div className="space-y-6">
+    {/* Sellers Summary Cards */}
+    
+
+    {/* Sellers List */}
+    <div className="bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden">
+      <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200/50">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-gray-800">All Sellers ({sellers.length})</h3>
+          <div className="flex items-center space-x-2">
+            <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center space-x-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span>Add Seller</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200/50">
+          <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Seller Info</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Contact</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Verification</th>
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Business</th>
+              
+              <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200/30">
+            {sellers.map((seller) => (
+              <tr key={seller._id} className="hover:bg-gray-50/50 transition-all duration-200">
+                {/* Seller Info */}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-10 w-10">
+                      <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                        {seller.sellerName?.charAt(0) || seller.name?.charAt(0) || 'S'}
+                      </div>
+                    </div>
+                    <div className="ml-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {seller.sellerName || seller.name}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Level: {seller.sellerHierarchyLevel ?? 0}
+                      </div>
+                      {seller.parentSeller && (
+                        <div className="text-xs text-gray-400">
+                          Parent: {seller.parentSeller?.sellerName || seller.parentSeller?.name}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </td>
+
+                {/* Contact Info */}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{seller.email}</div>
+                  {seller.verification?.phone && (
+                    <div className="text-sm text-gray-500">{seller.verification.phone}</div>
+                  )}
+                  <div className="text-xs text-gray-400">
+                    Joined: {new Date(seller.registeredOn || seller.createdAt).toLocaleDateString()}
+                  </div>
+                </td>
+
+                {/* Verification Status */}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex flex-col space-y-2">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      seller.verificationStatus === 'approved' 
+                        ? 'bg-green-100 text-green-800'
+                        : seller.verificationStatus === 'pending'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {seller.verificationStatus?.toUpperCase() || 'PENDING'}
+                    </span>
+                    {seller.verification?.submittedAt && (
+                      <div className="text-xs text-gray-500">
+                        Submitted: {new Date(seller.verification.submittedAt).toLocaleDateString()}
+                      </div>
+                    )}
+                  </div>
+                </td>
+
+                {/* Business Info */}
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">
+                    {seller.verification?.shopName || 'No Shop Name'}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    Login Count: {seller.loginCount || 0}
+                  </div>
+                </td>
+
+                {/* Performance */}
+                
+
+                {/* Actions */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleSelectSeller(seller._id)}
+                      className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => handleVerifySeller(seller._id)}
+                      className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200"
+                    >
+                      Verify
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        {sellers.length === 0 && (
+          <div className="text-center py-8">
+            <div className="text-gray-500">No sellers found</div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* Seller Details Modal */}
+    {selectedSeller && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+        <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto mx-auto p-6 shadow-2xl rounded-2xl bg-white/90 backdrop-blur-md border border-white/20">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-800">Seller Details</h3>
+            <button
+              onClick={() => setSelectedSeller(null)}
+              className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-all duration-200"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Basic Information */}
+            <div className="space-y-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+                <h4 className="font-bold text-gray-800 mb-3">Basic Information</h4>
+                <div className="space-y-2">
+                  <p><span className="font-semibold">Name:</span> {selectedSeller.sellerName || selectedSeller.name}</p>
+                  <p><span className="font-semibold">Email:</span> {selectedSeller.email}</p>
+                  <p><span className="font-semibold">Hierarchy Level:</span> {selectedSeller.sellerHierarchyLevel ?? 0}</p>
+                  <p><span className="font-semibold">Registered On:</span> {new Date(selectedSeller.registeredOn || selectedSeller.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+
+              {/* Business Information */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+                <h4 className="font-bold text-gray-800 mb-3">Business Information</h4>
+                <div className="space-y-2">
+                  <p><span className="font-semibold">Shop Name:</span> {selectedSeller.verification?.shopName || 'Not provided'}</p>
+                  <p><span className="font-semibold">Phone:</span> {selectedSeller.verification?.phone || 'Not provided'}</p>
+                  <p className="flex items-center gap-3"><span className="font-semibold">Verification Status:</span> 
+                    <span className={`px-2 py-1 text-xs rounded-full ${
+                      selectedSeller.verificationStatus === 'approved' 
+                        ? 'bg-green-100 text-green-800'
+                        : selectedSeller.verificationStatus === 'pending'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {selectedSeller.verificationStatus?.toUpperCase() || 'PENDING'}
+                    </span>
+                    {/* Admin controls: Accepted / Rejected */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleVerifySeller(selectedSeller._id, 'approved')}
+                        className="bg-gradient-to-r from-green-500 to-green-600 text-white px-2 py-1 rounded-md text-xs font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200"
+                        title="Mark as Accepted"
+                      >
+                        Accepted
+                      </button>
+                      <button
+                        onClick={() => handleVerifySeller(selectedSeller._id, 'rejected')}
+                        className="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 py-1 rounded-md text-xs font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200"
+                        title="Mark as Rejected"
+                      >
+                        Rejected
+                      </button>
+                    </div>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Verification Documents */}
+            <div className="space-y-4">
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
+                <h4 className="font-bold text-gray-800 mb-3">Verification Documents</h4>
+                <div className="space-y-3">
+                  {selectedSeller.verification?.idProofUrl && (
+                    <div>
+                      <p className="font-semibold text-sm">ID Proof:</p>
+                      <a 
+                        href={(selectedSeller.verification.idProofUrl || '').replace(/`/g, '').trim()} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-sm flex items-center space-x-1"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>View ID Proof</span>
+                      </a>
+                    </div>
+                  )}
+                  
+                  {selectedSeller.verification?.addressProofUrl && (
+                    <div>
+                      <p className="font-semibold text-sm">Address Proof:</p>
+                      <a 
+                        href={(selectedSeller.verification.addressProofUrl || '').replace(/`/g, '').trim()} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 text-sm flex items-center space-x-1"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>View Address Proof</span>
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Performance Stats */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg border border-orange-200">
+  <h4 className="font-bold text-gray-800 mb-3">Account Information</h4>
+  <div className="grid grid-cols-2 gap-4">
+    <div className="text-center">
+      <p className="text-2xl font-bold text-blue-600">{selectedSeller.loginCount || 0}</p>
+      <p className="text-sm text-gray-600">Login Count</p>
+    </div>
+    <div className="text-center">
+      <p className="text-2xl font-bold text-purple-600">
+        {selectedSeller.verificationStatus === 'approved' ? 'Verified' : 'Not Verified'}
+      </p>
+      <p className="text-sm text-gray-600">Status</p>
+    </div>
+  </div>
+</div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              onClick={() => setSelectedSeller(null)}
+              className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-4 py-2 rounded-lg font-medium hover:from-gray-600 hover:to-gray-700 transition-all duration-200"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+)}
+
       {/* Order Details Modal */}
       {showOrderModal && selectedOrder && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
@@ -1563,6 +1951,8 @@ const AdminDashboard = () => {
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Image</th>
                           <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Item</th>
+                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Seller</th>
+                          <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Seller ID</th>
                           <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Quantity</th>
                           <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Price</th>
                           <th className="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Total</th>
@@ -1595,6 +1985,14 @@ const AdminDashboard = () => {
                                   )}
                                 </div>
                               )}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-700">
+                              <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">
+                                {item.sellerName || 'Admin'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-xs text-gray-500">
+                              {item.sellerId || '—'}
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-700">
                               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">

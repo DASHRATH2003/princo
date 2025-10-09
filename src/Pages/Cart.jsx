@@ -3,7 +3,7 @@ import { useCart } from '../context/CartContext'
 import { useNavigate } from 'react-router-dom'
 
 const Cart = () => {
-  const { items, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartItemsCount } = useCart()
+  const { items, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartItemsCount, selectedIds, isSelected, toggleSelect, selectAll, deselectAll, getSelectedTotal, getSelectedItemsCount } = useCart()
   const navigate = useNavigate()
 
   if (items.length === 0) {
@@ -34,14 +34,28 @@ const Cart = () => {
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container-responsive">
         <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-900">Shopping Cart ({getCartItemsCount()} items)</h1>
+            <label className="flex items-center gap-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={items.length > 0 && selectedIds && selectedIds.length === items.length}
+                onChange={(e) => (e.target.checked ? selectAll() : deselectAll())}
+              />
+              Select All
+            </label>
           </div>
           
           <div className="p-6">
             <div className="space-y-6">
               {items.map((item) => (
                 <div key={item.uid || item.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4"
+                    checked={isSelected(item.uid || item.id)}
+                    onChange={() => toggleSelect(item.uid || item.id)}
+                  />
                   <img
                     src={item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjQwIiB5PSI0MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSIjOUI5QjlCIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+Tm8gSW1hZ2U8L3RleHQ+Cjwvc3ZnPgo='}
                     alt={item.name}
@@ -106,7 +120,11 @@ const Cart = () => {
             
             <div className="mt-8 border-t border-gray-200 pt-6">
               <div className="flex justify-between items-center mb-4">
-                <span className="text-xl font-bold text-gray-900">Total: ₹{getCartTotal().toLocaleString()}</span>
+                <span className="text-xl font-bold text-gray-900">
+                  {selectedIds && selectedIds.length > 0
+                    ? `Selected Total (${getSelectedItemsCount()}): ₹${getSelectedTotal().toLocaleString()}`
+                    : `Total: ₹${getCartTotal().toLocaleString()}`}
+                </span>
                 <button
                   onClick={clearCart}
                   className="text-red-600 hover:text-red-800 font-medium"

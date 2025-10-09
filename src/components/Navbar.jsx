@@ -20,6 +20,13 @@ const Navbar = () => {
     updateQuantity,
     getCartTotal,
     clearCorruptedCart,
+    selectedIds,
+    isSelected,
+    toggleSelect,
+    selectAll,
+    deselectAll,
+    getSelectedTotal,
+    getSelectedItemsCount,
   } = useCart();
   const cartItemsCount = getCartItemsCount();
 
@@ -62,6 +69,13 @@ const Navbar = () => {
           {/* Contact and Icons - Hidden on mobile */}
           <div className="hidden md:flex items-center space-x-6">
             <div className="text-lg text-white font-bold">📞 9880444189</div>
+            {/* Become a Seller CTA (Desktop) */}
+            <Link
+              to="/seller/login"
+              className="bg-yellow-400 text-gray-900 px-3 py-1 rounded-full font-semibold shadow-sm hover:bg-yellow-300 transition-colors"
+            >
+              Become a Seller
+            </Link>
 
             <div className="flex space-x-3">
               <button
@@ -144,6 +158,7 @@ const Navbar = () => {
                       </div>
                     </div>
                     <div className="py-2 space-y-1">
+                      {/* Removed Seller Panel from profile dropdown */}
                       <button
                         onClick={() => {
                           setIsProfileOpen(false);
@@ -153,15 +168,15 @@ const Navbar = () => {
                       >
                         My Files
                       </button>
-                   <button
-  onClick={() => {
-    setIsProfileOpen(false);
-    navigate("/my-orders"); // YEH LINE CHANGE KARO
-  }}
-  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
->
-  My Orders
-</button>
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          navigate("/my-orders"); // YEH LINE CHANGE KARO
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      >
+                        My Orders
+                      </button>
                       <button
                         onClick={() => {
                           logoutUser();
@@ -206,6 +221,13 @@ const Navbar = () => {
           {/* Mobile Contact - Visible only on mobile */}
           <div className="md:hidden flex items-center space-x-2">
             <div className="text-lg text-white font-bold">📞 9880444189</div>
+            {/* Become a Seller CTA (Mobile) */}
+            <Link
+              to="/seller/login"
+              className="bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-xs font-semibold shadow-sm hover:bg-yellow-300 transition-colors"
+            >
+              Become a Seller
+            </Link>
             {/* Mobile Home Icon */}
             <button
               onClick={() => navigate("/")}
@@ -374,6 +396,8 @@ const Navbar = () => {
                   <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
                 )}
               </Link>
+              {/* Public Seller link navigates to seller login */}
+             
             </nav>
 
             {/* Search and Actions - Hidden on mobile */}
@@ -570,6 +594,8 @@ const Navbar = () => {
               >
                 NEWS TODAY
               </Link>
+              {/* Public Seller link in mobile menu navigates to seller login */}
+              
             </nav>
 
             {/* Mobile Search */}
@@ -731,24 +757,34 @@ const Navbar = () => {
                 <h2 className="text-lg font-semibold text-white">
                   Shopping Cart ({cartItemsCount})
                 </h2>
-                <button
-                  onClick={() => setIsCartOpen(false)}
-                  className="p-2 hover:bg-purple-700 rounded-full transition-colors text-white"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 text-white text-sm">
+                    <input
+                      type="checkbox"
+                      checked={items.length > 0 && selectedIds && selectedIds.length === items.length}
+                      onChange={(e) => (e.target.checked ? selectAll() : deselectAll())}
                     />
-                  </svg>
-                </button>
+                    Select All
+                  </label>
+                  <button
+                    onClick={() => setIsCartOpen(false)}
+                    className="p-2 hover:bg-purple-700 rounded-full transition-colors text-white"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               {/* Cart Items */}
@@ -783,8 +819,14 @@ const Navbar = () => {
                         key={item.uid || item.id}
                         className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                       >
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4"
+                          checked={isSelected(item.uid || item.id)}
+                          onChange={() => toggleSelect(item.uid || item.id)}
+                        />
                         <img
-                          src={item.image}
+                          src={item.image || item.imgUrl}
                           alt={item.name}
                           className="w-16 h-16 object-cover rounded-md flex-shrink-0"
                         />
@@ -902,10 +944,10 @@ const Navbar = () => {
                 <div className="border-t p-4 space-y-4 bg-gray-50">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold text-gray-900">
-                      Total:
+                      {selectedIds && selectedIds.length > 0 ? `Selected Total (${getSelectedItemsCount()}):` : 'Total:'}
                     </span>
                     <span className="text-xl font-bold text-purple-600">
-                      ₹{getCartTotal().toLocaleString()}
+                      ₹{(selectedIds && selectedIds.length > 0 ? getSelectedTotal() : getCartTotal()).toLocaleString()}
                     </span>
                   </div>
                   <div className="space-y-2">

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { userLogin, saveUserSession } from "../services/authService";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // New state for password visibility
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -17,12 +18,22 @@ const Login = () => {
     try {
       const data = await userLogin({ email, password });
       saveUserSession({ token: data.token, user: data.user });
-      navigate("/", { replace: true });
+      // If logged-in user is a seller, send directly to Seller Panel
+      const role = String(data?.user?.role || '').toLowerCase();
+      if (role === 'seller') {
+        navigate('/seller/dashboard', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
     } catch (err) {
       setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -53,7 +64,7 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Password Input */}
+          {/* Password Input - UPDATED WITH EYE ICON */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
@@ -61,12 +72,24 @@ const Login = () => {
             <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50 focus-within:ring-2 focus-within:ring-purple-500">
               <Lock className="w-5 h-5 text-gray-400 mr-2" />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"} // Toggle between text and password
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-transparent outline-none text-gray-700"
               />
+              {/* Eye Icon Button */}
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="text-gray-400 hover:text-gray-600 focus:outline-none"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
             </div>
           </div>
 
@@ -96,7 +119,7 @@ const Login = () => {
 
           {/* Sign Up Link */}
           <p className="text-center text-sm text-gray-600 mt-4">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <Link to="/register" className="text-purple-600 hover:underline">
               Sign up here
             </Link>

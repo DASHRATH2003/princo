@@ -11,7 +11,10 @@ const CART_ACTIONS = {
   CLEAR_CART: 'CLEAR_CART',
   LOAD_CART: 'LOAD_CART',
   SHOW_NOTIFICATION: 'SHOW_NOTIFICATION',
-  HIDE_NOTIFICATION: 'HIDE_NOTIFICATION'
+  HIDE_NOTIFICATION: 'HIDE_NOTIFICATION',
+  TOGGLE_SELECT: 'TOGGLE_SELECT',
+  SELECT_ALL: 'SELECT_ALL',
+  DESELECT_ALL: 'DESELECT_ALL'
 }
 
 // Cart Reducer - FIXED VERSION
@@ -60,7 +63,8 @@ const cartReducer = (state, action) => {
     case CART_ACTIONS.REMOVE_ITEM:
       return {
         ...state,
-        items: state.items.filter(item => (item.uid || item.id) !== action.payload)
+        items: state.items.filter(item => (item.uid || item.id) !== action.payload),
+        selectedIds: (state.selectedIds || []).filter(id => id !== action.payload)
       };
     
     case CART_ACTIONS.UPDATE_QUANTITY: {
@@ -68,28 +72,37 @@ const cartReducer = (state, action) => {
       const { id, uid, quantity } = action.payload;
       const targetId = uid || id;
       
+      const updatedItems = state.items
+        .map(item =>
+          (item.uid || item.id) === targetId
+            ? { ...item, quantity: Math.max(0, quantity) }
+            : item
+        )
+        .filter(item => (item.quantity || 0) > 0);
+
+      const updatedSelected = (state.selectedIds || []).filter(id =>
+        updatedItems.some(i => (i.uid || i.id) === id)
+      );
+
       return {
         ...state,
-        items: state.items
-          .map(item =>
-            (item.uid || item.id) === targetId
-              ? { ...item, quantity: Math.max(0, quantity) } // Ensure quantity doesn't go below 0
-              : item
-          )
-          .filter(item => (item.quantity || 0) > 0) // Remove items with 0 quantity
+        items: updatedItems,
+        selectedIds: updatedSelected
       };
     }
     
     case CART_ACTIONS.CLEAR_CART:
       return {
         ...state,
-        items: []
+        items: [],
+        selectedIds: []
       };
     
     case CART_ACTIONS.LOAD_CART:
       return {
         ...state,
-        items: action.payload
+        items: action.payload,
+        selectedIds: []
       };
     
     case CART_ACTIONS.SHOW_NOTIFICATION:
@@ -109,6 +122,34 @@ const cartReducer = (state, action) => {
           message: ''
         }
       };
+
+    case CART_ACTIONS.TOGGLE_SELECT: {
+      const id = action.payload;
+      const current = new Set(state.selectedIds || []);
+      if (current.has(id)) {
+        current.delete(id);
+      } else {
+        current.add(id);
+      }
+      return {
+        ...state,
+        selectedIds: Array.from(current)
+      };
+    }
+
+    case CART_ACTIONS.SELECT_ALL: {
+      const allIds = state.items.map(i => i.uid || i.id);
+      return {
+        ...state,
+        selectedIds: allIds
+      };
+    }
+
+    case CART_ACTIONS.DESELECT_ALL:
+      return {
+        ...state,
+        selectedIds: []
+      };
     
     default:
       return state;
@@ -121,7 +162,8 @@ const initialState = {
   notification: {
     show: false,
     message: ''
-  }
+  },
+  selectedIds: []
 };
 
 // Cart Provider Component - FIXED VERSION
@@ -217,21 +259,59 @@ export const CartProvider = ({ children }) => {
     return state.items.reduce((count, item) => count + (item.quantity || 0), 0);
   };
 
+  // Selected calculations
+  const getSelectedItemsCount = () => {
+    const ids = new Set(state.selectedIds || []);
+    return state.items.filter(i => ids.has(i.uid || i.id)).reduce((count, item) => count + (item.quantity || 0), 0);
+  };
+
+  const getSelectedTotal = () => {
+    const ids = new Set(state.selectedIds || []);
+    return state.items.reduce((total, item) => {
+      const id = item.uid || item.id;
+      if (ids.has(id)) {
+        const price = item.price || 0;
+        const quantity = item.quantity || 0;
+        return total + (price * quantity);
+      }
+      return total;
+    }, 0);
+  };
+
   const getCartItem = (productId) => {
     return state.items.find(item => (item.uid || item.id) === productId);
+  };
+
+  // Selection helpers
+  const isSelected = (productId) => (state.selectedIds || []).includes(productId);
+  const toggleSelect = (productId) => dispatch({ type: CART_ACTIONS.TOGGLE_SELECT, payload: productId });
+  const selectAll = () => dispatch({ type: CART_ACTIONS.SELECT_ALL });
+  const deselectAll = () => dispatch({ type: CART_ACTIONS.DESELECT_ALL });
+  const removeSelected = () => {
+    (state.selectedIds || []).forEach(id => {
+      dispatch({ type: CART_ACTIONS.REMOVE_ITEM, payload: id });
+    });
   };
 
   const value = {
     items: state.items,
     notification: state.notification,
+    selectedIds: state.selectedIds,
     addToCart,
     removeFromCart,
     updateQuantity,
     clearCart,
     clearCorruptedCart,
     getCartTotal,
+    getSelectedTotal,
+    getSelectedItemsCount,
     getCartItemsCount,
     getCartItem,
+    isSelected,
+    toggleSelect,
+    selectAll,
+    deselectAll,
+    removeSelected,
     showNotification,
     hideNotification
   };

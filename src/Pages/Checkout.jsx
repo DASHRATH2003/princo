@@ -3,7 +3,7 @@ import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
-  const { items, getCartTotal, clearCart } = useCart();
+  const { items, getCartTotal, clearCart, selectedIds, getSelectedTotal } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("online");
@@ -45,7 +45,9 @@ const Checkout = () => {
 
   // ✅ FIXED: Razorpay compatible items format
   const getRazorpayItems = () => {
-    return items.map((item, index) => ({
+    const ids = new Set(selectedIds || []);
+    const source = (selectedIds && selectedIds.length > 0) ? items.filter(i => ids.has(i.uid || i.id)) : items;
+    return source.map((item, index) => ({
       id: String(item._id || item.id || `item_${index}`),
       name: String(item.name || 'Product').substring(0, 100), // Razorpay has length limits
       price: Math.round((item.price || 0) * 100), // Convert to paise
@@ -55,7 +57,9 @@ const Checkout = () => {
 
   // ✅ For your order records (with all details)
   const getOrderItems = () => {
-    return items.map(item => ({
+    const ids = new Set(selectedIds || []);
+    const source = (selectedIds && selectedIds.length > 0) ? items.filter(i => ids.has(i.uid || i.id)) : items;
+    return source.map(item => ({
       name: item.name,
       quantity: item.quantity,
       price: item.price,
@@ -91,7 +95,7 @@ const Checkout = () => {
         return;
       }
 
-      const amount = getCartTotal();
+      const amount = (selectedIds && selectedIds.length > 0) ? getSelectedTotal() : getCartTotal();
       
       // ✅ FIXED: Use Razorpay compatible items
       const razorpayItems = getRazorpayItems();
@@ -257,7 +261,7 @@ const Checkout = () => {
     }
     try {
       setLoading(true);
-      const amount = getCartTotal();
+      const amount = (selectedIds && selectedIds.length > 0) ? getSelectedTotal() : getCartTotal();
       const ts = Date.now();
       const orderId = `ORD${ts}`;
       const paymentId = `COD${ts}`;
@@ -435,7 +439,7 @@ const Checkout = () => {
             </h2>
 
             <div className="space-y-4 mb-6">
-              {items.map((item) => (
+              {((selectedIds && selectedIds.length > 0) ? items.filter(i => new Set(selectedIds).has(i.uid || i.id)) : items).map((item) => (
                 <div
                   key={item.uid || item.id}
                   className="border border-gray-200 rounded-lg p-4"
@@ -554,7 +558,7 @@ const Checkout = () => {
                     Subtotal:
                   </span>
                   <span className="text-lg font-bold text-gray-900">
-                    ₹{getCartTotal().toLocaleString()}
+                    ₹{((selectedIds && selectedIds.length > 0) ? getSelectedTotal() : getCartTotal()).toLocaleString()}
                   </span>
                 </div>
 
@@ -568,7 +572,7 @@ const Checkout = () => {
                 <div className="flex justify-between items-center text-xl font-bold border-t pt-4">
                   <span className="text-gray-900">Total:</span>
                   <span className="text-purple-600">
-                    ₹{getCartTotal().toLocaleString()}
+                    ₹{((selectedIds && selectedIds.length > 0) ? getSelectedTotal() : getCartTotal()).toLocaleString()}
                   </span>
                 </div>
               </div>
