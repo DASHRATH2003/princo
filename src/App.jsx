@@ -30,6 +30,8 @@ import ProductDetail from './Pages/ProductDetail'
 import Contact from './Pages/Contact'
 import NotFound from './Pages/NotFound'
 import SearchResults from './Pages/SearchResults'
+import ForgotPassword from './Pages/ForgotPassword.jsx'
+import ResetPassword from './Pages/ResetPassword.jsx'
 import OrderDetails from './components/OrderDetails';
 import MyOrders from './Pages/MyOrders.jsx' // ✅ .jsx 
 import SellerDashboard from './Pages/SellerDashboard.jsx';
@@ -89,6 +91,10 @@ const App = () => {
             <Route path="/seller/register" element={<SellerRegister />} />
             <Route path="/seller" element={<SellerRouteElement />} />
             <Route path="/seller/dashboard" element={<SellerRouteElement />} />
+
+            {/* Password reset routes at top-level to ensure matching in production */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             
             
 
@@ -105,6 +111,8 @@ const App = () => {
                       <Route path="/printing" element={<Printing />} />
                       <Route path="/e-market" element={<EMarket />} />
                       <Route path="/local-market" element={<LocalMarket />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
                       <Route path="/news-today" element={<NewsToday />} />
                       <Route path="/login" element={<UserLogin />} />
                       <Route path="/register" element={<UserRegister />} />

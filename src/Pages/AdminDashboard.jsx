@@ -46,6 +46,15 @@ const AdminDashboard = () => {
   // Sellers state
   const [sellers, setSellers] = useState([]);
   const [selectedSeller, setSelectedSeller] = useState(null);
+  const [showEditSellerModal, setShowEditSellerModal] = useState(false);
+  const [editSellerForm, setEditSellerForm] = useState({
+    name: '',
+    sellerName: '',
+    email: '',
+    sellerHierarchyLevel: 0,
+    shopName: '',
+    phone: ''
+  });
   const subCategories = ['l-mart', 'localmarket', 'printing', 'news'];
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
@@ -530,7 +539,17 @@ const AdminDashboard = () => {
       if (response.ok) {
         const sellerDetails = await response.json();
         // API returns shape: { seller, summary }
-        setSelectedSeller(sellerDetails?.seller || sellerDetails);
+        const sel = sellerDetails?.seller || sellerDetails;
+        setSelectedSeller(sel);
+        // Prefill edit form
+        setEditSellerForm({
+          name: sel.name || '',
+          sellerName: sel.sellerName || '',
+          email: sel.email || '',
+          sellerHierarchyLevel: sel.sellerHierarchyLevel ?? 0,
+          shopName: sel.verification?.shopName || '',
+          phone: sel.verification?.phone || ''
+        });
       } else {
         alert('Failed to fetch seller details');
       }
@@ -1675,6 +1694,12 @@ const AdminDashboard = () => {
                       View
                     </button>
                     <button
+                      onClick={() => { handleSelectSeller(seller._id); setShowEditSellerModal(true); }}
+                      className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200"
+                    >
+                      Edit
+                    </button>
+                    <button
                       onClick={() => handleVerifySeller(seller._id)}
                       className="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200"
                     >
@@ -1833,6 +1858,114 @@ const AdminDashboard = () => {
               Close
             </button>
           </div>
+        </div>
+      </div>
+    )}
+
+    {/* Edit Seller Modal */}
+    {showEditSellerModal && selectedSeller && (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+        <div className="relative w-full max-w-xl mx-auto p-6 shadow-2xl rounded-2xl bg-white/90 backdrop-blur-md border border-white/20">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold text-gray-800">Edit Seller</h3>
+            <button
+              onClick={() => setShowEditSellerModal(false)}
+              className="text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full p-2 transition-all duration-200"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              try {
+                const token = localStorage.getItem('adminToken');
+                if (!token) { alert('Admin session expired'); navigate('/admin/login'); return; }
+                const base = (import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000');
+                const res = await fetch(`${base}/api/dashboard/sellers/${selectedSeller._id}`, {
+                  method: 'PUT',
+                  headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                  body: JSON.stringify(editSellerForm)
+                });
+                const data = await res.json().catch(() => ({}));
+                if (res.ok) {
+                  alert(data.message || 'Seller updated');
+                  setShowEditSellerModal(false);
+                  await fetchDashboardData();
+                  // update selectedSeller inline
+                  setSelectedSeller(data.data || selectedSeller);
+                } else {
+                  alert(data.message || 'Failed to update seller');
+                }
+              } catch (err) {
+                console.error('Update seller error', err);
+                alert('Error updating seller');
+              }
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                type="text"
+                value={editSellerForm.name}
+                onChange={(e) => setEditSellerForm(prev => ({ ...prev, name: e.target.value }))}
+                className="mt-1 w-full border rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Seller Name</label>
+              <input
+                type="text"
+                value={editSellerForm.sellerName}
+                onChange={(e) => setEditSellerForm(prev => ({ ...prev, sellerName: e.target.value }))}
+                className="mt-1 w-full border rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                value={editSellerForm.email}
+                onChange={(e) => setEditSellerForm(prev => ({ ...prev, email: e.target.value }))}
+                className="mt-1 w-full border rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Hierarchy Level</label>
+              <input
+                type="number"
+                value={editSellerForm.sellerHierarchyLevel}
+                onChange={(e) => setEditSellerForm(prev => ({ ...prev, sellerHierarchyLevel: Number(e.target.value) }))}
+                className="mt-1 w-full border rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Shop Name</label>
+              <input
+                type="text"
+                value={editSellerForm.shopName}
+                onChange={(e) => setEditSellerForm(prev => ({ ...prev, shopName: e.target.value }))}
+                className="mt-1 w-full border rounded-md px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Phone</label>
+              <input
+                type="text"
+                value={editSellerForm.phone}
+                onChange={(e) => setEditSellerForm(prev => ({ ...prev, phone: e.target.value }))}
+                className="mt-1 w-full border rounded-md px-3 py-2"
+              />
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <button type="button" onClick={() => setShowEditSellerModal(false)} className="px-4 py-2 rounded-md bg-gray-100 text-gray-700">Cancel</button>
+              <button type="submit" className="px-4 py-2 rounded-md bg-indigo-600 text-white">Save Changes</button>
+            </div>
+          </form>
         </div>
       </div>
     )}

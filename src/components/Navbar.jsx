@@ -172,7 +172,7 @@ const Navbar = () => {
                   </button>
                 )}
                 {isProfileOpen && currentUser && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-3 z-40">
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-3 z-50">
                     <div className="flex items-center space-x-3 pb-3 border-b">
                       <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                         <span className="text-purple-700 font-bold">

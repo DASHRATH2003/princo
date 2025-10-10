@@ -11,6 +11,18 @@ const LoginModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
+  // Auto-close if a user session exists to avoid overlay blocking clicks
+  useEffect(() => {
+    try {
+      const u = localStorage.getItem('user');
+      if (isOpen && u) {
+        // Close immediately without waiting for animation
+        onClose();
+        setIsVisible(false);
+      }
+    } catch (_) {}
+  }, [isOpen, onClose]);
+
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(() => {

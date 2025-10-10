@@ -59,6 +59,28 @@ export const sellerLogin = async ({ email, password }) => {
   return data; // { token, user }
 };
 
+export const forgotPassword = async ({ email }) => {
+  const res = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.message || `Forgot password failed (${res.status})`);
+  return data; // { message }
+};
+
+export const resetPassword = async ({ email, token, password }) => {
+  const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, token, password })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.message || `Reset password failed (${res.status})`);
+  return data; // { message }
+};
+
 export const saveUserSession = ({ token, user }) => {
   localStorage.setItem('token', token);
   localStorage.setItem('user', JSON.stringify(user));
@@ -66,9 +88,9 @@ export const saveUserSession = ({ token, user }) => {
 
 export const getCurrentUser = () => {
   try {
-    const raw = localStorage.getItem('user');
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) {
+    const u = localStorage.getItem('user');
+    return u ? JSON.parse(u) : null;
+  } catch (_) {
     return null;
   }
 };

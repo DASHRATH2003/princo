@@ -123,3 +123,20 @@ export default {
   submitSellerVerification,
   getSellerVerification
 };
+
+// Admin helper: update seller (dashboard scope)
+export const adminUpdateSeller = async (sellerId, payload) => {
+  const base = (import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000');
+  const token = localStorage.getItem('adminToken');
+  const res = await fetch(`${base}/api/dashboard/sellers/${sellerId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.message || `Failed to update seller (${res.status})`);
+  return data; // { success, message, data }
+};

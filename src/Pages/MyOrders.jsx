@@ -23,7 +23,7 @@ const MyOrders = () => {
       if (!token) {
         setOrders([]);
         setLoading(false);
-        navigate("/user/login");
+        navigate("/login");
         return;
       }
 
@@ -42,7 +42,7 @@ const MyOrders = () => {
         console.log("Orders data received:", ordersData);
         setOrders(Array.isArray(ordersData) ? ordersData : []);
       } else if (response.status === 401) {
-        navigate("/user/login");
+        navigate("/login");
         setOrders([]);
       } else {
         console.error("Failed to fetch orders:", response.status);
@@ -89,7 +89,7 @@ const MyOrders = () => {
       const token = localStorage.getItem("token");
       if (!token) {
         alert("Please login to cancel your order.");
-        navigate("/user/login");
+        navigate("/login");
         return;
       }
 

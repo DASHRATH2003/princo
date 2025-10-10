@@ -53,7 +53,7 @@ const SearchResults = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {products.map((product) => (
-                  <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                  <div key={product._id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
                     <div className="bg-white">
                       <img
                         src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
@@ -64,8 +64,8 @@ const SearchResults = () => {
                       />
                     </div>
                     <div className="p-3">
-                      <h3 className="text-sm font-semibold text-gray-900 truncate">{product.name}</h3>
-                      <p className="text-xs text-gray-600 truncate">{product.description}</p>
+                      <h3 className="text-sm font-semibold text-gray-900">{product.name}</h3>
+                      <p className="text-xs text-gray-600">{product.description}</p>
                       <p className="text-sm font-bold text-purple-600 mt-1">₹{Number(product.price || 0).toLocaleString()}</p>
                     </div>
                   </div>
