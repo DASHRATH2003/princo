@@ -137,7 +137,7 @@ const MyOrders = () => {
               onClick={() => navigate("/e-market")}
               className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
-              Continue Shopping
+              Continue on L-mart
             </button>
           </div>
 
@@ -173,7 +173,7 @@ const MyOrders = () => {
                 onClick={() => navigate("/e-market")}
                 className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
-                Start Shopping
+                Start Shopping on L-mart
               </button>
             </div>
           ) : (

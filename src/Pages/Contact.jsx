@@ -56,7 +56,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-medium text-gray-800">Address</h3>
-                  <p className="text-gray-600">123 Business Street, City, State 12345</p>
+                  <p className="text-gray-600">#56 Industrial Estate, SINDAGI - 586128</p>
                 </div>
               </div>
 
@@ -68,7 +68,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-medium text-gray-800">Phone</h3>
-                  <p className="text-gray-600">9880444189</p>
+                  <p className="text-gray-600">+91 98804-44189</p>
                 </div>
               </div>
 
@@ -80,20 +80,38 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-medium text-gray-800">Email</h3>
-                  <p className="text-gray-600">info@printco.com</p>
+                  <p className="text-gray-600">info@emart.in</p>
                 </div>
               </div>
 
-              <div className="flex items-start space-x-4">
-                <div className="bg-purple-100 p-3 rounded-full">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+              {/* Google Maps Location */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-800 mb-4">Our Location</h3>
+                <div className="bg-gray-100 rounded-lg overflow-hidden border border-gray-300">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3821.238215423868!2d75.69891157505822!3d16.913583284006212!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc5b6c6c1c1c1c1%3A0x1c1c1c1c1c1c1c1c!2sIndustrial%20Estate%2C%20Sindagi%2C%20Karnataka%20586128!5e0!3m2!1sen!2sin!4v1690000000000!5m2!1sen!2sin"
+                    width="100%"
+                    height="200"
+                    style={{ border: 0 }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="EMart Location"
+                    className="w-full h-48"
+                  ></iframe>
                 </div>
-                <div>
-                  <h3 className="text-lg font-medium text-gray-800">Business Hours</h3>
-                  <p className="text-gray-600">Monday - Friday: 9:00 AM - 6:00 PM</p>
-                  <p className="text-gray-600">Saturday: 10:00 AM - 4:00 PM</p>
+                <div className="mt-3 text-center">
+                  <a
+                    href="https://maps.app.goo.gl/9a8AsahB6g2aZycz8"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium text-sm"
+                  >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    Open in Google Maps
+                  </a>
                 </div>
               </div>
             </div>

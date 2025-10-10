@@ -5,7 +5,7 @@ import { getProductsByCategory } from '../services/productService'
 
 const EMarket = () => {
   const navigate = useNavigate()
-  const pageTitle = "E-Market"
+  const pageTitle = "L-mart"
   const pageDescription = "Online marketplace for electronics and gadgets"
   const [selectedCategory, setSelectedCategory] = useState('All Products')
   const [priceRange, setPriceRange] = useState([0, 332500])

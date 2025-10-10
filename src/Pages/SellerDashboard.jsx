@@ -120,6 +120,13 @@ const SellerDashboard = () => {
     fetchSellerData(); // Refresh data
   };
 
+  // Load subcategories when Manage Category tab is active or category changes
+  useEffect(() => {
+    if (activeTab === 'manageCategory' && selectedCategory) {
+      fetchSubcategories(selectedCategory);
+    }
+  }, [activeTab, selectedCategory]);
+
   const handleDeleteProduct = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
@@ -841,17 +848,17 @@ const SellerDashboard = () => {
               </div>
               <div className="p-4 space-y-4">
                 <div className="flex items-center space-x-2">
-                  {['printing','e-market','local-market'].map((cat) => (
+                  {[['printing','Printing'],['l-mart','L-mart'],['localmarket','Local Market']].map(([value,label]) => (
                     <button
-                      key={cat}
-                      onClick={() => setSelectedCategory(cat)}
+                      key={value}
+                      onClick={() => setSelectedCategory(value)}
                       className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                        selectedCategory === cat
+                        selectedCategory === value
                           ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-transparent'
                           : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
                       }`}
                     >
-                      {cat}
+                      {label}
                     </button>
                   ))}
                 </div>

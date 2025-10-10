@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { OrderProvider } from './context/OrderContext'
 import Navbar from './components/Navbar'
+import ScrollToTop from './components/ScrollToTop'
 import ErrorBoundary from './components/ErrorBoundary'
 import Footer from './components/Footer'
 import CartNotification from './components/CartNotification'
@@ -22,6 +23,8 @@ import OrderSuccess from './Pages/OrderSuccess'
 import TermsOfService from './Pages/TermsOfService'
 import PrivacyPolicy from './Pages/PrivacyPolicy'
 import CookiePolicy from './Pages/CookiePolicy'
+import ShippingPolicy from './Pages/ShippingPolicy'
+import RefundPolicy from './Pages/RefundPolicy'
 import FileDownloads from './Pages/FileDownloads'
 import ProductDetail from './Pages/ProductDetail'
 import Contact from './Pages/Contact'
@@ -74,6 +77,7 @@ const App = () => {
     <OrderProvider>
       <CartProvider>
         <Router>
+          <ScrollToTop />
           <Routes>
             {/* Admin routes without navbar/footer */}
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -111,10 +115,12 @@ const App = () => {
                       <Route path="/terms-of-service" element={<TermsOfService />} />
                       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                       <Route path="/cookie-policy" element={<CookiePolicy />} />
+                      <Route path="/shipping-policy" element={<ShippingPolicy />} />
+                      <Route path="/refund-policy" element={<RefundPolicy />} />
                       <Route path="/file-downloads" element={<FileDownloads />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/product/:productId" element={<ProductDetail />} />
-                     
+
                       <Route path="/search" element={<SearchResults />} />
                       <Route path="*" element={<NotFound />} />
                       <Route path="/orderDetails/:orderId" element={<OrderDetails />} />

@@ -98,7 +98,7 @@ const Home = () => {
       <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40">
         <div className="text-center text-white px-4 mb-6 sm:mb-8 lg:mb-10">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-3 sm:mb-4 lg:mb-6 animate-fade-in leading-tight">
-            Welcome to E-Mart
+            Welcome to L-Mart
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-medium animate-slide-up leading-relaxed">
             A Small Attempt at Online Shopping with all
@@ -272,7 +272,7 @@ const Home = () => {
                 to="/e-market"
                 className="text-purple-600 hover:text-purple-800 font-medium transition-colors"
               >
-                Explore →
+                Explore L-mart →
               </Link>
             </div>
           </div>
@@ -306,7 +306,7 @@ const Home = () => {
             </Link>
 
             {/* Web Design */}
-            <Link to="/e-market" className="flex flex-col items-center group cursor-pointer">
+            <Link to="/e-market" className="flex flex-col items-center group cursor-pointer" aria-label="Browse L-mart">
               <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&h=80&q=80" 
@@ -367,43 +367,7 @@ const Home = () => {
           </div>
 
           {/* Sample Work Display */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Sample 1 */}
-            <Link to="/printing" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <img 
-                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                alt="Sample Work 1" 
-                className="w-full h-48 object-cover"
-              />
-            </Link>
-
-            {/* Sample 2 */}
-            <Link to="/e-market" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                alt="Sample Work 2" 
-                className="w-full h-48 object-cover"
-              />
-            </Link>
-
-            {/* Sample 3 */}
-            <Link to="/local-market" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <img 
-                src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                alt="Sample Work 3" 
-                className="w-full h-48 object-cover"
-              />
-            </Link>
-
-            {/* Sample 4 */}
-            <Link to="/newstoday" className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <img 
-                src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
-                alt="Sample Work 4" 
-                className="w-full h-48 object-cover"
-              />
-            </Link>
-          </div>
+         
         </div>
       </div>
 

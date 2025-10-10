@@ -427,7 +427,7 @@ const ProductDetail = () => {
       <div className="mt-8 bg-gray-50 border border-gray-200 rounded-lg p-5">
         <h3 className="text-xl font-semibold text-gray-800 mb-2">About Printco</h3>
         <p className="text-gray-700 text-sm leading-6">
-          Printco is a marketplace where you can find quality products and reliable printing services all in one place. Browse curated items across categories like E-Market, Local Market, and Printing. With transparent pricing, special offer benefits, and fast checkout, we’re focused on giving you a smooth and seamless shopping experience.
+          Printco is a marketplace where you can find quality products and reliable printing services all in one place. Browse curated items across categories like L-mart, Local Market, and Printing. With transparent pricing, special offer benefits, and fast checkout, we’re focused on giving you a smooth and seamless shopping experience.
         </p>
       </div>
     </div>

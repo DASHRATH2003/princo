@@ -46,7 +46,7 @@ const AdminDashboard = () => {
   // Sellers state
   const [sellers, setSellers] = useState([]);
   const [selectedSeller, setSelectedSeller] = useState(null);
-  const subCategories = ['emart', 'localmarket', 'printing', 'news'];
+  const subCategories = ['l-mart', 'localmarket', 'printing', 'news'];
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
   const [statusUpdate, setStatusUpdate] = useState('pending');
@@ -1301,7 +1301,7 @@ const AdminDashboard = () => {
                     >
                       <option value="">Select Category</option>
                       {subCategories.map(c => (
-                        <option key={c} value={c}>{c}</option>
+                        <option key={c} value={c}>{c === 'l-mart' ? 'L-mart' : c}</option>
                       ))}
                     </select>
                   </div>
@@ -1336,7 +1336,7 @@ const AdminDashboard = () => {
                         <tbody className="bg-white divide-y divide-gray-200/30">
                           {subList.map(sub => (
                             <tr key={sub._id} className="hover:bg-gradient-to-r hover:from-gray-50/50 hover:to-gray-50/50 transition-all duration-200">
-                              <td className="px-4 py-2 text-sm capitalize">{sub.category}</td>
+                              <td className="px-4 py-2 text-sm capitalize">{sub.category === 'l-mart' ? 'L-mart' : sub.category}</td>
                               <td className="px-4 py-2 text-sm">{sub.name}</td>
                               <td className="px-4 py-2 text-sm">
                                 <button

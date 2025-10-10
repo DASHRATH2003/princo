@@ -7,15 +7,15 @@ const PrivacyPolicy = () => {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Privacy Policy</h1>
-            <p className="text-gray-600">Last updated: January 2025</p>
+          
           </div>
 
           <div className="prose max-w-none">
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">1. Information We Collect</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                At PrintCo, we are committed to protecting your privacy. This Privacy Policy explains how we collect, 
-                use, disclose, and safeguard your information when you use our printing services, e-market platform, 
+                At L-mart, we are committed to protecting your privacy. This Privacy Policy explains how we collect, 
+                use, disclose, and safeguard your information when you use our printing services, L-mart platform, 
                 and local market services.
               </p>
               
@@ -152,9 +152,9 @@ const PrivacyPolicy = () => {
               <div className="bg-gray-50 p-6 rounded-lg">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">Privacy Questions or Concerns?</h3>
                 <div className="space-y-2 text-gray-700">
-                  <p><strong>Email:</strong> privacy@printco.com</p>
-                  <p><strong>Phone:</strong> +91 9880444189</p>
-                  <p><strong>Address:</strong> PrintCo Privacy Office, India</p>
+                  <p><strong>Email:</strong> privacy@lmart.in</p>
+                  <p><strong>Phone:</strong> +91 98804-44189</p>
+                  <p><strong>Address:</strong>#56 Industrial Estate, SINDAGI- 586128</p>
                   <p><strong>Response Time:</strong> We respond to privacy inquiries within 48 hours</p>
                 </div>
               </div>
@@ -171,9 +171,7 @@ const PrivacyPolicy = () => {
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-            <p className="text-gray-600">
-              © 2024 PrintCo. All rights reserved. | Since 2025
-            </p>
+           
           </div>
         </div>
       </div>

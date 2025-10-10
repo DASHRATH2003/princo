@@ -7,15 +7,15 @@ const TermsOfService = () => {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Terms of Service</h1>
-            <p className="text-gray-600">Last updated: January 2025</p>
+           
           </div>
 
           <div className="prose max-w-none">
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">1. Introduction</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                Welcome to PrintCo ("we," "our," or "us"). These Terms of Service ("Terms") govern your use of our website, 
-                printing services, e-market platform, and local market services (collectively, the "Services") operated by PrintCo.
+                Welcome to L-mart ("we," "our," or "us"). These Terms of Service ("Terms") govern your use of our website, 
+                printing services, L-mart platform, and local market services (collectively, the "Services") operated by PrintCo.
               </p>
               <p className="text-gray-700 leading-relaxed">
                 By accessing or using our Services, you agree to be bound by these Terms. If you disagree with any part of these terms, 
@@ -29,7 +29,7 @@ const TermsOfService = () => {
                 <h3 className="text-lg font-semibold text-blue-800 mb-3">Our Services Include:</h3>
                 <ul className="list-disc list-inside text-gray-700 space-y-2">
                   <li><strong>Printing Services:</strong> Digital printing, offset printing, business cards, brochures, banners</li>
-                  <li><strong>E-Market:</strong> Online marketplace for digital products and services</li>
+                  <li><strong>L-mart:</strong> Online marketplace for digital products and services</li>
                   <li><strong>Local Market:</strong> Platform connecting local businesses and customers</li>
                   <li><strong>News Today:</strong> Latest news and updates service</li>
                 </ul>
@@ -98,8 +98,8 @@ const TermsOfService = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">Get in Touch:</h3>
                 <div className="space-y-2 text-gray-700">
                   <p><strong>Phone:</strong> +91 9880444189</p>
-                  <p><strong>Email:</strong> info@printco.com</p>
-                  <p><strong>Business Hours:</strong> Monday - Saturday, 9:00 AM - 7:00 PM</p>
+                  <p><strong>Email:</strong> info@lmart.in</p>
+                 
                 </div>
               </div>
             </section>
@@ -114,9 +114,7 @@ const TermsOfService = () => {
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-            <p className="text-gray-600">
-              © 2024 PrintCo. All rights reserved. | Since 2025
-            </p>
+          
           </div>
         </div>
       </div>

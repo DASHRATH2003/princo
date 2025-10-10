@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import logo from "../assets/newadd.png";
+import logo from "../assets/Lmart.png";
 import { getCurrentUser, logoutUser } from "../services/authService";
+import { searchProducts } from "../services/productService";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,6 +14,10 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const suggestionRef = useRef(null);
   const {
     getCartItemsCount,
     items,
@@ -40,12 +45,40 @@ const Navbar = () => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileOpen(false);
       }
+      if (suggestionRef.current && !suggestionRef.current.contains(event.target)) {
+        setIsSuggestOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Debounced live product search for suggestions
+  useEffect(() => {
+    const term = searchTerm.trim();
+    if (!term) {
+      setSuggestions([]);
+      setIsSuggestOpen(false);
+      return;
+    }
+    setSuggestLoading(true);
+    const handle = setTimeout(async () => {
+      try {
+        const res = await searchProducts(term);
+        const list = res?.data || (Array.isArray(res) ? res : res?.products) || [];
+        setSuggestions(list.slice(0, 8));
+        setIsSuggestOpen(true);
+      } catch (e) {
+        setSuggestions([]);
+        setIsSuggestOpen(false);
+      } finally {
+        setSuggestLoading(false);
+      }
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   return (
     <div className="bg-white shadow-sm">
@@ -59,7 +92,7 @@ const Navbar = () => {
             <div className="relative transform transition-transform duration-300 hover:scale-110">
               <img
                 src={logo}
-                alt="E-Mart Logo"
+                alt="L-mart Logo"
                 className="w-14 h-14 sm:w-40 sm:h-16 object-contain transition-all duration-300 hover:brightness-110 hover:drop-shadow-lg cursor-pointer"
                 onClick={() => navigate("/")}
               />
@@ -220,14 +253,7 @@ const Navbar = () => {
 
           {/* Mobile Contact - Visible only on mobile */}
           <div className="md:hidden flex items-center space-x-2">
-            <div className="text-lg text-white font-bold">📞 9880444189</div>
-            {/* Become a Seller CTA (Mobile) */}
-            <Link
-              to="/seller/login"
-              className="bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-xs font-semibold shadow-sm hover:bg-yellow-300 transition-colors"
-            >
-              Become a Seller
-            </Link>
+            
             {/* Mobile Home Icon */}
             <button
               onClick={() => navigate("/")}
@@ -268,25 +294,77 @@ const Navbar = () => {
                 </svg>
               </button>
             ) : (
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
-                title={currentUser?.name || currentUser?.email}
-              >
-                <svg
-                  className="w-4 h-4 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
+                  title={currentUser?.name || currentUser?.email}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="w-4 h-4 text-purple-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </button>
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-3 z-50">
+                    <div className="flex items-center space-x-3 pb-3 border-b">
+                      <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                        <span className="text-purple-700 font-bold">
+                          {(currentUser?.name || currentUser?.email || "U").charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">
+                          {currentUser?.name || "User"}
+                        </p>
+                        <p className="text-xs text-gray-600 truncate">
+                          {currentUser?.email}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="py-2 space-y-1">
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          navigate("/file-downloads");
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      >
+                        My Files
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          navigate("/my-orders");
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      >
+                        My Orders
+                      </button>
+                      <button
+                        onClick={() => {
+                          logoutUser();
+                          setIsProfileOpen(false);
+                          setCurrentUser(null);
+                          navigate("/");
+                        }}
+                        className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
             {/* Mobile Cart Icon */}
             <button
@@ -335,9 +413,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className="border-t border-gray-200">
+      {/* Secondary navigation bar – show only on desktop to avoid mobile gap */}
+      <div className="border-t border-gray-200 hidden md:block">
         <div className="container-responsive">
-          <div className="flex items-center justify-between py-3">
+          <div className="flex items-center justify-between md:py-3">
             {/* Navigation Links - Hidden on mobile, visible on desktop */}
             <nav className="hidden md:flex items-center space-x-8">
               <Link
@@ -357,7 +436,7 @@ const Navbar = () => {
                   location.pathname === "/e-market" ? "active-nav-item" : ""
                 }`}
               >
-                E-Market
+                L-mart
                 {location.pathname === "/e-market" && (
                   <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
                 )}
@@ -403,7 +482,7 @@ const Navbar = () => {
             {/* Search and Actions - Hidden on mobile */}
             <div className="hidden md:flex items-center space-x-3">
               {/* Search Bar - White background */}
-              <div className="flex items-center bg-white border border-gray-400 rounded-lg px-3 py-2">
+              <div className="relative flex items-center bg-white border border-gray-400 rounded-lg px-3 py-2">
                 <input
                   type="text"
                   placeholder="Search bar"
@@ -438,6 +517,45 @@ const Navbar = () => {
                     />
                   </svg>
                 </button>
+
+                {isSuggestOpen && (
+                  <div
+                    ref={suggestionRef}
+                    className="absolute top-full left-0 mt-2 w-64 max-h-96 overflow-auto bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                  >
+                    {suggestLoading ? (
+                      <div className="p-3 text-sm text-gray-500">Searching...</div>
+                    ) : suggestions.length === 0 ? (
+                      <div className="p-3 text-sm text-gray-500">No matches.</div>
+                    ) : (
+                      <ul>
+                        {suggestions.map((p) => (
+                          <li
+                            key={p._id || p.id}
+                            className="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center space-x-2"
+                            onClick={() => {
+                              setIsSuggestOpen(false);
+                              setSearchTerm(p.name);
+                              navigate(`/product/${p._id || p.id}`);
+                            }}
+                          >
+                            <img
+                              src={p.image || "https://via.placeholder.com/40x40?text=+"}
+                              alt=""
+                              className="w-8 h-8 rounded object-cover"
+                            />
+                            <span className="text-sm text-gray-800 truncate">
+                              {p.name}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="px-3 py-2 border-t text-xs text-gray-500">
+                      Press Enter to search all results
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Upload and Download functionality */}
@@ -533,7 +651,7 @@ const Navbar = () => {
               </div>
 
               <Link
-                to="/register"
+                to="/contact"
                 className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-sm transition duration-200 whitespace-nowrap inline-block text-center"
               >
                 Join US
@@ -574,7 +692,7 @@ const Navbar = () => {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                E-Market
+                L-mart
               </Link>
               <Link
                 to="/local-market"
@@ -638,12 +756,51 @@ const Navbar = () => {
                   </svg>
                 </button>
               </div>
+
+              {isSuggestOpen && (
+                <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow max-h-64 overflow-auto">
+                  {suggestLoading ? (
+                    <div className="p-3 text-sm text-gray-500">Searching...</div>
+                  ) : suggestions.length === 0 ? (
+                    <div className="p-3 text-sm text-gray-500">No matches.</div>
+                  ) : (
+                    <ul>
+                      {suggestions.map((p) => (
+                        <li
+                          key={p._id || p.id}
+                          className="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center space-x-2"
+                          onClick={() => {
+                            setIsSuggestOpen(false);
+                            setSearchTerm(p.name);
+                            setIsMenuOpen(false);
+                            navigate(`/product/${p._id || p.id}`);
+                          }}
+                        >
+                          <img
+                            src={p.image || "https://via.placeholder.com/40x40?text=+"}
+                            alt=""
+                            className="w-8 h-8 rounded object-cover"
+                          />
+                          <span className="text-sm text-gray-800 truncate">{p.name}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Mobile Actions */}
             <div className="pt-4 space-y-2">
+              {/* Become a Seller CTA inside mobile menu */}
               <button
-                onClick={() => navigate("/register")}
+                onClick={() => { setIsMenuOpen(false); navigate("/seller/login"); }}
+                className="w-full bg-yellow-400 text-gray-900 px-4 py-2 rounded-lg hover:bg-yellow-300 font-medium text-center"
+              >
+                Become a Seller
+              </button>
+              <button
+                onClick={() => navigate("/contact")}
                 className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 font-medium text-center"
               >
                 Join US

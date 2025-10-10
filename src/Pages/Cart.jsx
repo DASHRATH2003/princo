@@ -22,7 +22,7 @@ const Cart = () => {
               onClick={() => navigate('/e-market')}
               className="mt-8 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
-              Continue Shopping
+              Continue on L-mart
             </button>
           </div>
         </div>
@@ -138,7 +138,7 @@ const Cart = () => {
                   onClick={() => navigate('/e-market')}
                   className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-6 rounded-lg transition-colors"
                 >
-                  Continue Shopping
+                  Continue on L-mart
                 </button>
                 <button
                   onClick={() => navigate('/checkout')}

@@ -256,7 +256,7 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
                 <select name="category" value={formData.category} onChange={handleInputChange} className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                   <option value="">Select Category</option>
-                  <option value="emart">E-mart</option>
+                  <option value="emart">L-mart</option>
                   <option value="localmarket">Local-market</option>
                   <option value="printing">Printing</option>
                   <option value="news">TodayNews</option>

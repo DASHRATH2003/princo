@@ -32,7 +32,7 @@ const NotFound = () => {
               to="/e-market" 
               className="text-purple-600 hover:text-purple-700 font-medium"
             >
-              E-Market
+              L-mart
             </Link>
             <Link 
               to="/local-market" 
