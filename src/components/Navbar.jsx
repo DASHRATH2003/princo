@@ -172,7 +172,11 @@ const Navbar = () => {
                   </button>
                 )}
                 {isProfileOpen && currentUser && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-3 z-50">
+                  <div
+                    className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-3 z-50 pointer-events-auto"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <div className="flex items-center space-x-3 pb-3 border-b">
                       <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                         <span className="text-purple-700 font-bold">
@@ -192,25 +196,22 @@ const Navbar = () => {
                     </div>
                     <div className="py-2 space-y-1">
                       {/* Removed Seller Panel from profile dropdown */}
-                      <button
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          navigate("/file-downloads");
-                        }}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      <Link
+                        to="/file-downloads"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       >
                         My Files
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          navigate("/my-orders"); // YEH LINE CHANGE KARO
-                        }}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      </Link>
+                      <Link
+                        to="/my-orders"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       >
                         My Orders
-                      </button>
+                      </Link>
                       <button
+                        type="button"
                         onClick={() => {
                           logoutUser();
                           setIsProfileOpen(false);
@@ -315,7 +316,11 @@ const Navbar = () => {
                   </svg>
                 </button>
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-3 z-50">
+                  <div
+                    className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-3 z-50 pointer-events-auto"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <div className="flex items-center space-x-3 pb-3 border-b">
                       <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                         <span className="text-purple-700 font-bold">
@@ -332,24 +337,20 @@ const Navbar = () => {
                       </div>
                     </div>
                     <div className="py-2 space-y-1">
-                      <button
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          navigate("/file-downloads");
-                        }}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      <Link
+                        to="/file-downloads"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       >
                         My Files
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsProfileOpen(false);
-                          navigate("/my-orders");
-                        }}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                      </Link>
+                      <Link
+                        to="/my-orders"
+                        onClick={() => setIsProfileOpen(false)}
+                        className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       >
                         My Orders
-                      </button>
+                      </Link>
                       <button
                         onClick={() => {
                           logoutUser();

@@ -15,8 +15,8 @@ const MyOrders = () => {
       setLoading(true);
       console.log("Fetching orders from backend...");
 
-      const API_BASE_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const API_ROOT = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '').replace('/api', '');
+      const API_BASE_URL = `${API_ROOT}/api`;
 
       // Authenticated customer orders fetch karo
       const token = localStorage.getItem("token");
@@ -83,8 +83,8 @@ const MyOrders = () => {
 
   const cancelOrder = async (orderId) => {
     try {
-      const API_BASE_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const API_ROOT = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '').replace('/api', '');
+      const API_BASE_URL = `${API_ROOT}/api`;
 
       const token = localStorage.getItem("token");
       if (!token) {

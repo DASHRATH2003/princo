@@ -20,7 +20,8 @@ const OrderDetails = () => {
   const fetchOrderDetails = async () => {
     try {
       setLoading(true);
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const API_ROOT = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '').replace('/api', '');
+      const API_BASE_URL = `${API_ROOT}/api`;
       
       console.log('Fetching order details for ID:', orderId); // Debug log
       console.log('API URL:', `${API_BASE_URL}/orders/${orderId}`); // Debug log
