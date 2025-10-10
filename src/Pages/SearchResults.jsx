@@ -33,30 +33,7 @@ const SearchResults = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center mb-6">
-          <input
-            type="text"
-            defaultValue={q}
-            placeholder="Search products..."
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                const val = e.currentTarget.value.trim();
-                navigate(`/search?q=${encodeURIComponent(val)}`);
-              }
-            }}
-          />
-          <button
-            className="ml-3 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-            onClick={() => {
-              const input = document.querySelector('input[placeholder="Search products..."]');
-              const val = input?.value.trim() || '';
-              navigate(`/search?q=${encodeURIComponent(val)}`);
-            }}
-          >
-            Search
-          </button>
-        </div>
+        {/* Removed internal search bar to keep only Navbar search */}
 
         {loading && (
           <div className="flex justify-center items-center py-12">
@@ -77,12 +54,15 @@ const SearchResults = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {products.map((product) => (
                   <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                    <img
-                      src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
-                      alt={product.name}
-                      className="w-full h-40 object-cover cursor-pointer"
-                      onClick={() => navigate(`/product/${product._id}`)}
-                    />
+                    <div className="bg-white">
+                      <img
+                        src={product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
+                        alt={product.name}
+                        className="w-full h-44 object-contain cursor-pointer"
+                        onClick={() => navigate(`/product/${product._id}`)}
+                        onError={(e) => { e.target.src = '/no-image.svg'; }}
+                      />
+                    </div>
                     <div className="p-3">
                       <h3 className="text-sm font-semibold text-gray-900 truncate">{product.name}</h3>
                       <p className="text-xs text-gray-600 truncate">{product.description}</p>
