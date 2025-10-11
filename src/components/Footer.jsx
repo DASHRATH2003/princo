@@ -1,10 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import logo from '../assets/newlogo.png'
+import logo from '../assets/Mmin.png'
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-[rgb(5,5,85)] text-white">
       <div className="container-responsive py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -13,7 +13,7 @@ const Footer = () => {
               <img 
                 src={logo} 
                 alt="Printo Logo" 
-                className="w-26 h-24 object-contain"
+                className="w-18 h-20 object-contain"
               />
             </div>
             <p className="text-gray-400 mb-4 max-w-xs text-sm leading-relaxed">
@@ -50,9 +50,9 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link to="/" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">Home</Link></li>
               <li><Link to="/printing" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">Printing</Link></li>
-              <li><Link to="/e-market" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">L-mart</Link></li>
+              <li><Link to="/e-market" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">E-Market</Link></li>
               <li><Link to="/local-market" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">Local Market</Link></li>
-              <li><Link to="/news-today" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">News</Link></li>
+              <li><Link to="/news-today" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">Market News</Link></li>
             </ul>
           </div>
 
@@ -98,7 +98,7 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
-            <p className="text-sm">&copy; 2024 Lmart. All rights reserved. | Since 2025</p>
+            <p className="text-sm">&copy; 2024 E-Market. All rights reserved. | Since 2025</p>
             <div className="text-sm">
               <span>Building Trust Through Quality Service</span>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import logo from "../assets/Lmart.png";
+import logo from "../assets/newlmart.png";
 import { getCurrentUser, logoutUser } from "../services/authService";
 import { searchProducts } from "../services/productService";
 
@@ -85,7 +85,8 @@ const Navbar = () => {
       {/* Navigation Menu */}
 
       {/* Top Header */}
-      <div className="container-responsive transition-all duration-500 bg-gradient-to-r from-blue-900 to-purple-600">
+<div className="container-responsive transition-all duration-500 bg-gradient-to-r from-[#04044C] via-[#1E3A8A] to-[#6D28D9]">
+
         <div className="flex justify-between items-center py-1">
           {/* Logo and Brand */}
           <div className="flex items-center space-x-3">
@@ -437,7 +438,7 @@ const Navbar = () => {
                   location.pathname === "/e-market" ? "active-nav-item" : ""
                 }`}
               >
-                L-mart
+                E-Market
                 {location.pathname === "/e-market" && (
                   <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
                 )}
@@ -471,7 +472,7 @@ const Navbar = () => {
                   location.pathname === "/news-today" ? "active-nav-item" : ""
                 }`}
               >
-                NEWS TODAY
+                MARKET NEWS 
                 {location.pathname === "/news-today" && (
                   <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
                 )}
@@ -693,7 +694,7 @@ const Navbar = () => {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                L-mart
+                E-Market
               </Link>
               <Link
                 to="/local-market"
