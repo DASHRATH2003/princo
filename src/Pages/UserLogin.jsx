@@ -28,9 +28,10 @@ const Login = () => {
           const intentRaw = localStorage.getItem('buyNowIntent');
           if (intentRaw) {
             const intent = JSON.parse(intentRaw);
-            if (intent && intent.type === 'buyNow') {
+            if (intent && (intent.type === 'buyNow' || intent.type === 'checkout')) {
               localStorage.removeItem('buyNowIntent');
-              navigate('/checkout', { replace: true });
+              const target = intent.redirectTo || '/checkout';
+              navigate(target, { replace: true });
               return;
             }
           }

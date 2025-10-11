@@ -1,6 +1,7 @@
 import React from 'react'
 import { useCart } from '../context/CartContext'
 import { useNavigate } from 'react-router-dom'
+import { getCurrentUser } from '../services/authService'
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartItemsCount, selectedIds, isSelected, toggleSelect, selectAll, deselectAll, getSelectedTotal, getSelectedItemsCount } = useCart()
@@ -141,7 +142,21 @@ const Cart = () => {
                   Continue on L-mart
                 </button>
                 <button
-                  onClick={() => navigate('/checkout')}
+                  onClick={() => {
+                    const user = getCurrentUser();
+                    if (!user) {
+                      try {
+                        localStorage.setItem('buyNowIntent', JSON.stringify({
+                          type: 'checkout',
+                          redirectTo: '/checkout',
+                          ts: Date.now()
+                        }));
+                      } catch (_) {}
+                      navigate('/login');
+                    } else {
+                      navigate('/checkout');
+                    }
+                  }}
                   className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
                 >
                   Proceed to Checkout

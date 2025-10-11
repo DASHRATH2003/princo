@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { getCurrentUser } from "../services/authService";
 
 const Checkout = () => {
   const { items, getCartTotal, clearCart, selectedIds, getSelectedTotal } = useCart();
@@ -23,6 +24,19 @@ const Checkout = () => {
   useEffect(() => {
     if (items.length === 0) {
       navigate("/cart");
+      return;
+    }
+    // Guard: require login before entering checkout
+    const user = getCurrentUser();
+    if (!user) {
+      try {
+        localStorage.setItem('buyNowIntent', JSON.stringify({
+          type: 'checkout',
+          redirectTo: '/checkout',
+          ts: Date.now()
+        }));
+      } catch (_) {}
+      navigate('/login');
     }
   }, [items, navigate]);
 
