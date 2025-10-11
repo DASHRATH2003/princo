@@ -6,7 +6,7 @@ import { getProductsByCategory } from "../services/productService";
 const ProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { addToCart, items: cart } = useCart();
+  const { addToCart, items: cart, setSelected } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -118,6 +118,42 @@ const ProductDetail = () => {
       selectedSize,
       selectedColor,
     });
+  };
+
+  // Buy Now: add current selection to cart (if not already), select only this item, go to checkout
+  const handleBuyNow = () => {
+    if (!product) return;
+    const effectivePrice =
+      product.offerPrice && product.offerPrice < product.price
+        ? product.offerPrice
+        : product.price;
+
+    const variantParts = [];
+    if (selectedColor) variantParts.push(`color:${selectedColor}`);
+    if (selectedSize) variantParts.push(`size:${selectedSize}`);
+    const uid = variantParts.length
+      ? `${product._id || product.id}::${variantParts.join('::')}`
+      : (product._id || product.id);
+
+    const allImages = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
+    const selectedImageSrc = allImages[selectedImageIndex] || product.imageUrl || product.image;
+
+    const targetItem = {
+      ...product,
+      id: product._id || product.id,
+      uid,
+      image: selectedImageSrc,
+      price: effectivePrice,
+      quantity,
+      selectedSize,
+      selectedColor,
+    };
+
+    // Ensure item exists in cart
+    addToCart(targetItem);
+    // Select only this item for checkout
+    setSelected([uid]);
+    navigate('/checkout');
   };
 
   const incrementQuantity = () => setQuantity((q) => q + 1);
@@ -354,17 +390,30 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            disabled={!product.inStock}
-            className={`w-full mt-6 py-3 rounded-lg text-white font-semibold transition ${
-              product.inStock
-                ? "bg-purple-600 hover:bg-purple-700"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Add to Cart
-          </button>
+          <div className="mt-6 flex gap-3">
+            <button
+              onClick={handleAddToCart}
+              disabled={!product.inStock}
+              className={`flex-1 py-2 rounded-md text-white font-medium transition ${
+                product.inStock
+                  ? "bg-purple-600 hover:bg-purple-700"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleBuyNow}
+              disabled={!product.inStock}
+              className={`flex-1 py-2 rounded-md text-white font-medium transition ${
+                product.inStock
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Buy Now
+            </button>
+          </div>
         </div>
       </div>
 

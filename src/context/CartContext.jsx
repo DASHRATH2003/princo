@@ -14,7 +14,8 @@ const CART_ACTIONS = {
   HIDE_NOTIFICATION: 'HIDE_NOTIFICATION',
   TOGGLE_SELECT: 'TOGGLE_SELECT',
   SELECT_ALL: 'SELECT_ALL',
-  DESELECT_ALL: 'DESELECT_ALL'
+  DESELECT_ALL: 'DESELECT_ALL',
+  SET_SELECTED: 'SET_SELECTED'
 }
 
 // Cart Reducer - FIXED VERSION
@@ -122,6 +123,17 @@ const cartReducer = (state, action) => {
           message: ''
         }
       };
+
+    case CART_ACTIONS.SET_SELECTED: {
+      const requested = Array.isArray(action.payload) ? action.payload : [];
+      const validIds = requested.filter(id =>
+        state.items.some(i => (i.uid || i.id) === id)
+      );
+      return {
+        ...state,
+        selectedIds: validIds
+      };
+    }
 
     case CART_ACTIONS.TOGGLE_SELECT: {
       const id = action.payload;
@@ -293,6 +305,12 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  // Directly set selected ids (useful for Buy Now)
+  const setSelected = (ids) => {
+    const list = Array.isArray(ids) ? ids : [];
+    dispatch({ type: CART_ACTIONS.SET_SELECTED, payload: list });
+  };
+
   const value = {
     items: state.items,
     notification: state.notification,
@@ -312,6 +330,7 @@ export const CartProvider = ({ children }) => {
     selectAll,
     deselectAll,
     removeSelected,
+    setSelected,
     showNotification,
     hideNotification
   };

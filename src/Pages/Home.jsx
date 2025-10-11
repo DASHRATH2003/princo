@@ -3,6 +3,13 @@ import { Link } from "react-router-dom";
 import { useCart } from '../context/CartContext';
 import { getAllProducts } from '../services/productService';
 
+// Import your local images
+import bg1 from '../assets/bg1.jpg';
+import bg2 from '../assets/bg2.jpg';
+import bg3 from '../assets/bg3.jpg';
+import bg4 from '../assets/bg4.jpg';
+import bg5 from '../assets/bg5.jpg';
+
 const Home = () => {
   const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
@@ -10,14 +17,9 @@ const Home = () => {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   
-  const images = [
-    "https://trios.qa/wp-content/uploads/2024/10/Printing.jpeg",
-    "https://simplife.ae/uploads/business_sliders/slider-1692617396-951.jpg",
-    "https://www.indusdubai.com/wp-content/uploads/2021/10/slide44-scaled.jpg",
-    "https://descoonline.com/wp-content/uploads/2020/10/Same-Day-Printing-in-Dubai.jpg",
-    "https://macedoniaprojects.co.zw/wp-content/uploads/2023/12/Digital-Printing-Services.jpg",
-  ];
-   const [current, setCurrent] = useState(0);
+  // Use local images from assets
+  const images = [bg1, bg2, bg3, bg4, bg5];
+  const [current, setCurrent] = useState(0);
 
   // Fetch real products from database
   useEffect(() => {
@@ -79,108 +81,103 @@ const Home = () => {
 
       {/* Hero Section */}
       <div className="relative w-full h-[70vh] sm:h-[75vh] md:h-[80vh] lg:h-[85vh] xl:h-[90vh] overflow-hidden">
-      {images.map((img, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === current ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <img
-            src={img}
-            alt={`Slide ${index + 1}`}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ))}
+        {images.map((img, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === current ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <img
+              src={img}
+              alt={`Slide ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
 
-      {/* Welcome Text Overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40">
-        <div className="text-center text-white px-4 mb-6 sm:mb-8 lg:mb-10">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-3 sm:mb-4 lg:mb-6 animate-fade-in leading-tight">
-            Welcome to L-Mart
-          </h1>
-          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-medium animate-slide-up leading-relaxed">
-            A Small Attempt at Online Shopping with all
-          </p>
-        </div>
-        
-        {/* Product Boxes Overlay with Auto Scroll */}
-        <div className="container-responsive">
-          <div className="relative overflow-hidden mask-gradient">
-            <div className={`flex space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5 ${displayProducts.length > 6 ? 'animate-scroll-horizontal' : ''}`} style={{width: displayProducts.length > 6 ? '200%' : '100%'}}>
-              {/* First set of products */}
-              {displayProducts.length > 0 ? displayProducts.map((product, index) => (
-                <Link 
-                  to={`/product/${product._id || product.id}`}
-                  key={`first-${product.id || product._id}`}
-                  className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
-                >
-                  <img
-                    src={product.imageUrl || product.image || '/no-image.svg'}
-                    alt={product.name}
-                    className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-contain bg-white"
-                    onError={(e) => {
-                      console.log('Image failed to load for product:', product.name, 'Image URL:', product.imageUrl || product.image);
-                      e.target.src = '/no-image.svg';
-                    }}
-                  />
-                  <div className="p-1 sm:p-2 lg:p-3">
-                    <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
+        {/* Welcome Text Overlay */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40">
+          <div className="text-center text-white px-4 mb-6 sm:mb-8 lg:mb-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-3 sm:mb-4 lg:mb-6 animate-fade-in leading-tight">
+              Welcome to L-Mart
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-medium animate-slide-up leading-relaxed">
+              A Small Attempt at Online Shopping with all
+            </p>
+          </div>
+          
+          {/* Product Boxes Overlay with Auto Scroll */}
+          <div className="container-responsive">
+            <div className="relative overflow-hidden mask-gradient">
+              <div className={`flex space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5 ${displayProducts.length > 6 ? 'animate-scroll-horizontal' : ''}`} style={{width: displayProducts.length > 6 ? '200%' : '100%'}}>
+                {/* First set of products */}
+                {displayProducts.length > 0 ? displayProducts.map((product, index) => (
+                  <Link 
+                    to={`/product/${product._id || product.id}`}
+                    key={`first-${product.id || product._id}`}
+                    className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
+                  >
+                    <img
+                      src={product.imageUrl || product.image || '/no-image.svg'}
+                      alt={product.name}
+                      className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-contain bg-white"
+                      onError={(e) => {
+                        console.log('Image failed to load for product:', product.name, 'Image URL:', product.imageUrl || product.image);
+                        e.target.src = '/no-image.svg';
+                      }}
+                    />
+                    <div className="p-1 sm:p-2 lg:p-3">
+                      <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
+                    </div>
+                  </Link>
+                )) : (
+                  <div className="flex items-center justify-center w-full py-8">
+                    <p className="text-gray-500 text-center">No products available</p>
                   </div>
-                </Link>
-              )) : (
-                <div className="flex items-center justify-center w-full py-8">
-                  <p className="text-gray-500 text-center">No products available</p>
-                </div>
-              )}
-              
-              {/* Duplicate set for infinite scroll - only show if we have enough products */}
-              {displayProducts.length > 3 && displayProducts.map((product, index) => (
-                <Link 
-                  to={`/product/${product._id || product.id}`}
-                  key={`second-${product.id || product._id}`}
-                  className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
-                >
-                  <img
-                    src={product.imageUrl || product.image || '/no-image.svg'}
-                    alt={product.name}
-                    className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-contain bg-white"
-                    onError={(e) => {
-                      console.log('Image failed to load for product (second set):', product.name, 'Image URL:', product.imageUrl || product.image);
-                      e.target.src = '/no-image.svg';
-                    }}
-                  />
-                  <div className="p-1 sm:p-2 lg:p-3">
-                    <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
-                  </div>
-                </Link>
-              ))}
+                )}
+                
+                {/* Duplicate set for infinite scroll - only show if we have enough products */}
+                {displayProducts.length > 3 && displayProducts.map((product, index) => (
+                  <Link 
+                    to={`/product/${product._id || product.id}`}
+                    key={`second-${product.id || product._id}`}
+                    className="bg-white bg-opacity-90 rounded-lg shadow-lg overflow-hidden border-2 border-yellow-400 hover:shadow-xl transition-all transform hover:scale-105 flex-shrink-0 w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 cursor-pointer"
+                  >
+                    <img
+                      src={product.imageUrl || product.image || '/no-image.svg'}
+                      alt={product.name}
+                      className="w-full h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 object-contain bg-white"
+                      onError={(e) => {
+                        console.log('Image failed to load for product (second set):', product.name, 'Image URL:', product.imageUrl || product.image);
+                        e.target.src = '/no-image.svg';
+                      }}
+                    />
+                    <div className="p-1 sm:p-2 lg:p-3">
+                      <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-gray-800 truncate">{product.name}</h3>
+                      <p className="text-xs sm:text-sm text-gray-600 truncate">{product.category}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Dots Indicator */}
+        <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 sm:w-3 sm:h-3 lg:w-4 lg:h-4 rounded-full transition-colors ${
+                index === current ? "bg-white" : "bg-gray-400"
+              }`}
+              onClick={() => setCurrent(index)}
+            ></button>
+          ))}
+        </div>
       </div>
-
-      {/* Dots Indicator */}
-      <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {images.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 sm:w-3 sm:h-3 lg:w-4 lg:h-4 rounded-full transition-colors ${
-              index === current ? "bg-white" : "bg-gray-400"
-            }`}
-            onClick={() => setCurrent(index)}
-          ></button>
-        ))}
-      </div>
-    </div>
-
-
-
-      {/* Custom Printing Banner Section */}
-      
 
       {/* Categories Section */}
       <div className="py-6 sm:py-8 md:py-10 lg:py-12 bg-gray-50">
@@ -279,8 +276,6 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Featured Products */}
-
       {/* Sub Category Section */}
       <div className="py-12 bg-white">
         <div className="container-responsive">
@@ -365,14 +360,8 @@ const Home = () => {
               <h3 className="text-sm font-medium text-gray-900 text-center">Business Card Design</h3>
             </Link>
           </div>
-
-          {/* Sample Work Display */}
-         
         </div>
       </div>
-
-      {/* Wall Decoratives Section */}
-     \
 
       {/* Complete Product Collection */}
       <div className="py-8 bg-white">
@@ -561,7 +550,6 @@ const Home = () => {
               </Link>
             ))}
           </div>
-
         </div>
       </div>
 
@@ -741,86 +729,84 @@ const Home = () => {
           </div>
         </div>
       </div>
+      
       <div className="content-section p-4 bg-gradient-to-br from-white to-purple-50 rounded-3xl shadow-xl mt-4 border border-gray-200">
-  {/* Heading */}
-  <h2 className="text-3xl font-extrabold text-purple-700 mb-4 text-center">
-    Welcome to <span className="text-orange-500">PrintCo</span> – India’s Trusted Online Printing Partner
-  </h2>
-  
-  {/* Intro */}
-  <p className="text-gray-700 text-lg leading-relaxed mb-4 text-center">
-    At <b>PrintCo</b>, we deliver <span className="text-purple-600 font-semibold">reliable, affordable, and premium-quality online printing</span> services for students, startups, corporates, and individuals across India.
-  </p>
-  <p className="text-gray-600 text-base mb-4 text-center">
-    From <b>business cards</b> to <b>books</b>, <b>posters</b>, <b>brochures</b>, and <b>custom marketing materials</b> – our user-friendly platform makes printing fast, easy, and stress-free with <span className="text-orange-500 font-medium">free Pan-India delivery</span> & <span className="text-purple-600 font-medium">bulk discounts</span>.
-  </p>
+        {/* Heading */}
+        <h2 className="text-3xl font-extrabold text-purple-700 mb-4 text-center">
+          Welcome to <span className="text-orange-500">PrintCo</span> – India's Trusted Online Printing Partner
+        </h2>
+        
+        {/* Intro */}
+        <p className="text-gray-700 text-lg leading-relaxed mb-4 text-center">
+          At <b>PrintCo</b>, we deliver <span className="text-purple-600 font-semibold">reliable, affordable, and premium-quality online printing</span> services for students, startups, corporates, and individuals across India.
+        </p>
+        <p className="text-gray-600 text-base mb-4 text-center">
+          From <b>business cards</b> to <b>books</b>, <b>posters</b>, <b>brochures</b>, and <b>custom marketing materials</b> – our user-friendly platform makes printing fast, easy, and stress-free with <span className="text-orange-500 font-medium">free Pan-India delivery</span> & <span className="text-purple-600 font-medium">bulk discounts</span>.
+        </p>
 
-  {/* Services */}
-  <div className="mb-6">
-    <h3 className="text-2xl font-semibold text-orange-600 mb-3 flex items-center gap-2">
-      📌 Our Most Popular Online Printing Services
-    </h3>
-    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
-      <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
-        <b>Document Printing</b> – Fast and affordable printing for assignments & business needs.
-      </li>
-      <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
-        <b>Book Printing</b> – Perfect for students, authors & institutions with multiple bindings.
-      </li>
-      <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
-        <b>Brochure Printing</b> – Eye-catching prints to promote your events or business.
-      </li>
-      <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
-        <b>Posters & Banners</b> – High-quality large-format prints for retail & academic needs.
-      </li>
-      <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
-        <b>Sticker Printing</b> – Vibrant stickers, perfect for branding & promotions.
-      </li>
-    </ul>
-  </div>
+        {/* Services */}
+        <div className="mb-6">
+          <h3 className="text-2xl font-semibold text-orange-600 mb-3 flex items-center gap-2">
+            📌 Our Most Popular Online Printing Services
+          </h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+            <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
+              <b>Document Printing</b> – Fast and affordable printing for assignments & business needs.
+            </li>
+            <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
+              <b>Book Printing</b> – Perfect for students, authors & institutions with multiple bindings.
+            </li>
+            <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
+              <b>Brochure Printing</b> – Eye-catching prints to promote your events or business.
+            </li>
+            <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
+              <b>Posters & Banners</b> – High-quality large-format prints for retail & academic needs.
+            </li>
+            <li className="bg-white rounded-xl p-4 shadow hover:shadow-md transition">
+              <b>Sticker Printing</b> – Vibrant stickers, perfect for branding & promotions.
+            </li>
+          </ul>
+        </div>
 
-  {/* Why Choose Us */}
-  <div className="mb-6">
-    <h3 className="text-2xl font-semibold text-green-700 mb-3">
-      💡 Why Choose PrintCo?
-    </h3>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
-      <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ Pan-India Delivery across all major cities</p>
-      <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ Affordable Pricing with premium quality</p>
-      <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ User-Friendly Website – upload, preview & order easily</p>
-      <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ Fast Turnaround – On-time delivery</p>
-      <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ Bulk Order Discounts – Ideal for SMEs & startups</p>
-      <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ High Print Quality – Vivid colors & durable materials</p>
-    </div>
-  </div>
+        {/* Why Choose Us */}
+        <div className="mb-6">
+          <h3 className="text-2xl font-semibold text-green-700 mb-3">
+            💡 Why Choose PrintCo?
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+            <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ Pan-India Delivery across all major cities</p>
+            <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ Affordable Pricing with premium quality</p>
+            <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ User-Friendly Website – upload, preview & order easily</p>
+            <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ Fast Turnaround – On-time delivery</p>
+            <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ Bulk Order Discounts – Ideal for SMEs & startups</p>
+            <p className="bg-gradient-to-r from-green-50 to-white rounded-lg p-3 shadow">✅ High Print Quality – Vivid colors & durable materials</p>
+          </div>
+        </div>
 
-  {/* Who We Serve */}
-  <div>
-    <h3 className="text-2xl font-semibold text-purple-600 mb-3">
-      👥 Who We Serve
-    </h3>
-    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
-      <li className="bg-blue-50 rounded-xl p-4 shadow">
-        <b>Students & Institutions</b> – Affordable project & dissertation printing.
-      </li>
-      <li className="bg-blue-50 rounded-xl p-4 shadow">
-        <b>Startups & Small Businesses</b> – Flyers, catalogs & pitch decks.
-      </li>
-      <li className="bg-blue-50 rounded-xl p-4 shadow">
-        <b>Event Planners & Agencies</b> – Marketing banners & invitations.
-      </li>
-      <li className="bg-blue-50 rounded-xl p-4 shadow">
-        <b>Authors & Publishers</b> – High-quality book printing with binding options.
-      </li>
-      <li className="bg-blue-50 rounded-xl p-4 shadow">
-        <b>Corporate Clients</b> – Reports, manuals & branded stationery.
-      </li>
-    </ul>
-  </div>
-</div>
-
-
-      {/* Custom CSS for animations - moved to index.css */}
+        {/* Who We Serve */}
+        <div>
+          <h3 className="text-2xl font-semibold text-purple-600 mb-3">
+            👥 Who We Serve
+          </h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+            <li className="bg-blue-50 rounded-xl p-4 shadow">
+              <b>Students & Institutions</b> – Affordable project & dissertation printing.
+            </li>
+            <li className="bg-blue-50 rounded-xl p-4 shadow">
+              <b>Startups & Small Businesses</b> – Flyers, catalogs & pitch decks.
+            </li>
+            <li className="bg-blue-50 rounded-xl p-4 shadow">
+              <b>Event Planners & Agencies</b> – Marketing banners & invitations.
+            </li>
+            <li className="bg-blue-50 rounded-xl p-4 shadow">
+              <b>Authors & Publishers</b> – High-quality book printing with binding options.
+            </li>
+            <li className="bg-blue-50 rounded-xl p-4 shadow">
+              <b>Corporate Clients</b> – Reports, manuals & branded stationery.
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   );
 };
