@@ -23,6 +23,18 @@ const Login = () => {
       if (role === 'seller') {
         navigate('/seller/dashboard', { replace: true });
       } else {
+        // If user came from Buy Now intent, go to checkout directly
+        try {
+          const intentRaw = localStorage.getItem('buyNowIntent');
+          if (intentRaw) {
+            const intent = JSON.parse(intentRaw);
+            if (intent && intent.type === 'buyNow') {
+              localStorage.removeItem('buyNowIntent');
+              navigate('/checkout', { replace: true });
+              return;
+            }
+          }
+        } catch (_) {}
         navigate('/', { replace: true });
       }
     } catch (err) {
@@ -40,10 +52,10 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-8">
         <h2 className="text-2xl font-bold text-center text-gray-800">
-          User Login
+          welcome to L-Mart
         </h2>
         <p className="text-center text-gray-500 mt-1">
-          Sign in to your account
+          L-mart
         </p>
 
         <form onSubmit={handleLogin} className="mt-6 space-y-5">

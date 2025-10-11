@@ -71,55 +71,65 @@ const LocalMarket = () => {
       <div className="max-w-full mx-auto px-2 py-6">
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Sidebar Filters */}
-          <div className={`w-full lg:w-60 space-y-5 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          <div className={`category-sidebar flex-shrink-0 space-y-5 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Categories */}
-            <div className="bg-white rounded-lg shadow-sm p-3">
+            <div className="category-card p-3">
               <h3 className="text-md font-semibold text-gray-900 mb-3">Categories</h3>
               <div className="space-y-1">
                 {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                      selectedCategory === category
-                        ? 'bg-green-100 text-green-800 font-medium'
-                        : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                  >
-                    {category}
-                  </button>
+                  <div key={category} className="category-item">
+                    <input
+                      type="radio"
+                      id={category}
+                      name="category"
+                      checked={selectedCategory === category}
+                      onChange={() => setSelectedCategory(category)}
+                      className="text-green-600 focus:ring-green-500 border-gray-300 flex-shrink-0"
+                    />
+                    <label htmlFor={category} className="cursor-pointer truncate">
+                      {category}
+                    </label>
+                  </div>
                 ))}
               </div>
             </div>
 
             {/* Freshness */}
-            <div className="bg-white rounded-lg shadow-sm p-3">
+            <div className="category-card p-3">
               <h3 className="text-md font-semibold text-gray-900 mb-3">Freshness</h3>
               <div className="space-y-1">
                 {freshnessLevels.map((level) => (
-                  <label key={level} className="flex items-center">
-                    <input type="checkbox" className="rounded border-gray-300 text-green-600 focus:ring-green-500" />
-                    <span className="ml-2 text-sm text-gray-600">{level}</span>
-                  </label>
+                  <div key={level} className="category-item">
+                    <input
+                      type="checkbox"
+                      id={level}
+                      className="text-green-600 focus:ring-green-500 border-gray-300 rounded flex-shrink-0"
+                    />
+                    <label htmlFor={level} className="cursor-pointer truncate">{level}</label>
+                  </div>
                 ))}
               </div>
             </div>
 
             {/* Delivery Time */}
-            <div className="bg-white rounded-lg shadow-sm p-3">
+            <div className="category-card p-3">
               <h3 className="text-md font-semibold text-gray-900 mb-3">Delivery Time</h3>
               <div className="space-y-1">
                 {deliveryOptions.map((option) => (
-                  <label key={option} className="flex items-center">
-                    <input type="checkbox" className="rounded border-gray-300 text-green-600 focus:ring-green-500" />
-                    <span className="ml-2 text-sm text-gray-600">{option}</span>
-                  </label>
+                  <div key={option} className="category-item">
+                    <input
+                      type="checkbox"
+                      id={option}
+                      className="text-green-600 focus:ring-green-500 border-gray-300 rounded flex-shrink-0"
+                    />
+                    <label htmlFor={option} className="cursor-pointer truncate">{option}</label>
+                  </div>
                 ))}
               </div>
             </div>
 
             {/* Price Range */}
-            <div className="bg-white rounded-lg shadow-sm p-3">
+            <div className="category-card p-3">
               <h3 className="text-md font-semibold text-gray-900 mb-3">Price Range</h3>
               <input
                 type="range"
@@ -139,19 +149,20 @@ const LocalMarket = () => {
           {/* Main Content */}
           <div className="flex-1">
             {/* Tabs */}
-            <div className="bg-white rounded-lg shadow-sm mb-6">
-              <div className="flex flex-wrap border-b">
+            <div className="mb-6">
+              <div className="category-tabs">
                 {categories.slice(0, 6).map((category) => (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-                      selectedCategory === category
-                        ? 'border-green-500 text-green-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700'
-                    }`}
+                    className={`category-tab ${selectedCategory === category ? 'category-tab--active' : 'category-tab--inactive'}`}
                   >
-                    {category}
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="category-tab-icon">
+                        <div className="category-tab-dot"></div>
+                      </div>
+                      <span>{category}</span>
+                    </div>
                   </button>
                 ))}
               </div>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { getProductsByCategory } from "../services/productService";
+import LoginModal from "../components/LoginModal";
+import { getCurrentUser } from "../services/authService";
 
 const ProductDetail = () => {
   const { productId } = useParams();
@@ -15,6 +17,7 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -120,7 +123,7 @@ const ProductDetail = () => {
     });
   };
 
-  // Buy Now: add current selection to cart (if not already), select only this item, go to checkout
+  // Buy Now: add current selection to cart; if not logged in, prompt login before checkout
   const handleBuyNow = () => {
     if (!product) return;
     const effectivePrice =
@@ -153,6 +156,20 @@ const ProductDetail = () => {
     addToCart(targetItem);
     // Select only this item for checkout
     setSelected([uid]);
+
+    // Require login before proceeding to checkout
+    const user = getCurrentUser();
+    if (!user) {
+      try {
+        localStorage.setItem(
+          'buyNowIntent',
+          JSON.stringify({ type: 'buyNow', uids: [uid], ts: Date.now() })
+        );
+      } catch (_) {}
+      setShowLoginModal(true);
+      return;
+    }
+
     navigate('/checkout');
   };
 
@@ -479,6 +496,9 @@ const ProductDetail = () => {
           Printco is a marketplace where you can find quality products and reliable printing services all in one place. Browse curated items across categories like L-mart, Local Market, and Printing. With transparent pricing, special offer benefits, and fast checkout, we’re focused on giving you a smooth and seamless shopping experience.
         </p>
       </div>
+
+      {/* Login Prompt Modal for Buy Now */}
+      <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} />
     </div>
   );
 };

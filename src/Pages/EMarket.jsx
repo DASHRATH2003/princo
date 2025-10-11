@@ -104,8 +104,8 @@ const EMarket = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="container-responsive py-4">
+      <div className="max-w-full mx-auto px-2 ">
+        <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="flex-1">
             </div>
@@ -135,22 +135,22 @@ const EMarket = () => {
           </div>
           
           {/* Sidebar */}
-    <div className={`w-full lg:w-56 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+    <div className={`category-sidebar flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
             {/* Categories */}
-            <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4 mb-4 lg:mb-6">
+            <div className="category-card p-3 lg:p-4 mb-4 lg:mb-6">
               <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Categories</h3>
               <div className="space-y-1 lg:space-y-2">
                 {categories.map((category) => (
-                  <div key={category} className="flex items-center">
+                  <div key={category} className="category-item">
                     <input
                       type="radio"
                       id={category}
                       name="category"
                       checked={selectedCategory === category}
                       onChange={() => setSelectedCategory(category)}
-                      className="h-3 w-3 lg:h-4 lg:w-4 text-blue-600 focus:ring-blue-500 border-gray-300 flex-shrink-0"
+                      className="text-blue-600 focus:ring-blue-500 border-gray-300 flex-shrink-0"
                     />
-                    <label htmlFor={category} className="ml-2 text-xs lg:text-sm text-gray-700 cursor-pointer truncate">
+                    <label htmlFor={category} className="cursor-pointer truncate">
                       {category}
                     </label>
                     {category !== 'All Products' && (
@@ -164,17 +164,17 @@ const EMarket = () => {
             </div>
 
             {/* Service Type Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4 mb-4 lg:mb-6">
+            <div className="category-card p-3 lg:p-4 mb-4 lg:mb-6">
               <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Service Type</h3>
               <div className="space-y-1 lg:space-y-2">
                 {['Design Only', 'Print Only', 'Design + Print', 'Rush Service'].map((type) => (
-                  <div key={type} className="flex items-center">
+                  <div key={type} className="category-item">
                     <input
                       type="checkbox"
                       id={type}
-                      className="h-3 w-3 lg:h-4 lg:w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded flex-shrink-0"
+                      className="text-purple-600 focus:ring-purple-500 border-gray-300 rounded flex-shrink-0"
                     />
-                    <label htmlFor={type} className="ml-2 text-xs lg:text-sm text-gray-700 cursor-pointer truncate">
+                    <label htmlFor={type} className="cursor-pointer truncate">
                       {type}
                     </label>
                   </div>
@@ -183,17 +183,17 @@ const EMarket = () => {
             </div>
 
             {/* Delivery Time Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4 mb-4 lg:mb-6">
+            <div className="category-card p-3 lg:p-4 mb-4 lg:mb-6">
               <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Delivery Time</h3>
               <div className="space-y-1 lg:space-y-2">
                 {['Same Day', '1-2 days', '3-5 days', '1 week', '2+ weeks'].map((delivery) => (
-                  <div key={delivery} className="flex items-center">
+                  <div key={delivery} className="category-item">
                     <input
                       type="checkbox"
                       id={delivery}
-                      className="h-3 w-3 lg:h-4 lg:w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded flex-shrink-0"
+                      className="text-purple-600 focus:ring-purple-500 border-gray-300 rounded flex-shrink-0"
                     />
-                    <label htmlFor={delivery} className="ml-2 text-xs lg:text-sm text-gray-700 cursor-pointer truncate">
+                    <label htmlFor={delivery} className="cursor-pointer truncate">
                       {delivery}
                     </label>
                   </div>
@@ -202,7 +202,7 @@ const EMarket = () => {
             </div>
 
             {/* Price Range */}
-            <div className="bg-white rounded-lg shadow-sm p-3 lg:p-4">
+            <div className="category-card p-3 lg:p-4">
               <h3 className="font-semibold text-gray-800 mb-3 lg:mb-4 text-sm lg:text-base">Price Range</h3>
               <div className="space-y-3 lg:space-y-4">
                 <div className="flex items-center justify-between text-xs lg:text-sm text-gray-600">
@@ -227,20 +227,20 @@ const EMarket = () => {
           <div className="flex-1">
             {/* Category Tabs */}
             <div className="mb-4 lg:mb-6">
-              <div className="flex overflow-x-auto space-x-1 bg-gray-100 p-1 rounded-lg scrollbar-hide">
+              <div className="category-tabs scrollbar-hide">
                 {categories.map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setSelectedCategory(tab)}
-                    className={`flex-shrink-0 px-3 lg:px-4 py-2 text-xs lg:text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+                    className={`category-tab ${
                       selectedCategory === tab
-                        ? 'bg-white text-gray-900 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'category-tab--active'
+                        : 'category-tab--inactive'
                     }`}
                   >
                     <div className="flex items-center justify-center space-x-1 lg:space-x-2">
-                      <div className="w-4 h-4 lg:w-6 lg:h-6 bg-purple-300 rounded flex items-center justify-center">
-                        <div className="w-2 h-2 lg:w-3 lg:h-3 bg-purple-600 rounded"></div>
+                      <div className="category-tab-icon">
+                        <div className="category-tab-dot"></div>
                       </div>
                       <span className="hidden sm:inline">{tab}</span>
                       <span className="sm:hidden">{tab.split(' ')[0]}</span>

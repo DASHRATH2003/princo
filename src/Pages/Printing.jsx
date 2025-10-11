@@ -253,22 +253,22 @@ const Printing = () => {
     </div>
     
     {/* Sidebar */}
-    <div className={`w-full lg:w-56 flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+    <div className={`category-sidebar flex-shrink-0 ${showFilters ? 'block' : 'hidden lg:block'}`}>
       {/* Categories */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className="category-card p-4 mb-6">
         <h3 className="font-semibold text-gray-800 mb-4">Categories</h3>
         <div className="space-y-2">
           {categories.map((category) => (
-            <div key={category} className="flex items-center">
+            <div key={category} className="category-item">
               <input
                 type="radio"
                 id={category}
                 name="category"
                 checked={selectedCategory === category}
                 onChange={() => setSelectedCategory(category)}
-                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                className="text-purple-600 focus:ring-purple-500 border-gray-300"
               />
-              <label htmlFor={category} className="ml-2 text-sm text-gray-700 cursor-pointer">
+              <label htmlFor={category} className="cursor-pointer">
                 {category}
               </label>
             </div>
@@ -277,17 +277,17 @@ const Printing = () => {
       </div>
 
       {/* Service Type Filter */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className="category-card p-4 mb-6">
         <h3 className="font-semibold text-gray-800 mb-4">Service Type</h3>
         <div className="space-y-2">
           {['Design Only', 'Print Only', 'Design + Print', 'Rush Service'].map((type) => (
-            <div key={type} className="flex items-center">
+            <div key={type} className="category-item">
               <input
                 type="checkbox"
                 id={type}
-                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                className="text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
               />
-              <label htmlFor={type} className="ml-2 text-sm text-gray-700 cursor-pointer">
+              <label htmlFor={type} className="cursor-pointer">
                 {type}
               </label>
             </div>
@@ -296,17 +296,17 @@ const Printing = () => {
       </div>
 
       {/* Delivery Time Filter */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className="category-card p-4 mb-6">
         <h3 className="font-semibold text-gray-800 mb-4">Delivery Time</h3>
         <div className="space-y-2">
           {['Same Day', '1-2 days', '3-5 days', '1 week', '2+ weeks'].map((delivery) => (
-            <div key={delivery} className="flex items-center">
+            <div key={delivery} className="category-item">
               <input
                 type="checkbox"
                 id={delivery}
-                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                className="text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
               />
-              <label htmlFor={delivery} className="ml-2 text-sm text-gray-700 cursor-pointer">
+              <label htmlFor={delivery} className="cursor-pointer">
                 {delivery}
               </label>
             </div>
@@ -315,7 +315,7 @@ const Printing = () => {
       </div>
 
       {/* Price Range */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
+      <div className="category-card p-4">
         <h3 className="font-semibold text-gray-800 mb-4">Price Range</h3>
         <div className="space-y-4">
           <div className="flex items-center justify-between text-sm text-gray-600">
@@ -339,20 +339,16 @@ const Printing = () => {
     {/* Main Content */}
     <div className="flex-1">
       {/* Category Tabs - Show only subcategories */}
-      <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg overflow-x-auto">
+      <div className="category-tabs mb-6 overflow-x-auto">
         {categories.slice(0, 6).map((tab) => (
           <button
             key={tab}
             onClick={() => setSelectedCategory(tab)}
-            className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              selectedCategory === tab
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
+            className={`category-tab ${selectedCategory === tab ? 'category-tab--active' : 'category-tab--inactive'}`}
           >
             <div className="flex items-center justify-center space-x-2">
-              <div className="w-6 h-6 bg-purple-300 rounded flex items-center justify-center">
-                <div className="w-3 h-3 bg-purple-600 rounded"></div>
+              <div className="category-tab-icon">
+                <div className="category-tab-dot"></div>
               </div>
               <span>{tab}</span>
             </div>

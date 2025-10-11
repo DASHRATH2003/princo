@@ -80,6 +80,69 @@ select:focus {
   }
 }
 
+/* ===== Category Layout Utilities (Shared across EMarket, LocalMarket, Printing) ===== */
+.category-sidebar {
+  /* Fixed consistent sidebar width on large screens */
+  @apply w-full lg:w-56; /* ~224px; LocalMarket uses 60 => normalize to 56 */
+}
+
+.category-card {
+  /* Card container for filters */
+  @apply bg-white rounded-lg shadow-sm;
+}
+
+.category-item {
+  /* Consistent height/spacing for each category row */
+  @apply flex items-center px-3 py-2 rounded-md;
+  min-height: 40px; /* enforce uniform row height */
+}
+
+.category-item input {
+  @apply h-4 w-4;
+}
+
+.category-item label {
+  @apply ml-2 text-sm text-gray-700;
+}
+
+.category-tabs {
+  /* Top tabs container */
+  @apply flex overflow-x-auto space-x-1 bg-gray-100 p-1 rounded-lg;
+}
+
+.category-tab {
+  /* Individual tab button sizing */
+  @apply flex-shrink-0 px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap;
+}
+
+.category-tab-icon {
+  /* Small icon box shown in tabs */
+  @apply w-6 h-6 bg-purple-300 rounded flex items-center justify-center;
+}
+
+.category-tab-dot {
+  @apply w-3 h-3 bg-purple-600 rounded;
+}
+
+.category-tab--active {
+  @apply bg-white text-gray-900 shadow-sm;
+}
+
+.category-tab--inactive {
+  @apply text-gray-600 hover:text-gray-900;
+}
+
+/* ===== Shared Page Header (below Navbar) ===== */
+.page-header {
+  /* Uniform background bar under navbar across pages */
+  @apply bg-white shadow-sm border-b;
+}
+
+.page-header-inner {
+  /* Consistent horizontal padding and vertical spacing */
+  @apply container-responsive py-4;
+}
+
 @keyframes scroll-horizontal {
   0% {
     transform: translateX(0);
