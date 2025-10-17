@@ -35,6 +35,9 @@ const Navbar = () => {
   } = useCart();
   const cartItemsCount = getCartItemsCount();
 
+  // NEW: track which nav path should be highlighted (supports product detail pages)
+  const [highlightPath, setHighlightPath] = useState(location.pathname);
+
   useEffect(() => {
     const user = getCurrentUser();
     setCurrentUser(user);
@@ -79,6 +82,37 @@ const Navbar = () => {
     }, 300);
     return () => clearTimeout(handle);
   }, [searchTerm]);
+
+  // NEW: map product category to navbar route
+  const mapCategoryToNavPath = (category) => {
+    const c = String(category || '').toLowerCase();
+    if (["localmarket", "local-market"].includes(c)) return "/local-market";
+    if (["printing", "print"].includes(c)) return "/printing";
+    if (["news", "news-today"].includes(c)) return "/news-today";
+    // default group: E-Market / L-mart
+    return "/e-market";
+  };
+
+  // NEW: set highlightPath based on current route; if product detail, derive from product category
+  useEffect(() => {
+    const path = location.pathname || "/";
+    if (path.startsWith("/product/")) {
+      const productId = path.split("/").pop();
+      const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const headers = { "Content-Type": "application/json" };
+      const token = localStorage.getItem("adminToken");
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      fetch(`${API_BASE_URL}/products/single/${productId}`, { method: "GET", headers })
+        .then((res) => res.json())
+        .then((data) => {
+          const cat = data?.data?.category;
+          setHighlightPath(mapCategoryToNavPath(cat));
+        })
+        .catch(() => setHighlightPath("/e-market"));
+    } else {
+      setHighlightPath(path);
+    }
+  }, [location.pathname]);
 
   return (
     <div className="bg-white shadow-sm">
@@ -598,7 +632,7 @@ const Navbar = () => {
                           }
 
                           const API_BASE_URL =
-                            import.meta.env.VITE_API_URL?.replace("/api", "") ||
+                            import.meta.env.VITE_API_BASE_URL?.replace("/api", "") ||
                             "http://localhost:5000";
                           const response = await fetch(
                             `${API_BASE_URL}/api/files/upload-multiple-public`,

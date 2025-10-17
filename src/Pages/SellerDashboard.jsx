@@ -913,8 +913,8 @@ const SellerDashboard = () => {
                         </tr>
                       </thead>
                       <tbody className="bg-white/50 divide-y divide-gray-200/30">
-                        {orders.map((order, index) => (
-                          <tr key={order.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200">
+                        {recentOrders.map((order, index) => (
+                          <tr key={order._id || order.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200">
                             <td className="px-4 py-3 whitespace-nowrap text-sm">
                               <div>
                                 <div className="font-semibold text-gray-900 text-sm">{order.orderId}</div>
@@ -924,15 +924,15 @@ const SellerDashboard = () => {
                             <td className="px-4 py-3 whitespace-nowrap text-sm">
                               <div className="flex items-center space-x-2">
                                 <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                                  {order.customerName?.charAt(0) || 'U'}
+                                  {(order.customerInfo?.name || order.customerName || 'U').charAt(0)}
                                 </div>
                                 <div>
-                                  <div className="font-semibold text-gray-900 text-sm">{order.customerName}</div>
-                                  <div className="text-xs text-gray-500">{order.customerEmail}</div>
+                                  <div className="font-semibold text-gray-900 text-sm">{order.customerInfo?.name || order.customerName || 'Customer'}</div>
+                                  <div className="text-xs text-gray-500">{order.customerInfo?.email || order.customerEmail || ''}</div>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">₹{order.total}</td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">₹{order.sellerTotal || order.total || 0}</td>
                             <td className="px-4 py-3 whitespace-nowrap text-sm">
                               <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
                                 {order.status}
@@ -1675,7 +1675,7 @@ const SellerDashboard = () => {
                             </button>
                           </div>
                         </div>
-                        <p className="text-sm"><span className="font-semibold text-gray-700">Total Amount:</span> <span className="text-green-600 font-bold text-lg">₹{selectedOrder.total}</span></p>
+                        <p className="text-sm"><span className="font-semibold text-gray-700">Total Amount:</span> <span className="text-green-600 font-bold text-lg">₹{selectedOrder.sellerTotal || selectedOrder.total || 0}</span></p>
                         <p className="text-sm"><span className="font-semibold text-gray-700">Order Date:</span> <span className="text-gray-600">{new Date(selectedOrder.createdAt).toLocaleDateString()}</span></p>
                       </div>
                     </div>
@@ -1731,7 +1731,7 @@ const SellerDashboard = () => {
                           </tr>
                         </thead>
                         <tbody className="bg-white/50 divide-y divide-gray-200/30">
-                          {selectedOrder.items?.map((item, index) => (
+                          {(selectedOrder.sellerItems || selectedOrder.items || []).map((item, index) => (
                             <tr key={index} className="hover:bg-orange-50/50 transition-all duration-200">
                               <td className="px-6 py-4 text-sm text-gray-900">
                                 <div className="flex items-center space-x-3">

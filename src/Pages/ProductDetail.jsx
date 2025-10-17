@@ -218,6 +218,35 @@ const ProductDetail = () => {
     return map[cat] || '/e-market';
   };
 
+  // Display label for product category
+  const getCategoryLabel = (product) => {
+    const cat = String(product?.category || '').toLowerCase();
+    const map = {
+      'emart': 'E-Market',
+      'e-mart': 'E-Market',
+      'l-mart': 'E-Market',
+      'lmart': 'E-Market',
+      'localmarket': 'Local Market',
+      'local-market': 'Local Market',
+      'printing': 'Printing',
+      'print': 'Printing',
+      'news': 'Market News',
+      'news-today': 'Market News',
+    };
+    return map[cat] || 'E-Market';
+  };
+
+  const getCategoryBadgeClass = (product) => {
+    const cat = String(product?.category || '').toLowerCase();
+    if (['localmarket','local-market'].includes(cat))
+      return 'bg-green-100 text-green-700 border-green-200';
+    if (['printing','print'].includes(cat))
+      return 'bg-orange-100 text-orange-700 border-orange-200';
+    if (['news','news-today'].includes(cat))
+      return 'bg-blue-100 text-blue-700 border-blue-200';
+    return 'bg-purple-100 text-purple-700 border-purple-200';
+  };
+
   // When a color is selected, switch the main image to the corresponding one
   const handleSelectColor = (color) => {
     setSelectedColor(color);
@@ -367,7 +396,14 @@ const ProductDetail = () => {
         {/* RIGHT - Details */}
         <div className="md:w-1/2 bg-white p-6 rounded-xl shadow-md border border-gray-200">
           <div className="border-b pb-4 mb-4 flex items-center justify-between">
-            <h3 className="text-2xl font-bold text-gray-900">Product Details</h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-2xl font-bold text-gray-900">Product Details</h3>
+              {product && (
+                <span className={`px-2.5 py-1 text-xs font-semibold rounded-md border ${getCategoryBadgeClass(product)}`}>
+                  {getCategoryLabel(product)}
+                </span>
+              )}
+            </div>
             <button
               onClick={() => navigate(getCategoryRoute(product))}
               className="px-4 py-2 text-sm font-medium rounded-md border border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100"
