@@ -187,7 +187,7 @@ export const deleteProduct = async (productId) => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('sellerToken') || localStorage.getItem('adminToken')}`
+        'Authorization': `Bearer ${localStorage.getItem('adminToken') || localStorage.getItem('sellerToken')}`
       }
     });
 
@@ -207,7 +207,7 @@ export const toggleProductStatus = async (productId) => {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('sellerToken') || localStorage.getItem('adminToken')}`
+        'Authorization': `Bearer ${localStorage.getItem('adminToken') || localStorage.getItem('sellerToken')}`
       }
     });
 

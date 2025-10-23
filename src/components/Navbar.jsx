@@ -136,7 +136,8 @@ const Navbar = () => {
 
           {/* Contact and Icons - Hidden on mobile */}
           <div className="hidden md:flex items-center space-x-6">
-            <div className="text-lg text-white font-bold">📞 9880444189</div>
+          
+            <div className="text-lg text-white font-bold"></div>
             {/* Become a Seller CTA (Desktop) */}
             <Link
               to="/seller/login"

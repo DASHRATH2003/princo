@@ -664,7 +664,7 @@ const SellerAddProductModal = ({ isOpen, onClose, onProductAdded }) => {
               </div>
             </div>
 
-            {/* Right Column - Images */}
+            {/* Right Column - Images and Video */}
             <div className="space-y-4">
               {/* Main Image */}
               <div>
@@ -767,40 +767,42 @@ const SellerAddProductModal = ({ isOpen, onClose, onProductAdded }) => {
                   </label>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Product Video (Optional, up to 5MB) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Add Video (Optional, up to 5MB)
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-              <input
-                type="file"
-                accept="video/*"
-                onChange={handleVideoChange}
-                className="hidden"
-                id="seller-video-upload"
-              />
-              <label htmlFor="seller-video-upload" className="cursor-pointer flex flex-col items-center text-gray-500">
-                {formData.video ? (
-                  <div className="text-sm text-gray-700">
-                    <p className="font-medium">{formData.video.name}</p>
-                    <p className="text-xs">{(formData.video.size / (1024 * 1024)).toFixed(2)} MB</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center py-8">
-                    <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 48 48">
-                      <path d="M16 12h16a4 4 0 014 4v16a4 4 0 01-4 4H16a4 4 0 01-4-4V16a4 4 0 014-4zm8 8l10 6-10 6V20z" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <p className="mt-2 text-sm text-gray-600">Click to upload product video</p>
-                  </div>
-                )}
-              </label>
-            </div>
-            {errors.video && <p className="text-red-500 text-sm mt-1">{errors.video}</p>}
-          </div>
+              {/* Product Video (Optional, up to 5MB) - MOVED HERE */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Add Video (Optional, up to 5MB)
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoChange}
+                    className="hidden"
+                    id="seller-video-upload"
+                  />
+                  <label htmlFor="seller-video-upload" className="cursor-pointer flex flex-col items-center text-gray-500">
+                    {formData.video ? (
+                      <div className="text-sm text-gray-700">
+                        <p className="font-medium">{formData.video.name}</p>
+                        <p className="text-xs">{(formData.video.size / (1024 * 1024)).toFixed(2)} MB</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center py-8">
+                        <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 48 48">
+                          <path d="M16 12h16a4 4 0 014 4v16a4 4 0 01-4 4H16a4 4 0 01-4-4V16a4 4 0 014-4zm8 8l10 6-10 6V20z" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <p className="mt-2 text-sm text-gray-600">Click to upload product video</p>
+                      </div>
+                    )}
+                  </label>
+                </div>
+                {errors.video && <p className="text-red-500 text-sm mt-1">{errors.video}</p>}
+              </div>
+
+            </div> {/* End of Right Column */}
+          </div> {/* End of grid-cols-1 md:grid-cols-2 */}
+
 
           {/* Error Message */}
           {errors.submit && (
