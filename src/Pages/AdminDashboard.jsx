@@ -41,6 +41,7 @@ const AdminDashboard = () => {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProductsMenuOpen, setIsProductsMenuOpen] = useState(false);
+  const [isOrdersMenuOpen, setIsOrdersMenuOpen] = useState(false);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [showEditProductModal, setShowEditProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -82,6 +83,8 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
   const [statusUpdate, setStatusUpdate] = useState('pending');
+  // Orders filter (sidebar selection controls table rendering)
+  const [orderStatusFilter, setOrderStatusFilter] = useState('all');
 
   // Earnings (Admin) state
   const [earningsRange, setEarningsRange] = useState('monthly'); // 'weekly' | 'monthly' | 'yearly'
@@ -1158,20 +1161,61 @@ const AdminDashboard = () => {
               <span>Customers</span>
             </button>
 
-            {/* Orders */}
-            <button
-              onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
-                activeTab === 'orders'
-                  ? 'bg-gray-100 text-gray-900 border border-gray-200'
+            {/* Orders with dropdown */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setIsOrdersMenuOpen((prev) => !prev)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                  activeTab === 'orders'
+                    ? 'bg-gray-100 text-gray-900 border border-gray-200'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              <span>Orders</span>
-            </button>
+                }`}
+              >
+                <span className="flex items-center space-x-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  <span>Orders</span>
+                </span>
+                <svg className={`w-4 h-4 transition-transform ${isOrdersMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isOrdersMenuOpen && (
+                <div className="ml-6 space-y-2">
+                   <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('all'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    All Orders
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('pending'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    Pending
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('processing'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    Processing
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('delivered'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    Delivered
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('cancelled'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    Cancelled
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Earnings */}
             <button
@@ -1694,9 +1738,9 @@ const AdminDashboard = () => {
                   </div>
                   <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">All Orders</h3>
                 </div>
-                <button onClick={handleDeleteAllOrders} className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 shadow-sm">
+                {/* <button onClick={handleDeleteAllOrders} className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 shadow-sm">
                   Delete All Orders
-                </button>
+                </button> */}
               </div>
             </div>
             <div className="overflow-x-auto -mx-3 lg:mx-0">
@@ -1714,13 +1758,19 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white/50 divide-y divide-gray-200/30">
-                  {orders.map((order, index) => (
-                    <tr key={order.id} className="hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 transition-all duration-200">
-                      <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-sm">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                            {order.customerName?.charAt(0) || 'U'}
-                          </div>
+                  {orders
+                    .filter((o) => {
+                      const f = (orderStatusFilter || 'all').toLowerCase();
+                      if (f === 'all') return true;
+                      return (o.status || '').toLowerCase() === f;
+                    })
+                    .map((order, index) => (
+                     <tr key={order.id} className="hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 transition-all duration-200">
+                       <td className="px-2 sm:px-4 py-3 whitespace-nowrap text-sm">
+                         <div className="flex items-center space-x-2">
+                           <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                             {order.customerName?.charAt(0) || 'U'}
+                           </div>
                           <div className="font-semibold text-gray-900 text-sm">{order.customerName}</div>
                         </div>
                       </td>
@@ -1891,7 +1941,7 @@ const AdminDashboard = () => {
                     </svg>
                     <span>Add Product</span>
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => setShowDeleteAllModal(true)}
                     className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
                   >
@@ -1899,7 +1949,7 @@ const AdminDashboard = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                     <span>Delete All Products</span>
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

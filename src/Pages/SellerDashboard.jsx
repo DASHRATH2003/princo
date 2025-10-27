@@ -16,6 +16,7 @@ const SellerDashboard = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProductsMenuOpen, setIsProductsMenuOpen] = useState(false);
+  const [isOrdersMenuOpen, setIsOrdersMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState({
     totalProducts: 0,
@@ -32,6 +33,7 @@ const SellerDashboard = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [statusUpdate, setStatusUpdate] = useState('pending');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('all');
 
   // Files state
   const [files, setFiles] = useState([]);
@@ -689,20 +691,61 @@ const SellerDashboard = () => {
               <span>Overview</span>
             </button>
 
-            {/* Orders */}
-            <button
-              onClick={() => { setActiveTab('orders'); setIsMobileMenuOpen(false); }}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
-                activeTab === 'orders'
-                  ? 'bg-gray-100 text-gray-900 border border-gray-200'
-                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              <span>Orders</span>
-            </button>
+            {/* Orders with dropdown */}
+            <div className="space-y-1">
+              <button
+                onClick={() => setIsOrdersMenuOpen((prev) => !prev)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-all duration-300 ${
+                  activeTab === 'orders'
+                    ? 'bg-gray-100 text-gray-900 border border-gray-200'
+                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <span className="flex items-center space-x-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  <span>Orders</span>
+                </span>
+                <svg className={`w-4 h-4 transition-transform ${isOrdersMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isOrdersMenuOpen && (
+                <div className="ml-6 space-y-2">
+                  <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('all'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    All Orders
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('pending'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    Pending
+                  </button>
+                   <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('processing'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    Processing
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('delivered'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    Delivered
+                  </button>
+                  <button
+                    onClick={() => { setActiveTab('orders'); setOrderStatusFilter('cancelled'); setIsMobileMenuOpen(false); }}
+                    className="w-full text-left px-3 py-2 text-sm rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                  >
+                    Cancelled
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Products with dropdown */}
             <div className="space-y-1">
@@ -1050,7 +1093,7 @@ const SellerDashboard = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white/50 divide-y divide-gray-200/30">
-                      {orders.map((order, index) => (
+                      {(orderStatusFilter === 'all' ? orders : orders.filter(o => (o.status || '').toLowerCase() === orderStatusFilter)).map((order, index) => (
                         <tr key={order.id} className="hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 transition-all duration-200">
                           <td className="px-4 py-3 whitespace-nowrap text-sm">
                             <div>
