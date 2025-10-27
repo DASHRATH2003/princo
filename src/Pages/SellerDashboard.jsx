@@ -8,6 +8,8 @@ import sellerService from '../services/sellerService';
 import { getSubcategoriesByCategory } from '../services/subcategoryService';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL || 'info@lmart.in';
+const SUPPORT_WHATSAPP = import.meta.env.VITE_SUPPORT_WHATSAPP || '+91 98804 44189';
 
 const SellerDashboard = () => {
   const user = getCurrentSeller();
@@ -62,6 +64,8 @@ const SellerDashboard = () => {
   // Recent orders state
   const [recentOrders, setRecentOrders] = useState([]);
   const [recentOrdersLoading, setRecentOrdersLoading] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState('approved');
+  const [accessDenied, setAccessDenied] = useState(false);
 
   if (!user || user.role !== 'seller') {
     return (
@@ -72,7 +76,33 @@ const SellerDashboard = () => {
   }
 
   useEffect(() => {
-    fetchSellerData();
+    const checkAndLoad = async () => {
+      try {
+        const email = user?.email;
+        if (!email) {
+          setAccessDenied(true);
+          setLoading(false);
+          return;
+        }
+        const vres = await sellerService.getSellerVerification(email);
+        const status = String(vres?.data?.verificationStatus || 'pending').toLowerCase();
+        setVerificationStatus(status);
+        const denied = status !== 'approved';
+        setAccessDenied(denied);
+        if (denied) {
+          setLoading(false);
+          return;
+        }
+      } catch (e) {
+        setAccessDenied(true);
+        setLoading(false);
+        return;
+      }
+      fetchSellerData();
+    };
+    checkAndLoad();
+    const interval = setInterval(checkAndLoad, 5000);
+    return () => clearInterval(interval);
   }, []);
 
  const fetchSellerData = async () => {
@@ -567,6 +597,42 @@ const SellerDashboard = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  if (accessDenied) {
+    const message = 'Access Denied. Your account has been rejected by the administrator. Please contact support for more details.';
+    const waNumber = (SUPPORT_WHATSAPP || '').replace(/[^0-9]/g, '');
+    const waText = encodeURIComponent(`Hello Support, my seller account appears rejected. Email: ${user?.email || ''}`);
+    const mailSubject = encodeURIComponent('Seller Account Rejected - Assistance Needed');
+    const mailBody = encodeURIComponent(`Hello Support,\n\nMy seller account appears rejected. Please assist.\n\nSeller email: ${user?.email || ''}\nDate: ${new Date().toLocaleString()}\n\nThanks`);
+    const mailHref = `mailto:${SUPPORT_EMAIL}?subject=${mailSubject}&body=${mailBody}`;
+    const waHref = `https://wa.me/${waNumber}?text=${waText}`;
+
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="w-full max-w-2xl bg-white shadow-sm border border-gray-200 rounded-xl p-6">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-center">
+            {message}
+          </div>
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a
+              href={mailHref}
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200"
+            >
+              <span>✉️ Gmail Support</span>
+            </a>
+            <a
+              href={waHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
+            >
+              <span>📱 WhatsApp Support</span>
+            </a>
+          </div>
+          <p className="mt-4 text-xs text-gray-500 text-center">We’ll include your email in the message to speed up support.</p>
+        </div>
+      </div>
+    );
+  }
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -1646,7 +1712,7 @@ const SellerDashboard = () => {
                         <h4 className="font-bold text-gray-800">Order Information</h4>
                       </div>
                       <div className="space-y-3">
-                        <p className="text-sm"><span className="font-semibold text-gray-700">Order ID:</span> <span className="text-blue-600 font-medium">#{selectedOrder.id}</span></p>
+                        <p className="text-sm"><span className="font-semibold text-gray-700">Order ID:</span> <span className="text-blue-600 font-medium">#{selectedOrder.orderId || selectedOrder.id}</span></p>
                         <p className="text-sm"><span className="font-semibold text-gray-700">Status:</span> 
                           <span className={`ml-2 inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedOrder.status)}`}>
                             {selectedOrder.status}
@@ -1690,20 +1756,20 @@ const SellerDashboard = () => {
                         <h4 className="font-bold text-gray-800">Customer Information</h4>
                       </div>
                       <div className="space-y-3">
-                        <p className="text-sm"><span className="font-semibold text-gray-700">Name:</span> <span className="text-gray-800 font-medium">{selectedOrder.customerName}</span></p>
-                        {selectedOrder.customerEmail && (
-                          <p className="text-sm"><span className="font-semibold text-gray-700">Email:</span> <span className="text-gray-600">{selectedOrder.customerEmail}</span></p>
+                        <p className="text-sm"><span className="font-semibold text-gray-700">Name:</span> <span className="text-gray-800 font-medium">{selectedOrder.customerName || selectedOrder.customerInfo?.name || 'Customer'}</span></p>
+                        {(selectedOrder.customerEmail || selectedOrder.customerInfo?.email) && (
+                          <p className="text-sm"><span className="font-semibold text-gray-700">Email:</span> <span className="text-gray-600">{selectedOrder.customerEmail || selectedOrder.customerInfo?.email}</span></p>
                         )}
-                        {selectedOrder.customerPhone && (
-                          <p className="text-sm"><span className="font-semibold text-gray-700">Phone:</span> <span className="text-gray-600">{selectedOrder.customerPhone}</span></p>
+                        {(selectedOrder.customerPhone || selectedOrder.customerInfo?.phone) && (
+                          <p className="text-sm"><span className="font-semibold text-gray-700">Phone:</span> <span className="text-gray-600">{selectedOrder.customerPhone || selectedOrder.customerInfo?.phone}</span></p>
                         )}
-                        {selectedOrder.customerAddress && (
+                        {(selectedOrder.customerAddress || selectedOrder.customerInfo?.address) && (
                           <div>
                             <p className="font-semibold text-gray-700 text-sm mb-1">Address:</p>
                             <div className="bg-white/60 p-3 rounded-lg text-sm text-gray-700">
-                              <p>{selectedOrder.customerAddress}</p>
-                              {selectedOrder.customerCity && <p>{selectedOrder.customerCity}</p>}
-                              {selectedOrder.customerPincode && <p className="font-medium">PIN: {selectedOrder.customerPincode}</p>}
+                              <p>{selectedOrder.customerAddress || selectedOrder.customerInfo?.address}</p>
+                              {(selectedOrder.customerCity || selectedOrder.customerInfo?.city) && <p>{selectedOrder.customerCity || selectedOrder.customerInfo?.city}</p>}
+                              {(selectedOrder.customerPincode || selectedOrder.customerInfo?.pincode) && <p className="font-medium">PIN: {selectedOrder.customerPincode || selectedOrder.customerInfo?.pincode}</p>}
                             </div>
                           </div>
                         )}

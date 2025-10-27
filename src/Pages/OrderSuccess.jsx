@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useOrder } from '../context/OrderContext';
+import logo from '../assets/newlmart.png';
 
 const OrderSuccess = () => {
   console.log('🎯 OrderSuccess component loaded!');
@@ -55,6 +56,9 @@ const OrderSuccess = () => {
   }
   
   const { paymentId, orderId, amount, items, customerInfo } = orderData || {};
+  // Determine payment mode from data or infer from paymentId
+  const paymentMode = (orderData && orderData.paymentMode)
+    || (paymentId ? (String(paymentId).startsWith('COD') ? 'Cash on Delivery' : 'Razorpay') : 'Razorpay');
   const [showConfetti, setShowConfetti] = useState(true);
   const [animateSuccess, setAnimateSuccess] = useState(false);
   const [saveStatus, setSaveStatus] = useState('pending');
@@ -72,6 +76,137 @@ const OrderSuccess = () => {
   
   // Use orderId from location state, fallback to generated one
   const finalOrderId = orderId || (paymentId ? `ORD${paymentId.slice(-6).toUpperCase()}` : null);
+
+  // Generate printable invoice and trigger browser PDF save dialog
+  const handleDownloadInvoice = () => {
+    try {
+      const invoiceId = finalOrderId || `INV-${Date.now()}`;
+      const createdAt = new Date().toLocaleString('en-IN');
+      const computedTotal = (amount ?? ((items || []).reduce((sum, it) => sum + ((it.price || 0) * (it.quantity || 0)), 0)));
+      const rows = (items || []).map((it) => `
+        <tr>
+          <td style="padding:10px;border-bottom:1px solid #e5e7eb;">${it.name || 'Item'}</td>
+          <td style="padding:10px;border-bottom:1px solid #e5e7eb;text-align:center;">${it.quantity || 1}</td>
+          <td style="padding:10px;border-bottom:1px solid #e5e7eb;text-align:right;">₹${Number(it.price || 0).toFixed(2)}</td>
+          <td style="padding:10px;border-bottom:1px solid #e5e7eb;text-align:right;">₹${((it.price || 0) * (it.quantity || 1)).toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      const invoiceHtml = `<!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>Invoice ${invoiceId}</title>
+          <style>
+            :root { --text:#111827; --muted:#6b7280; --light:#e5e7eb; --gray:#9ca3af; --dark:#374151; }
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, 'Helvetica Neue', Arial, sans-serif; color: var(--text); background:#ffffff; }
+            .container { max-width: 800px; margin: 0 auto; padding: 24px 32px 40px; position: relative; }
+            .top { display:flex; justify-content:space-between; align-items:flex-start; font-size:12px; color: var(--gray); }
+            .big-title { font-weight:800; font-size:42px; letter-spacing:0.5px; margin:16px 0 8px; }
+            .date { font-size:12px; color: var(--text); margin:6px 0 18px; }
+            .cols { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:6px 0 18px; }
+            .label { font-weight:700; font-size:12px; color: var(--text); margin-bottom:6px; }
+            .muted { color: var(--muted); }
+            table { width:100%; border-collapse: collapse; margin-top:8px; }
+            thead th { background:#f3f4f6; color:#111827; font-weight:600; font-size:12px; padding:12px; text-align:left; border-bottom:1px solid var(--light); }
+            tbody td { padding:12px; font-size:13px; border-bottom:1px solid var(--light); }
+            tfoot td { padding:12px; font-size:13px; }
+            .tfoot-row { border-top:2px solid var(--light); }
+            .tfoot-label { text-align:right; font-weight:700; }
+            .tfoot-value { text-align:right; font-weight:700; }
+            .meta-line { margin-top:16px; font-size:13px; }
+            .note { margin-top:6px; font-size:12px; color: var(--muted); }
+            .waves { position:relative; margin-top:24px; height:140px; }
+            .waves svg { width:100%; height:140px; }
+            @page { margin: 16mm; }
+            @media print { .no-print { display:none; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="top">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <img src="${logo}" alt="Logo" style="height:28px;object-fit:contain;"/>
+                <span style="font-size:12px;color:#6b7280;">Invoice ${invoiceId}</span>
+              </div>
+              <div>NO. ${invoiceId}</div>
+            </div>
+
+            <div class="big-title">INVOICE</div>
+            <div class="date"><span style="font-weight:700">Date:</span> ${createdAt}</div>
+
+            <div class="cols">
+              <div>
+                <div class="label">Billed to:</div>
+                <div>${customerInfo?.name || 'Customer'}</div>
+                ${customerInfo?.address ? `<div>${customerInfo.address}</div>` : ''}
+                ${customerInfo?.city || customerInfo?.pincode ? `<div>${customerInfo?.city || ''} ${customerInfo?.pincode || ''}</div>` : ''}
+                ${customerInfo?.email ? `<div class="muted">${customerInfo.email}</div>` : ''}
+              </div>
+              <div>
+                <div class="label">From:</div>
+                <div>L‑Mart</div>
+                <div>#56 Industrial Estate, SINDAGI - 586128</div>
+                <div class="muted">info@lmart.in</div>
+              </div>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th style="text-align:center;">Quantity</th>
+                  <th style="text-align:right;">Price</th>
+                  <th style="text-align:right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows}
+              </tbody>
+              <tfoot>
+                <tr class="tfoot-row">
+                  <td colspan="3" class="tfoot-label">Total</td>
+                  <td class="tfoot-value">₹${Number(computedTotal).toFixed(2)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <div class="meta-line"><strong>Payment method:</strong> ${paymentMode || '—'}</div>
+            <div class="note"><strong>Note:</strong> Thank you for choosing us!</div>
+
+            <div class="no-print" style="margin-top:18px;">
+              <button onclick="window.print()" style="background:#111827;color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;">Print / Save as PDF</button>
+            </div>
+
+            <div class="waves">
+              <svg viewBox="0 0 800 160" preserveAspectRatio="none">
+                <path d="M0,80 C200,140 600,20 800,90 L800,160 L0,160 Z" fill="#e5e7eb"></path>
+                <path d="M0,110 C220,170 620,40 800,120 L800,160 L0,160 Z" fill="#4b5563"></path>
+              </svg>
+            </div>
+          </div>
+        </body>
+      </html>`;
+
+      const w = window.open('', '_blank');
+      if (!w) {
+        alert('Pop-up blocked. Please allow pop-ups to download invoice.');
+        return;
+      }
+      w.document.open();
+      w.document.write(invoiceHtml);
+      w.document.close();
+      w.onload = () => {
+        w.focus();
+        // Auto-open print dialog; button also available
+        w.print();
+      };
+    } catch (err) {
+      console.error('Invoice generation error:', err);
+      alert('Invoice generate karte waqt error aaya.');
+    }
+  };
   
   // Additional debugging for missing data
   console.log('🔍 Data validation:', {
@@ -305,6 +440,10 @@ const OrderSuccess = () => {
                   </div>
                 )}
                 <div className="flex justify-between items-center">
+                  <span className="font-medium text-gray-700">Payment Method:</span>
+                  <span className="text-gray-600">{paymentMode}</span>
+                </div>
+                <div className="flex justify-between items-center">
                   <span className="font-medium text-gray-700">Total Amount:</span>
                   <span className="text-green-600 font-bold text-xl">₹{amount}</span>
                 </div>
@@ -371,6 +510,15 @@ const OrderSuccess = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={handleDownloadInvoice}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v12m0 0l-3-3m3 3l3-3M4 20h16" />
+              </svg>
+              Download Invoice (PDF)
+            </button>
             <button
               onClick={() => navigate('/')}
               className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center"

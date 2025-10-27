@@ -223,7 +223,8 @@ export const toggleProductStatus = async (productId) => {
 // 🟢 Get products for a specific seller
 export const getSellerProducts = async (sellerId) => {
   try {
-    const token = localStorage.getItem('sellerToken') || localStorage.getItem('adminToken');
+    // Prefer admin token for admin dashboard calls; fallback to seller token
+    const token = localStorage.getItem('adminToken') || localStorage.getItem('sellerToken');
     const headers = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 

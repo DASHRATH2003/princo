@@ -773,6 +773,38 @@ const AdminDashboard = () => {
     }
   };
 
+  // Delete all orders (Admin)
+  const handleDeleteAllOrders = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        navigate('/admin/login');
+        return;
+      }
+      const confirmDelete = window.confirm('Kya aap sure hain? Saare orders delete ho jayenge aur ye action undo nahi ho sakta.');
+      if (!confirmDelete) return;
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      const resp = await fetch(`${API_BASE_URL}/api/dashboard/orders/all`, { method: 'DELETE', headers });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        alert(err.message || 'Saare orders delete karne me problem aayi');
+        return;
+      }
+      const data = await resp.json().catch(() => ({}));
+      alert(`Deleted ${data.deletedCount || 0} orders.`);
+      setOrders([]);
+      // Refresh stats and other dashboard data
+      fetchDashboardData();
+    } catch (e) {
+      console.error('Delete all orders failed:', e);
+      alert('Delete all orders failed');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUser');
@@ -1653,13 +1685,18 @@ const AdminDashboard = () => {
         {activeTab === 'orders' && (
           <div className="bg-white/70 backdrop-blur-sm rounded-lg shadow-lg border border-white/20">
             <div className="px-4 py-3 border-b border-gray-200/30">
-              <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-500 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">All Orders</h3>
                 </div>
-                <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">All Orders</h3>
+                <button onClick={handleDeleteAllOrders} className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 shadow-sm">
+                  Delete All Orders
+                </button>
               </div>
             </div>
             <div className="overflow-x-auto -mx-3 lg:mx-0">
@@ -2719,6 +2756,13 @@ const AdminDashboard = () => {
                       >
                         Rejected
                       </button>
+                      <button
+                        onClick={() => handleVerifySeller(selectedSeller._id, 'rejected')}
+                        className="bg-gradient-to-r from-gray-700 to-gray-900 text-white px-2 py-1 rounded-md text-xs font-medium hover:from-gray-800 hover:to-black transition-all duration-200"
+                        title="Block Seller"
+                      >
+                        Block Seller
+                      </button>
                     </div>
                   </p>
                 </div>
@@ -3507,7 +3551,7 @@ const AdminDashboard = () => {
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-700">
                               <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">
-                                {item.sellerName || 'Admin'}
+                                {item.sellerId ? 'Seller' : 'Admin'}
                               </span>
                             </td>
                             <td className="px-6 py-4 text-xs text-gray-500">

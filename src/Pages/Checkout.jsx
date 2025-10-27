@@ -213,6 +213,8 @@ const Checkout = () => {
               amount: amount,
               items: orderItems, // ✅ Use detailed items
               customerInfo: customerInfo,
+              // Explicitly include payment mode for OrderSuccess/invoice
+              paymentMode: 'Razorpay'
             };
 
             console.log(
@@ -319,7 +321,9 @@ const Checkout = () => {
         orderId, 
         amount, 
         items: orderItems, // ✅ Use detailed items
-        customerInfo 
+        customerInfo,
+        // Explicitly include payment mode for OrderSuccess/invoice
+        paymentMode: 'Cash on Delivery'
       };
       
       // ✅ FIXED: Save data and navigate FIRST
