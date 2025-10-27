@@ -12,7 +12,7 @@ const Footer = () => {
   return (
     <footer className="bg-[rgb(5,5,85)] text-white">
       <div className="container-responsive py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           
           {/* Company Info */}
           <div>
@@ -94,6 +94,43 @@ const Footer = () => {
               <li><Link to="/printing" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">Printing</Link></li>
               <li><Link to="/news-today" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">MARKET NEWS</Link></li>
             </ul>
+          </div>
+
+          {/* Support & Help */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Support & Help</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/my-orders" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">
+                  Track My Orders
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">
+                  Contact Support
+                </Link>
+              </li>
+              <li>
+                <Link to="/file-downloads" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">
+                  Downloads & Guides
+                </Link>
+              </li>
+              <li>
+                <Link to="/refund-policy" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">
+                  Returns & Refunds
+                </Link>
+              </li>
+              <li>
+                <Link to="/shipping-policy" className="text-gray-400 hover:text-white transition hover:translate-x-1 inline-block">
+                  Shipping & Delivery
+                </Link>
+              </li>
+             
+            </ul>
+            <div className="mt-4 text-sm text-gray-300">
+            
+              
+            </div>
           </div>
 
           {/* Terms & Policies */}
