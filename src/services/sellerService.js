@@ -176,3 +176,18 @@ export const adminUpdateSeller = async (sellerId, payload) => {
   if (!res.ok) throw new Error(data.message || `Failed to update seller (${res.status})`);
   return data; // { success, message, data }
 };
+
+// Admin: Delete seller and related products
+export const adminDeleteSeller = async (sellerId) => {
+  const base = (import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000');
+  const token = localStorage.getItem('adminToken');
+  const res = await fetch(`${base}/api/dashboard/sellers/${sellerId}`, {
+    method: 'DELETE',
+    headers: {
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    }
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.message || `Failed to delete seller (${res.status})`);
+  return data; // { success, message, data }
+};

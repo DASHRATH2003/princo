@@ -222,7 +222,7 @@ const LocalMarket = () => {
                     </div>
                     <div className="p-4">
                       <h3 className="font-medium text-gray-900 mb-2 text-sm line-clamp-2">{product.name}</h3>
-                      <p className="text-lg font-semibold text-gray-900 mb-3">₹ {(product.offerPrice ?? product.price)}</p>
+                    <p className="text-lg font-semibold text-gray-900 mb-3">₹ {((product.offerPrice !== null && product.offerPrice !== undefined && Number(product.offerPrice) > 0) ? Number(product.offerPrice) : Number(product.price || 0))}</p>
                       
                       {/* Add to Cart Section */}
                       <div className="flex items-center justify-between">

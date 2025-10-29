@@ -66,7 +66,12 @@ const SearchResults = () => {
                     <div className="p-3">
                       <h3 className="text-sm font-semibold text-gray-900">{product.name}</h3>
                       <p className="text-xs text-gray-600">{product.description}</p>
-                      <p className="text-sm font-bold text-purple-600 mt-1">₹{Number(product.price || 0).toLocaleString()}</p>
+                      <div className="mt-1 flex items-center space-x-2">
+                        <p className="text-sm font-bold text-purple-600">₹{Number(((product.offerPrice !== null && product.offerPrice !== undefined && Number(product.offerPrice) > 0) ? product.offerPrice : (product.price || 0))).toLocaleString()}</p>
+                        {(product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0 && product.price && product.price > product.offerPrice) && (
+                          <span className="text-xs text-gray-500 line-through">₹{Number(product.price || 0).toLocaleString()}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

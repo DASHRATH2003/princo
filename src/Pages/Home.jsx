@@ -557,11 +557,13 @@ const Home = () => {
                     <span className="text-xs text-gray-500 ml-1">4.3</span>
                   </div>
                   
-                  {/* Price */}
+                  {/* Price - show only seller/admin-defined price & offerPrice */}
                   <div className="flex items-center justify-between mb-2 sm:mb-3">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">
-                      <span className="text-sm sm:text-lg font-bold text-gray-900">₹{(product.offerPrice ?? product.price)}</span>
-                      <span className="text-xs sm:text-sm text-gray-500 line-through">₹{(product.price + 50)}</span>
+                      <span className="text-sm sm:text-lg font-bold text-gray-900">₹{((product.offerPrice !== null && product.offerPrice !== undefined && Number(product.offerPrice) > 0) ? Number(product.offerPrice) : Number(product.price || 0))}</span>
+                      {(product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0 && product.price && product.price > product.offerPrice) && (
+                        <span className="text-xs sm:text-sm text-gray-500 line-through">₹{product.price}</span>
+                      )}
                     </div>
                   </div>
                   
@@ -652,11 +654,13 @@ const Home = () => {
                     <span className="text-xs text-gray-500 ml-1">4.5</span>
                   </div>
                   
-                  {/* Price */}
+                  {/* Price - show only seller/admin-defined price & offerPrice */}
                   <div className="flex items-center justify-between mb-2 sm:mb-3">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">
-                      <span className="text-sm sm:text-lg font-bold text-gray-900">₹{(product.offerPrice ?? product.price)}</span>
-                      <span className="text-xs sm:text-sm text-gray-500 line-through">₹{(product.price + 100)}</span>
+                      <span className="text-sm sm:text-lg font-bold text-gray-900">₹{((product.offerPrice !== null && product.offerPrice !== undefined && Number(product.offerPrice) > 0) ? Number(product.offerPrice) : Number(product.price || 0))}</span>
+                      {(product.offerPrice !== null && product.offerPrice !== undefined && product.offerPrice > 0 && product.price && product.price > product.offerPrice) && (
+                        <span className="text-xs sm:text-sm text-gray-500 line-through">₹{product.price}</span>
+                      )}
                     </div>
                   </div>
                   

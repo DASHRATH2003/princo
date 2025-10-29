@@ -11,6 +11,7 @@ import { listCategoryCommissions, setCategoryCommission as setCategoryCommission
 import { getPosters, createPoster, deletePoster } from '../services/posterService';
 import { getBanners, createBanner, deleteBanner } from '../services/bannerService';
 import { getAdminNotifications, markAllNotificationsAsRead, markNotificationAsRead, getUnreadCount } from '../services/notificationService';
+import { adminDeleteSeller } from '../services/sellerService';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -983,6 +984,38 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
   };
 
   // Sellers handlers
+  const refreshSellers = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      const res = await fetch(`${API_BASE_URL}/api/dashboard/sellers`, {
+        headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSellers(data);
+      }
+    } catch (e) {
+      console.error('Error refreshing sellers:', e);
+    }
+  };
+
+  const handleDeleteSeller = async (sellerId) => {
+    if (!sellerId) return;
+    const ok = window.confirm('Are you sure you want to delete this seller and their products?');
+    if (!ok) return;
+    try {
+      const resp = await adminDeleteSeller(sellerId);
+      alert(resp?.message || 'Seller deleted successfully');
+      // Clear selection if the deleted seller was open
+      setSelectedSeller(prev => (prev && String(prev._id) === String(sellerId) ? null : prev));
+      // Refresh list
+      await refreshSellers();
+    } catch (err) {
+      console.error('Error deleting seller:', err);
+      alert(err?.message || 'Failed to delete seller');
+    }
+  };
   const handleSelectSeller = async (sellerId) => {
     try {
       const token = localStorage.getItem('adminToken');
@@ -2702,6 +2735,16 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
                         onChange={(e) => setBannerImageFile(e.target.files?.[0] || null)}
                         className="mt-1 w-full border rounded-md px-3 py-2"
                       />
+                      {bannerImageFile && (
+                        <div className="mt-3 border rounded-md overflow-hidden bg-gray-50">
+                          <div className="p-2 text-xs font-medium text-gray-700">Preview (uploaded image shown in banner)</div>
+                          <img
+                            src={URL.createObjectURL(bannerImageFile)}
+                            alt={bannerImageTitle || 'Banner preview'}
+                            className="w-full h-32 object-contain bg-white"
+                          />
+                        </div>
+                      )}
                     </div>
                     <div>
                       <button
@@ -2877,6 +2920,12 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
                       className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-indigo-600 hover:to-indigo-700 transition-all duration-200"
                     >
                       Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteSeller(seller._id)}
+                      className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200"
+                    >
+                      Delete
                     </button>
                     <button
                       onClick={() => handleVerifySeller(seller._id)}

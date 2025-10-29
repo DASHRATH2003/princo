@@ -421,9 +421,9 @@ const ProductDetail = () => {
 
           <div className="flex items-center mb-3">
             <span className="text-2xl font-bold text-purple-600">
-              ₹{(product.offerPrice ?? product.price)?.toLocaleString()}
+              ₹{Number(((product.offerPrice !== null && product.offerPrice !== undefined && Number(product.offerPrice) > 0) ? product.offerPrice : (product.price || 0))).toLocaleString()}
             </span>
-            {product.offerPrice && product.offerPrice < product.price && (
+            {(product.offerPrice !== null && product.offerPrice !== undefined && Number(product.offerPrice) > 0 && product.price && Number(product.price) > Number(product.offerPrice)) && (
               <span className="ml-2 text-sm text-gray-500 line-through">
                 ₹{product.price?.toLocaleString()}
               </span>
@@ -557,8 +557,8 @@ const ProductDetail = () => {
                     <h3 className="font-medium text-gray-900 truncate">{p.name}</h3>
                     <div className="flex items-center mt-1">
                       <span className="text-purple-600 font-semibold">₹{(effectivePrice || 0).toLocaleString()}</span>
-                      {p.originalPrice && p.originalPrice > effectivePrice && (
-                        <span className="ml-2 text-xs text-gray-400 line-through">₹{p.originalPrice.toLocaleString()}</span>
+                      {(p.offerPrice !== null && p.offerPrice !== undefined && p.offerPrice > 0 && p.price && p.price > p.offerPrice) && (
+                        <span className="ml-2 text-xs text-gray-400 line-through">₹{p.price?.toLocaleString()}</span>
                       )}
                     </div>
                     <div className="mt-3 flex gap-2">
