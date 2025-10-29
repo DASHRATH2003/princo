@@ -62,27 +62,39 @@ const ProductDetail = () => {
   }, [product]);
 
   const toList = (val) => {
-    // Normalize to a list of strings for rendering
+    // Normalize to a list of clean strings for rendering
+    const clean = (s) => {
+      const t = String(s ?? '').trim();
+      // Hide accidental object-string tokens
+      if (!t || /^(\[object Object\]|object object)$/i.test(t)) return '';
+      return t;
+    };
+
+    const fromArray = (arr) => arr
+      .map((v) => {
+        if (typeof v === 'string') return clean(v);
+        if (v && typeof v === 'object') return clean(v.color ?? v.name ?? '');
+        return clean(v);
+      })
+      .filter(Boolean);
+
     if (Array.isArray(val)) {
-      // If this is an array of objects (e.g., colorVarients as { color, images }), pick the color names
-      if (val.length > 0 && typeof val[0] === "object" && val[0] !== null) {
-        return val.map((v) => (typeof v === "string" ? v : (v?.color || ""))).filter(Boolean);
-      }
-      return val.filter(Boolean);
+      return fromArray(val);
     }
-    if (typeof val === "string") {
+
+    if (typeof val === 'string') {
+      // Try JSON first
       try {
         const parsed = JSON.parse(val);
-        if (Array.isArray(parsed)) {
-          // If parsed array contains objects, map to color names
-          if (parsed.length > 0 && typeof parsed[0] === "object" && parsed[0] !== null) {
-            return parsed.map((v) => (typeof v === "string" ? v : (v?.color || ""))).filter(Boolean);
-          }
-          return parsed.filter(Boolean);
-        }
-      } catch {}
-      return val.split(",").map((s) => s.trim()).filter(Boolean);
+        if (Array.isArray(parsed)) return fromArray(parsed);
+      } catch (_) {}
+      // Fallback: split by comma or semicolon
+      return val
+        .split(/[,;]+/)
+        .map((s) => clean(s))
+        .filter(Boolean);
     }
+
     return [];
   };
 
