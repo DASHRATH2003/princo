@@ -36,6 +36,9 @@ const SellerDashboard = () => {
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
   const [showOrderSuggestions, setShowOrderSuggestions] = useState(false);
+  // Header search (seller id/name, order id, customer)
+  const [headerSearchQuery, setHeaderSearchQuery] = useState('');
+  const [showHeaderSuggestions, setShowHeaderSuggestions] = useState(false);
 
   // Files state
   const [files, setFiles] = useState([]);
@@ -871,6 +874,49 @@ const SellerDashboard = () => {
               </svg>
             </div>
             <h1 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Seller Dashboard</h1>
+            <div className="hidden md:block ml-6 w-full flex-1 min-w-0 max-w-3xl">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={headerSearchQuery}
+                  onChange={(e) => { setHeaderSearchQuery(e.target.value); setShowHeaderSuggestions(true); }}
+                  onFocus={() => setShowHeaderSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowHeaderSuggestions(false), 150)}
+                  placeholder="Search order ID, customer..."
+                  className="w-full md:w-[900px] lg:w-[1000px] xl:w-[500px] px-4 py-2 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+                />
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z" />
+                </svg>
+                {showHeaderSuggestions && headerSearchQuery.length >= 1 && (
+                  (() => {
+                    const q = headerSearchQuery.trim().toLowerCase();
+                    const orderIds = (orders || []).map(o => String(o.orderId || o.id || o._id)).filter(Boolean);
+                    const customerNames = (orders || []).map(o => o.customerName).filter(Boolean);
+                    const pool = [...orderIds, ...customerNames].map(String);
+                    const suggestions = Array.from(new Set(pool))
+                      .filter(item => item.toLowerCase().startsWith(q))
+                      .slice(0, 8);
+                    return (
+                      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-40 overflow-y-auto">
+                        {suggestions.length > 0 ? suggestions.map((s, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onMouseDown={() => { setHeaderSearchQuery(s); setShowHeaderSuggestions(false); }}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                          >
+                            {s}
+                          </button>
+                        )) : (
+                          <div className="px-3 py-2 text-xs text-gray-500">No matches</div>
+                        )}
+                      </div>
+                    );
+                  })()
+                )}
+              </div>
+            </div>
           </div>
           
           {/* Seller User Profile */}
@@ -907,6 +953,46 @@ const SellerDashboard = () => {
                 </svg>
               </div>
               <h1 className="text-lg font-bold text-gray-900">Seller Dashboard</h1>
+            </div>
+            <div className="ml-2 flex-1 min-w-0">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={headerSearchQuery}
+                  onChange={(e) => { setHeaderSearchQuery(e.target.value); setShowHeaderSuggestions(true); }}
+                  onFocus={() => setShowHeaderSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowHeaderSuggestions(false), 150)}
+                  placeholder="Search order ID, customer..."
+                  className="w-full px-4 py-2 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white"
+                />
+                {showHeaderSuggestions && headerSearchQuery.length >= 1 && (
+                  (() => {
+                    const q = headerSearchQuery.trim().toLowerCase();
+                    const orderIds = (orders || []).map(o => String(o.orderId || o.id || o._id)).filter(Boolean);
+                    const customerNames = (orders || []).map(o => o.customerName).filter(Boolean);
+                    const pool = [...orderIds, ...customerNames].map(String);
+                    const suggestions = Array.from(new Set(pool))
+                      .filter(item => item.toLowerCase().startsWith(q))
+                      .slice(0, 8);
+                    return (
+                      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-40 overflow-y-auto">
+                        {suggestions.length > 0 ? suggestions.map((s, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onMouseDown={() => { setHeaderSearchQuery(s); setShowHeaderSuggestions(false); }}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                          >
+                            {s}
+                          </button>
+                        )) : (
+                          <div className="px-3 py-2 text-xs text-gray-500">No matches</div>
+                        )}
+                      </div>
+                    );
+                  })()
+                )}
+              </div>
             </div>
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1131,9 +1217,27 @@ const SellerDashboard = () => {
                         .filter((o) => {
                           const f = (orderStatusFilter || 'all').toLowerCase();
                           if (f !== 'all' && (o.status || '').toLowerCase() !== f) return false;
-                          const q = orderSearchQuery.trim().toLowerCase();
+                          const q1 = orderSearchQuery?.trim().toLowerCase();
+                          const q2 = headerSearchQuery?.trim().toLowerCase();
+                          const q = (q1 || q2 || '').toLowerCase();
                           if (!q) return true;
-                          return (o.customerName || '').toLowerCase().includes(q);
+                          const idStr = String(o.orderId || o.id || o._id || '').toLowerCase();
+                          const email = (o.customerEmail || '').toLowerCase();
+                          const phone = String(o.customerPhone || '').toLowerCase();
+                          const addr = (o.customerAddress || '').toLowerCase();
+                          const city = (o.customerCity || '').toLowerCase();
+                          const pincode = String(o.customerPincode || '').toLowerCase();
+                          const itemsStr = (o.items || []).map(i => (i.name || '')).join(' ').toLowerCase();
+                          return (
+                            (o.customerName || '').toLowerCase().includes(q) ||
+                            idStr.includes(q) ||
+                            email.includes(q) ||
+                            phone.includes(q) ||
+                            addr.includes(q) ||
+                            city.includes(q) ||
+                            pincode.includes(q) ||
+                            itemsStr.includes(q)
+                          );
                         })
                         .map((order, index) => (
                         <tr key={order.id} className="hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-pink-50/50 transition-all duration-200">
@@ -1401,7 +1505,7 @@ const SellerDashboard = () => {
               </div>
               <div className="p-4 space-y-4">
                 <div className="flex items-center space-x-2">
-                  {[['l-mart','E-market'],['localmarket','Local Market'],['printing','Printing'],['oldee','Oldee'],['news','Today News']].map(([value,label]) => (
+                  {[['l-mart','E-market'],['localmarket','Local Market'],['printing','Printing'],['news','Market News'],['oldee','Oldee']].map(([value,label]) => (
                     <button
                       key={value}
                       onClick={() => setSelectedCategory(value)}

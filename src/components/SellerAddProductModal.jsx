@@ -59,8 +59,8 @@ const SellerAddProductModal = ({ isOpen, onClose, onProductAdded }) => {
     { value: 'l-mart', label: 'E-market' },
     { value: 'localmarket', label: 'Local-market' },
     { value: 'printing', label: 'Printing' },
-    { value: 'oldee', label: 'Oldee' },
-    { value: 'news', label: 'TodayNews' }
+    { value: 'news', label: 'Market News' },
+    { value: 'oldee', label: 'Oldee' }
   ];
 
   useEffect(() => {
