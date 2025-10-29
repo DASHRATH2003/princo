@@ -111,11 +111,18 @@ const Home = () => {
     const loadSubs = async () => {
       try {
         setSubsLoading(true);
-        const categoriesToLoad = ['l-mart', 'localmarket', 'printing'];
+        const categoriesToLoad = ['l-mart', 'localmarket', 'printing', 'oldee'];
         const results = await Promise.all(
           categoriesToLoad.map((cat) => getSubcategoriesByCategory(cat).catch(() => []))
         );
-        const merged = results.flat().filter(Boolean);
+        // Merge and filter: only include subcategories that have an imageUrl
+        const merged = results
+          .flat()
+          .filter(Boolean)
+          .filter((sc) => {
+            const url = String(sc?.imageUrl || '').trim();
+            return url.length > 0; // only those with image
+          });
         // Optional: sort by name for consistent ordering
         merged.sort((a, b) => String(a?.name || '').localeCompare(String(b?.name || '')));
         setSubcategories(merged);
@@ -147,6 +154,7 @@ const Home = () => {
       'local-market': '/local-market',
       'printing': '/printing',
       'print': '/printing',
+      'oldee': '/oldee',
       'news': '/news-today',
       'news-today': '/news-today',
     };
@@ -164,6 +172,7 @@ const Home = () => {
       'local-market': '/local-market',
       'printing': '/printing',
       'print': '/printing',
+      'oldee': '/oldee',
       'news': '/news-today',
       'news-today': '/news-today',
     };
@@ -451,7 +460,8 @@ const Home = () => {
                   const routeMap = {
                     'l-mart': '/e-market',
                     'localmarket': '/local-market',
-                    'printing': '/printing'
+                    'printing': '/printing',
+                    'oldee': '/oldee'
                   };
                   const target = routeMap[String(sc?.category || '').toLowerCase()] || '/';
                   return (

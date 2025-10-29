@@ -230,6 +230,7 @@ const ProductDetail = () => {
       'local-market': 'Local Market',
       'printing': 'Printing',
       'print': 'Printing',
+      'oldee': 'Oldee',
       'news': 'Market News',
       'news-today': 'Market News',
     };
@@ -242,6 +243,8 @@ const ProductDetail = () => {
       return 'bg-green-100 text-green-700 border-green-200';
     if (['printing','print'].includes(cat))
       return 'bg-orange-100 text-orange-700 border-orange-200';
+    if (['oldee'].includes(cat))
+      return 'bg-pink-100 text-pink-700 border-pink-200';
     if (['news','news-today'].includes(cat))
       return 'bg-blue-100 text-blue-700 border-blue-200';
     return 'bg-purple-100 text-purple-700 border-purple-200';

@@ -10,6 +10,7 @@ import CartNotification from './components/CartNotification'
 import LoginModal from './components/LoginModal'
 import Home from './Pages/Home'
 import Printing from './Pages/Printing'
+import Oldee from './Pages/Oldee'
 import EMarket from './Pages/EMarket'
 import LocalMarket from './Pages/LocalMarket'
 import NewsToday from './Pages/NewsToday'
@@ -109,6 +110,7 @@ const App = () => {
                     <Routes>
                       <Route path="/" element={<Home />} />
                       <Route path="/printing" element={<Printing />} />
+                      <Route path="/oldee" element={<Oldee />} />
                       <Route path="/e-market" element={<EMarket />} />
                       <Route path="/local-market" element={<LocalMarket />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />

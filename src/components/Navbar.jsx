@@ -88,6 +88,7 @@ const Navbar = () => {
     const c = String(category || '').toLowerCase();
     if (["localmarket", "local-market"].includes(c)) return "/local-market";
     if (["printing", "print"].includes(c)) return "/printing";
+    if (["oldee"].includes(c)) return "/oldee";
     if (["news", "news-today"].includes(c)) return "/news-today";
     // default group: E-Market / L-mart
     return "/e-market";
@@ -502,6 +503,18 @@ const Navbar = () => {
               </Link>
 
               <Link
+                to="/oldee"
+                className={`text-blue-700 hover:text-purple-500 font-medium relative ${
+                  location.pathname === "/oldee" ? "active-nav-item" : ""
+                }`}
+              >
+                Oldee
+                {location.pathname === "/oldee" && (
+                  <span className="absolute bottom-[-8px] left-0 w-full h-[3px] bg-purple-500 rounded-full"></span>
+                )}
+              </Link>
+
+              <Link
                 to="/news-today"
                 className={`text-blue-700 hover:text-purple-500 font-medium relative ${
                   location.pathname === "/news-today" ? "active-nav-item" : ""
@@ -721,6 +734,15 @@ const Navbar = () => {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Printing
+              </Link>
+              <Link
+                to="/oldee"
+                className={`text-gray-700 hover:text-purple-600 font-medium py-2 border-b border-gray-100 ${
+                  location.pathname === "/oldee" ? "text-purple-600" : ""
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Oldee
               </Link>
               <Link
                 to="/e-market"

@@ -36,6 +36,7 @@ const AdminDashboard = () => {
     emart: [],
     localmarket: [],
     printing: [],
+    oldee: [],
     news: []
   });
   const [loadingProducts, setLoadingProducts] = useState(false);
@@ -79,7 +80,7 @@ const AdminDashboard = () => {
   const [bannerUploading, setBannerUploading] = useState(false);
   const [selectedBannerProduct, setSelectedBannerProduct] = useState(null);
   const [productBanners, setProductBanners] = useState([]);
-  const subCategories = ['l-mart', 'localmarket', 'printing', 'news'];
+const subCategories = ['l-mart', 'localmarket', 'printing', 'oldee', 'news'];
   const navigate = useNavigate();
   const { getAllOrders } = useOrder();
   const [statusUpdate, setStatusUpdate] = useState('pending');
@@ -632,7 +633,7 @@ const AdminDashboard = () => {
   const fetchAllProducts = async () => {
     setLoadingProducts(true);
     try {
-      const categories = ['emart', 'localmarket', 'printing', 'news'];
+const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
       const productPromises = categories.map(async (category) => {
         try {
           const response = await getAdminProductsByCategory(category);
@@ -2114,7 +2115,7 @@ const AdminDashboard = () => {
                     >
                       <option value="">Select Category</option>
                       {subCategories.map(c => (
-                        <option key={c} value={c}>{c === 'l-mart' ? 'L-mart' : c}</option>
+                        <option key={c} value={c}>{c === 'l-mart' ? 'E-market' : c}</option>
                       ))}
                     </select>
                   </div>

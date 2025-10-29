@@ -56,9 +56,10 @@ const SellerAddProductModal = ({ isOpen, onClose, onProductAdded }) => {
 
   // Category options
   const categories = [
-    { value: 'l-mart', label: 'L-mart' },
+    { value: 'l-mart', label: 'E-market' },
     { value: 'localmarket', label: 'Local-market' },
     { value: 'printing', label: 'Printing' },
+    { value: 'oldee', label: 'Oldee' },
     { value: 'news', label: 'TodayNews' }
   ];
 

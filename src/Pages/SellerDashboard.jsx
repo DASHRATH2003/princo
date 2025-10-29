@@ -1401,7 +1401,7 @@ const SellerDashboard = () => {
               </div>
               <div className="p-4 space-y-4">
                 <div className="flex items-center space-x-2">
-                  {[['printing','Printing'],['l-mart','L-mart'],['localmarket','Local Market']].map(([value,label]) => (
+                  {[['l-mart','E-market'],['localmarket','Local Market'],['printing','Printing'],['oldee','Oldee'],['news','Today News']].map(([value,label]) => (
                     <button
                       key={value}
                       onClick={() => setSelectedCategory(value)}

@@ -6,7 +6,7 @@ import { getSubcategoriesByCategory } from '../services/subcategoryService'
 
 const EMarket = () => {
   const navigate = useNavigate()
-  const pageTitle = "L-mart"
+  const pageTitle = "E-market"
   const pageDescription = "Online marketplace for electronics and gadgets"
   const [selectedCategory, setSelectedCategory] = useState('All Products')
   const [priceRange, setPriceRange] = useState([0, 332500])
