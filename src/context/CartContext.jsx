@@ -216,8 +216,23 @@ export const CartProvider = ({ children }) => {
       return;
     }
     
-    console.log('Adding to cart:', product);
-    dispatch({ type: CART_ACTIONS.ADD_ITEM, payload: product });
+    // Stock-aware clamp: respect product.stockQuantity minus already-in-cart count
+    const baseId = product.id || product._id;
+    const totalInCart = state.items
+      .filter((it) => it.id === baseId)
+      .reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
+    const stock = Number(product.stockQuantity ?? Infinity);
+    const desired = Number(product.quantity ?? 1);
+    const remaining = isFinite(stock) ? Math.max(0, stock - totalInCart) : desired;
+    const finalQty = isFinite(stock) ? Math.min(desired, remaining) : desired;
+
+    if (isFinite(stock) && finalQty <= 0) {
+      alert('This product is out of stock.');
+      return;
+    }
+
+    console.log('Adding to cart (stock-aware):', { ...product, quantity: finalQty });
+    dispatch({ type: CART_ACTIONS.ADD_ITEM, payload: { ...product, quantity: finalQty, stockQuantity: Number(product.stockQuantity ?? 0) } });
     
     // Auto-hide notification after 3 seconds
     setTimeout(() => {
@@ -230,10 +245,39 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (productId, quantity) => {
+    // Locate item to compute remaining stock excluding its current quantity
+    const idx = state.items.findIndex((it) => (it.uid || it.id) === productId);
+    if (idx === -1) {
+      // Fallback: dispatch as-is
+      const payload = typeof productId === 'string' && productId.includes('::') 
+        ? { uid: productId, quantity } 
+        : { id: productId, quantity };
+      dispatch({ type: CART_ACTIONS.UPDATE_QUANTITY, payload });
+      return;
+    }
+
+    const item = state.items[idx];
+    const baseId = item.id;
+    const othersTotal = state.items
+      .filter((it, j) => it.id === baseId && j !== idx)
+      .reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
+    const stock = Number(item.stockQuantity ?? Infinity);
+    let requested = Number(quantity);
+    if (isNaN(requested)) requested = 0;
+
+    let finalQty = requested;
+    if (isFinite(stock)) {
+      const remaining = Math.max(0, stock - othersTotal);
+      if (requested > remaining) {
+        alert(`Only ${remaining} left in stock.`);
+        finalQty = remaining;
+      }
+    }
+
     // FIXED: Pass both uid and id to handle both cases
     const payload = typeof productId === 'string' && productId.includes('::') 
-      ? { uid: productId, quantity } 
-      : { id: productId, quantity };
+      ? { uid: productId, quantity: finalQty } 
+      : { id: productId, quantity: finalQty };
     
     dispatch({ type: CART_ACTIONS.UPDATE_QUANTITY, payload });
   };

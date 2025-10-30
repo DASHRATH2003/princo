@@ -19,6 +19,7 @@ const ProductDetail = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [relatedLoading, setRelatedLoading] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [quantityWarning, setQuantityWarning] = useState("");
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -105,6 +106,29 @@ const ProductDetail = () => {
     return typeof sc === "string" ? sc : "";
   };
 
+  // Helper: remaining stock after considering items already in cart (across variants)
+  const getRemainingStock = () => {
+    if (!product) return Infinity;
+    const baseId = product._id || product.id;
+    const totalInCartForProduct = (cart || []).filter((it) => it.id === baseId)
+      .reduce((sum, it) => sum + (Number(it.quantity) || 0), 0);
+    const stock = Number(product.stockQuantity ?? 0);
+    if (Number.isNaN(stock) || stock <= 0) return 0;
+    return Math.max(0, stock - totalInCartForProduct);
+  };
+
+  // Auto show out-of-stock warning when nothing is available
+  useEffect(() => {
+    const remaining = getRemainingStock();
+    const OUT_OF_STOCK_MSG = "This product is currently out of stock.";
+    if (remaining === 0) {
+      setQuantityWarning(OUT_OF_STOCK_MSG);
+    } else if (quantityWarning === OUT_OF_STOCK_MSG) {
+      setQuantityWarning("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product, cart]);
+
   const handleAddToCart = () => {
     if (!product) return;
     const effectivePrice =
@@ -124,13 +148,28 @@ const ProductDetail = () => {
     const allImages = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
     const selectedImageSrc = allImages[selectedImageIndex] || product.imageUrl || product.image;
 
+    // Clamp desired quantity based on remaining stock
+    const remaining = getRemainingStock();
+    let desiredQty = Number(quantity) || 1;
+    if (desiredQty > remaining) {
+      setQuantityWarning(`Only ${remaining} item(s) available.`);
+      desiredQty = remaining;
+    }
+    if (desiredQty <= 0) {
+      setQuantityWarning("This product is currently out of stock.");
+      return;
+    }
+    // Clear any previous warning on successful add
+    setQuantityWarning("");
+
     addToCart({
       ...product,
       id: product._id || product.id,
       uid,
       image: selectedImageSrc,
       price: effectivePrice,
-      quantity,
+      quantity: desiredQty,
+      stockQuantity: Number(product.stockQuantity ?? 0),
       selectedSize,
       selectedColor,
     });
@@ -154,13 +193,28 @@ const ProductDetail = () => {
     const allImages = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
     const selectedImageSrc = allImages[selectedImageIndex] || product.imageUrl || product.image;
 
+    // Clamp desired quantity based on remaining stock
+    const remaining = getRemainingStock();
+    let desiredQty = Number(quantity) || 1;
+    if (desiredQty > remaining) {
+      setQuantityWarning(`Only ${remaining} item(s) available.`);
+      desiredQty = remaining;
+    }
+    if (desiredQty <= 0) {
+      setQuantityWarning("This product is currently out of stock.");
+      return;
+    }
+    // Clear any previous warning when proceeding
+    setQuantityWarning("");
+
     const targetItem = {
       ...product,
       id: product._id || product.id,
       uid,
       image: selectedImageSrc,
       price: effectivePrice,
-      quantity,
+      quantity: desiredQty,
+      stockQuantity: Number(product.stockQuantity ?? 0),
       selectedSize,
       selectedColor,
     };
@@ -186,7 +240,18 @@ const ProductDetail = () => {
     navigate('/checkout');
   };
 
-  const incrementQuantity = () => setQuantity((q) => q + 1);
+  const incrementQuantity = () => {
+    const remaining = getRemainingStock();
+    setQuantity((q) => {
+      const next = Number(q || 0) + 1;
+      if (next > remaining) {
+        setQuantityWarning(`Only ${remaining} item(s) available.`);
+        return Math.max(1, remaining);
+      }
+      setQuantityWarning("");
+      return next;
+    });
+  };
   const decrementQuantity = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
   
   const handleQuantityChange = (e) => {
@@ -194,12 +259,20 @@ const ProductDetail = () => {
     // Allow empty string for user to clear and type new number
     if (value === '') {
       setQuantity('');
+      setQuantityWarning("");
       return;
     }
     // Parse and validate the number
     const num = parseInt(value, 10);
     if (!isNaN(num) && num >= 1) {
-      setQuantity(num);
+      const remaining = getRemainingStock();
+      if (num > remaining) {
+        setQuantityWarning(`Only ${remaining} item(s) available.`);
+        setQuantity(Math.max(1, remaining));
+      } else {
+        setQuantity(num);
+        setQuantityWarning("");
+      }
     }
   };
 
@@ -207,6 +280,14 @@ const ProductDetail = () => {
     // If quantity is empty or invalid, reset to 1
     if (quantity === '' || quantity < 1) {
       setQuantity(1);
+    }
+    // Also clamp to remaining stock
+    const remaining = getRemainingStock();
+    if (Number(quantity) > remaining) {
+      setQuantityWarning(`Only ${remaining} item(s) available.`);
+      setQuantity(Math.max(1, remaining));
+    } else {
+      setQuantityWarning("");
     }
   };
 
@@ -541,14 +622,17 @@ const ProductDetail = () => {
                 className="px-4 py-2 border border-gray-300 rounded-md w-20 text-center focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
+            {quantityWarning && (
+              <div className="text-sm text-red-600">{quantityWarning}</div>
+            )}
           </div>
 
           <div className="mt-6 flex gap-3">
             <button
               onClick={handleAddToCart}
-              disabled={!product.inStock}
+              disabled={!product.inStock || getRemainingStock() === 0}
               className={`flex-1 py-2 rounded-md text-white font-medium transition ${
-                product.inStock
+                product.inStock && getRemainingStock() > 0
                   ? "bg-purple-600 hover:bg-purple-700"
                   : "bg-gray-400 cursor-not-allowed"
               }`}
@@ -557,9 +641,9 @@ const ProductDetail = () => {
             </button>
             <button
               onClick={handleBuyNow}
-              disabled={!product.inStock}
+              disabled={!product.inStock || getRemainingStock() === 0}
               className={`flex-1 py-2 rounded-md text-white font-medium transition ${
-                product.inStock
+                product.inStock && getRemainingStock() > 0
                   ? "bg-green-600 hover:bg-green-700"
                   : "bg-gray-400 cursor-not-allowed"
               }`}
