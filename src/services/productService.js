@@ -159,10 +159,23 @@ export const updateProduct = async (productId, productData) => {
       }
     });
 
-    const response = await fetch(`${API_BASE_URL}/products/update/${productId}`, {
+    const adminToken = localStorage.getItem('adminToken');
+    const sellerToken = localStorage.getItem('sellerToken');
+    const isAdmin = !!adminToken;
+    const token = adminToken || sellerToken;
+
+    if (!token) {
+      throw new Error('Authentication token not found. Please login again.');
+    }
+
+    const url = isAdmin
+      ? `${API_BASE_URL}/products/update/${productId}`
+      : `${API_BASE_URL}/seller/products/${productId}`;
+
+    const response = await fetch(url, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('sellerToken') || localStorage.getItem('adminToken')}`
+        'Authorization': `Bearer ${token}`
       },
       body: formData
     });

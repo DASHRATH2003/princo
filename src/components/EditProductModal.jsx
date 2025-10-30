@@ -32,7 +32,10 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
         offerPrice: product.offerPrice ?? '',
         category: product.category || product.category?.value || '',
         subcategory: typeof product.subcategory === 'object' ? (product.subcategory?.name || '') : (product.subcategory || ''),
-        colorVarients: Array.isArray(product.colorVarients) ? product.colorVarients : (product.colorVarients ? String(product.colorVarients).split(',').map(s => s.trim()) : ['']),
+        // Ensure we load colors as plain strings for editing chips
+        colorVarients: Array.isArray(product.colorVarients)
+          ? product.colorVarients.map(v => (typeof v === 'string' ? v : (v && v.color ? String(v.color) : '')))
+          : (product.colorVarients ? String(product.colorVarients).split(',').map(s => s.trim()) : ['']),
         sizeVarients: Array.isArray(product.sizeVarients) ? product.sizeVarients : (product.sizeVarients ? String(product.sizeVarients).split(',').map(s => s.trim()) : ['']),
         inStock: product.inStock !== undefined ? product.inStock : true,
         stockQuantity: product.stockQuantity ?? 0,

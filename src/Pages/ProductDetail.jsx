@@ -268,7 +268,16 @@ const ProductDetail = () => {
     if (!product) return;
     // If colorVarients are objects with images, switch to the first image for that color when available
     const variants = Array.isArray(product.colorVarients) ? product.colorVarients : [];
-    const allImages = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
+    // Use deduped display images to avoid duplicate indexing
+    const allImagesRaw = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
+    const seen = new Set();
+    const allImages = [];
+    allImagesRaw.forEach((u) => {
+      const key = String(u || '').trim();
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      allImages.push(u);
+    });
     const match = variants.find((v) => {
       const name = typeof v === "string" ? v : (v?.color || "");
       return name.toLowerCase() === (color || "").toLowerCase();
@@ -281,8 +290,8 @@ const ProductDetail = () => {
       // Fallback: try by position of color name among normalized list
       const colors = toList(product.colorVarients);
       const idx = colors.findIndex((c) => (c || "").toLowerCase() === (color || "").toLowerCase());
-      // Map color index to product.images index; add 1 because allImages[0] is the main image
-      const mappedIndex = idx >= 0 ? (idx + 1) : -1;
+      // Map color index to image index; add 1 because index 0 is usually main image
+      const mappedIndex = idx >= 0 ? Math.min(idx + 1, allImages.length - 1) : -1;
       if (mappedIndex >= 0 && mappedIndex < allImages.length) setSelectedImageIndex(mappedIndex);
     }
   };
@@ -350,46 +359,67 @@ const ProductDetail = () => {
                 className="w-full h-[400px] object-contain bg-gray-50"
               />
             ) : (
-              <img
-                src={
-                  selectedImageIndex === 0
-                    ? product.imageUrl || product.image
-                    : product.images?.[selectedImageIndex - 1]
-                }
-                alt={product.name}
-                className="w-full h-[400px] object-contain bg-gray-50"
-                onError={(e) => { e.target.src = '/no-image.svg'; }}
-              />
+              (() => {
+                const all = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
+                const seen = new Set();
+                const displayImages = [];
+                all.forEach((u) => {
+                  const key = String(u || '').trim();
+                  if (!key || seen.has(key)) return;
+                  seen.add(key);
+                  displayImages.push(u);
+                });
+                const current = displayImages[selectedImageIndex] || displayImages[0] || '/no-image.svg';
+                return (
+                  <img
+                    src={current}
+                    alt={product.name}
+                    className="w-full h-[400px] object-contain bg-gray-50"
+                    onError={(e) => { e.target.src = '/no-image.svg'; }}
+                  />
+                );
+              })()
             )}
 
             <div className="flex gap-3 p-3 justify-center flex-wrap bg-gray-100">
-              {(product.imageUrl || product.image) && (
-                <img
-                  src={product.imageUrl || product.image}
-                  alt="Main"
-                  onClick={() => { setSelectedMedia('image'); setSelectedImageIndex(0); }}
-                  className={`w-16 h-16 object-contain bg-white cursor-pointer rounded-md border-2 ${
-                    selectedImageIndex === 0
-                      ? "border-purple-600"
-                      : "border-gray-300"
-                  }`}
-                  onError={(e) => { e.target.src = '/no-image.svg'; }}
-                />
-              )}
-              {product.images?.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Thumbnail ${index}`}
-                  onClick={() => { setSelectedMedia('image'); setSelectedImageIndex(index + 1); }}
-                  className={`w-16 h-16 object-contain bg-white cursor-pointer rounded-md border-2 ${
-                    selectedImageIndex === index + 1
-                      ? "border-purple-600"
-                      : "border-gray-300"
-                  }`}
-                  onError={(e) => { e.target.src = '/no-image.svg'; }}
-                />
-              ))}
+              {(() => {
+                const all = [product.imageUrl || product.image, ...(product.images || [])].filter(Boolean);
+                const seen = new Set();
+                const displayImages = [];
+                all.forEach((u) => {
+                  const key = String(u || '').trim();
+                  if (!key || seen.has(key)) return;
+                  seen.add(key);
+                  displayImages.push(u);
+                });
+                return displayImages.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`Thumbnail ${index}`}
+                    onClick={() => {
+                      setSelectedMedia('image');
+                      setSelectedImageIndex(index);
+                      // When clicking an image, auto-select matching color variant if any
+                      const variants = Array.isArray(product.colorVarients) ? product.colorVarients : [];
+                      const match = variants.find((v) => {
+                        const imgs = typeof v === 'string' ? [] : (v?.images || []);
+                        return imgs.includes(img);
+                      });
+                      if (match && typeof match !== 'string') {
+                        const name = (match.color || '').trim();
+                        if (name) setSelectedColor(name);
+                      }
+                    }}
+                    className={`w-16 h-16 object-contain bg-white cursor-pointer rounded-md border-2 ${
+                      selectedImageIndex === index
+                        ? "border-purple-600"
+                        : "border-gray-300"
+                    }`}
+                    onError={(e) => { e.target.src = '/no-image.svg'; }}
+                  />
+                ));
+              })()}
               {product.videoUrl && (
                 <button
                   type="button"

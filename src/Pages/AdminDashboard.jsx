@@ -2137,6 +2137,7 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Product</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Price</th>
+                    <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Stock</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Color variants</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Size variants</th>
                     <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
@@ -2165,6 +2166,11 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
                           </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">₹{product.price}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {Number(product.stockQuantity || 0)} in stock
+                          </span>
+                        </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <div className="flex items-center space-x-2">
                             {Array.isArray(product.colorVarients) && product.colorVarients.length > 0 ? (
@@ -3278,6 +3284,7 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
                       <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Name</th>
                       <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Category</th>
                       <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Price</th>
+                      <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Stock</th>
                       <th className="px-4 py-2 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
                     </tr>
                   </thead>
@@ -3299,6 +3306,11 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 capitalize">{p.category || '—'}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">₹{p.price}</td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            {Number(p.stockQuantity || 0)} in stock
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${p.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                             {p.isActive ? 'Active' : 'Inactive'}
                           </span>
@@ -3307,7 +3319,7 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
                     ))}
                     {sellerProducts.length === 0 && !sellerProductsLoading && (
                       <tr>
-                        <td className="px-4 py-6 text-center text-sm text-gray-500" colSpan={5}>No products found for this seller</td>
+                        <td className="px-4 py-6 text-center text-sm text-gray-500" colSpan={6}>No products found for this seller</td>
                       </tr>
                     )}
                   </tbody>

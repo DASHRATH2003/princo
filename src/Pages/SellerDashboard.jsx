@@ -1616,7 +1616,7 @@ const SellerDashboard = () => {
                           <td className="px-4 py-3 whitespace-nowrap text-sm font-bold text-green-600">₹{product.price}</td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm">
                             <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                              {product.stock || 0} in stock
+                              {Number(product.stockQuantity || 0)} in stock
                             </span>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm">
