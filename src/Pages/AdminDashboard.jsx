@@ -299,6 +299,8 @@ const subCategories = ['l-mart', 'localmarket', 'printing', 'news', 'oldee'];
       };
 
       const API_BASE_URL = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      // Keep locally fetched orders so we can compute customer metrics reliably
+      let fetchedOrders = [];
       
       // Fetch dashboard statistics from backend
       try {
@@ -334,6 +336,8 @@ const subCategories = ['l-mart', 'localmarket', 'printing', 'news', 'oldee'];
             customerCity: order.customerCity || 'N/A',
             customerPincode: order.customerPincode || 'N/A'
           }));
+          // Store locally for downstream computations
+          fetchedOrders = formattedOrders;
           setOrders(formattedOrders);
         }
       } catch (error) {
@@ -367,7 +371,24 @@ const subCategories = ['l-mart', 'localmarket', 'printing', 'news', 'oldee'];
         const customersResponse = await fetch(`${API_BASE_URL}/api/dashboard/customers`, { headers });
         if (customersResponse.ok) {
           const customersData = await customersResponse.json();
-          setCustomers(customersData);
+          // Calculate orderCount and totalSpent for each customer using fetchedOrders
+          const customersWithOrderInfo = (Array.isArray(customersData) ? customersData : []).map((customer) => {
+            const custEmail = String(customer.email || '').trim().toLowerCase();
+            const custName = String(customer.name || '').trim().toLowerCase();
+            const ordersForCustomer = (fetchedOrders || []).filter((order) => {
+              const email = String(order.customerEmail || '').trim().toLowerCase();
+              const name = String(order.customerName || '').trim().toLowerCase();
+              return (custEmail && email && email === custEmail) || (custName && name && name === custName);
+            });
+            const orderCount = ordersForCustomer.length;
+            const totalSpent = ordersForCustomer.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+            return {
+              ...customer,
+              orderCount,
+              totalSpent
+            };
+          });
+          setCustomers(customersWithOrderInfo);
         }
       } catch (error) {
         console.error('Error fetching customers:', error);

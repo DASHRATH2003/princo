@@ -167,7 +167,6 @@ const cartReducer = (state, action) => {
       return state;
   }
 };
-
 // Initial State
 const initialState = {
   items: [],
