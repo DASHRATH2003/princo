@@ -432,46 +432,47 @@ const SellerAddProductModal = ({ isOpen, onClose, onProductAdded }) => {
                 {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
               </div>
 
-              {/* Price */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price (₹) *
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.price ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter price"
-                />
-                {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
-              </div>
+              {/* Price + Offer Price side-by-side */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Price (₹) *
+                  </label>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.price ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter price"
+                  />
+                  {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+                </div>
 
-              {/* Offer Price (Optional) */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Offer Price (₹) <span className="text-gray-500">(Optional)</span>
-                </label>
-                <input
-                  type="number"
-                  name="offerPrice"
-                  value={formData.offerPrice}
-                  onChange={handleInputChange}
-                  min="0"
-                  step="0.01"
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.offerPrice ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter offer price (optional)"
-                />
-                {errors.offerPrice && (
-                  <p className="text-red-500 text-sm mt-1">{errors.offerPrice}</p>
-                )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Offer Price (₹) <span className="text-gray-500">(Optional)</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="offerPrice"
+                    value={formData.offerPrice}
+                    onChange={handleInputChange}
+                    min="0"
+                    step="0.01"
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      errors.offerPrice ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter offer price (optional)"
+                  />
+                  {errors.offerPrice && (
+                    <p className="text-red-500 text-sm mt-1">{errors.offerPrice}</p>
+                  )}
+                </div>
               </div>
 
               {/* Category */}
