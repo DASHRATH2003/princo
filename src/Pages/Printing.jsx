@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useWishlist } from '../context/WishlistContext'
 import { getProductsByCategory } from '../services/productService'
 import { getSubcategoriesByCategory } from '../services/subcategoryService'
+import { calculateDiscountPercent } from '../utils/discount'
 
 // Add custom CSS animations
 const customStyles = `
@@ -168,6 +170,7 @@ if (typeof document !== 'undefined') {
 const Printing = () => {
   const navigate = useNavigate()
   const { addToCart } = useCart()
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist()
   const [selectedCategory, setSelectedCategory] = useState('All Products')
   const [priceRange, setPriceRange] = useState([0, 25000])
   const [showFilters, setShowFilters] = useState(false)
@@ -175,6 +178,7 @@ const Printing = () => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [categories, setCategories] = useState(['All Products'])
+  const [selectedRating, setSelectedRating] = useState(0)
 
   const getSubcategoryName = (sc) => {
     if (sc && typeof sc === 'object') {
@@ -242,7 +246,13 @@ const Printing = () => {
                           (subName && subName === selectedCategory)
     const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1]
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesCategory && matchesPrice && matchesSearch
+    const getProductRating = (p) => {
+      const raw = p?.averageRating ?? p?.rating ?? (typeof p?.ratings === 'number' ? p?.ratings : null)
+      const num = typeof raw === 'string' ? parseFloat(raw) : raw
+      return Number.isFinite(num) ? num : 0
+    }
+    const matchesRating = selectedRating === 0 || getProductRating(product) >= selectedRating
+    return matchesCategory && matchesPrice && matchesSearch && matchesRating
   })
 
   return (
@@ -286,41 +296,33 @@ const Printing = () => {
               </div>
             </div>
 
-            {/* Service Type Filter */}
+            {/* Rating Filter */}
             <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Service Type</h3>
+              <h3 className="font-semibold text-gray-800 mb-4">Customer Rating</h3>
               <div className="space-y-2">
-                {['Design Only', 'Print Only', 'Design + Print', 'Rush Service'].map((type) => (
-                  <div key={type} className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      id={type}
-                      className="text-green-600 focus:ring-green-500 border-gray-300 rounded flex-shrink-0"
-                    />
-                    <label htmlFor={type} className="cursor-pointer text-sm text-gray-700 flex-1 truncate">
-                      {type}
-                    </label>
-                  </div>
+                {[5,4,3,2,1].map((stars) => (
+                  <button
+                    key={stars}
+                    onClick={() => setSelectedRating(stars)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-md border transition-colors ${selectedRating === stars ? 'border-green-600 bg-green-50 text-green-700' : 'border-gray-200 hover:border-green-400'}`}
+                    aria-label={`Filter ${stars} stars & up`}
+                  >
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className={`w-4 h-4 ${i < stars ? 'text-yellow-400' : 'text-gray-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <span className="text-xs text-gray-600">{stars}★ & up</span>
+                  </button>
                 ))}
-              </div>
-            </div>
-
-            {/* Delivery Time Filter */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Delivery Time</h3>
-              <div className="space-y-2">
-                {['Same Day', '1-2 days', '3-5 days', '1 week', '2+ weeks'].map((delivery) => (
-                  <div key={delivery} className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      id={delivery}
-                      className="text-green-600 focus:ring-green-500 border-gray-300 rounded flex-shrink-0"
-                    />
-                    <label htmlFor={delivery} className="cursor-pointer text-sm text-gray-700 flex-1 truncate">
-                      {delivery}
-                    </label>
-                  </div>
-                ))}
+                <button
+                  onClick={() => setSelectedRating(0)}
+                  className="w-full mt-2 text-xs text-gray-600 underline"
+                >
+                  Clear rating
+                </button>
               </div>
             </div>
 
@@ -392,11 +394,34 @@ const Printing = () => {
                         onError={(e) => { e.currentTarget.src = '/no-image.svg' }}
                         onClick={() => navigate(`/product/${product._id}`)}
                       />
-                      {product.discount > 0 && (
-                        <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs">
-                          {product.discount}% OFF
-                        </div>
-                      )}
+                      {(() => {
+                        const pct = calculateDiscountPercent(product.price, product.offerPrice);
+                        return pct > 0 ? (
+                          <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs">
+                            {pct}% OFF
+                          </div>
+                        ) : null;
+                      })()}
+                      {/* Wishlist Heart Icon */}
+                      {(() => {
+                        const pid = product._id || product.id;
+                        const wished = isWishlisted(pid);
+                        return (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (wished) removeFromWishlist(pid);
+                              else addToWishlist(product);
+                            }}
+                            className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+                            aria-label="Toggle wishlist"
+                          >
+                            <svg className={`w-4 h-4 ${wished ? 'text-red-500' : 'text-gray-400'}`} fill={wished ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                          </button>
+                        );
+                      })()}
                     </div>
                     <div className="p-4">
                       <h3 className="font-medium text-gray-900 mb-2 text-sm line-clamp-2">{product.name}</h3>

@@ -90,6 +90,9 @@ const SellerLogin = () => {
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
+            <div className="mt-2 text-right">
+              <Link to="/forgot-password" className="text-sm text-purple-600 hover:underline">Forgot password?</Link>
+            </div>
           </div>
 
           {successMessage && <div className="text-green-600 text-sm text-center bg-green-50 border border-green-200 rounded-lg p-3">{successMessage}</div>}

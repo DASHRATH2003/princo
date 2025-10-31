@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import logo from "../assets/newlmart.png";
 import { getCurrentUser, logoutUser } from "../services/authService";
 import { searchProducts } from "../services/productService";
@@ -34,6 +35,8 @@ const Navbar = () => {
     getSelectedItemsCount,
   } = useCart();
   const cartItemsCount = getCartItemsCount();
+  const { getWishlistCount } = useWishlist();
+  const wishlistCount = getWishlistCount();
 
   // NEW: track which nav path should be highlighted (supports product detail pages)
   const [highlightPath, setHighlightPath] = useState(location.pathname);
@@ -292,24 +295,19 @@ const Navbar = () => {
           {/* Mobile Contact - Visible only on mobile */}
           <div className="md:hidden flex items-center space-x-2">
             
-            {/* Mobile Home Icon */}
+            {/* Mobile Wishlist Icon (replaces Home) */}
             <button
-              onClick={() => navigate("/")}
-              className="w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
+              onClick={() => navigate("/wishlist")}
+              className="relative w-8 h-8 border border-purple-300 rounded-full flex items-center justify-center bg-white hover:bg-gray-50 transition duration-200"
             >
-              <svg
-                className="w-4 h-4 text-orange-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                />
+              <svg className="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              )}
             </button>
             {/* Mobile Login/Profile Icon */}
             {!currentUser ? (
@@ -699,6 +697,22 @@ const Navbar = () => {
                   Download
                 </button>
               </div>
+
+              {/* Desktop Wishlist Icon */}
+              <button
+                className="relative p-2 rounded-full hover:bg-gray-100"
+                onClick={() => navigate('/wishlist')}
+                aria-label="Wishlist"
+              >
+                <svg className="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                  </span>
+                )}
+              </button>
 
               <Link
                 to="/contact"

@@ -6,7 +6,8 @@ const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [resetUrl, setResetUrl] = useState('');
+  // We no longer expose resetUrl on the page; users should open the
+  // reset link directly from their email inbox.
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,9 +17,7 @@ const ForgotPassword = () => {
     try {
       const res = await forgotPassword({ email });
       setMessage(res.message || 'If the email exists, a reset link has been sent');
-      if (res.resetUrl) {
-        setResetUrl(res.resetUrl);
-      }
+      // Ignore any resetUrl returned from backend to avoid showing it here.
     } catch (err) {
       setError(err.message || 'Failed to request reset');
     } finally {
@@ -38,13 +37,7 @@ const ForgotPassword = () => {
           </div>
           {message && <div className="text-green-600 text-sm text-center">{message}</div>}
           {error && <div className="text-red-600 text-sm text-center">{error}</div>}
-          {resetUrl && (
-            <div className="text-center text-sm mt-2">
-              <a href={resetUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 underline">
-                Open Reset Link
-              </a>
-            </div>
-          )}
+          {/* No direct reset link shown; check email to proceed. */}
           <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-60">
             {loading ? 'Sending...' : 'Send Reset Link'}
           </button>

@@ -5,9 +5,12 @@ import { getAllProducts } from '../services/productService';
 import { getPosters } from '../services/posterService';
 import { getBanners } from '../services/bannerService';
 import { getSubcategoriesByCategory } from '../services/subcategoryService';
+import { calculateDiscountPercent } from '../utils/discount';
+import { useWishlist } from '../context/WishlistContext';
 
 const Home = () => {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -524,16 +527,36 @@ const Home = () => {
                       e.target.src = 'https://via.placeholder.com/150?text=Product+Image';
                     }}
                   />
-                  {/* Discount Badge */}
-                  <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
-                    -15%
-                  </div>
-                  {/* Heart Icon */}
-                  <div className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-100 transition-colors">
-                    <svg className="w-4 h-4 text-gray-400 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </div>
+                  {/* Discount Badge (computed) */}
+                  {(() => {
+                    const pct = calculateDiscountPercent(product.price, product.offerPrice);
+                    return pct > 0 ? (
+                      <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-semibold">-{pct}%</div>
+                    ) : null;
+                  })()}
+                  {/* Wishlist Heart Icon */}
+                  {(() => {
+                    const pid = product._id || product.id;
+                    const wished = isWishlisted(pid);
+                    return (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (wished) {
+                            removeFromWishlist(pid);
+                          } else {
+                            addToWishlist(product);
+                          }
+                        }}
+                        className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+                        aria-label="Toggle wishlist"
+                      >
+                        <svg className={`w-4 h-4 ${wished ? 'text-red-500' : 'text-gray-400'}`} fill={wished ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </button>
+                    );
+                  })()}
                 </div>
                 
                 {/* Product Info */}
@@ -621,10 +644,13 @@ const Home = () => {
                       e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM5QjlCOUIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD4KPC9zdmc+Cg==';
                     }}
                   />
-                  {/* Discount Badge */}
-                  <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
-                    -25%
-                  </div>
+                  {/* Discount Badge (computed) */}
+                  {(() => {
+                    const pct = calculateDiscountPercent(product.price, product.offerPrice);
+                    return pct > 0 ? (
+                      <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-semibold">-{pct}%</div>
+                    ) : null;
+                  })()}
                   {/* Heart Icon */}
                   <div className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md cursor-pointer hover:bg-gray-100 transition-colors">
                     <svg className="w-4 h-4 text-gray-400 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">

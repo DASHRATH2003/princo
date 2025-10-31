@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
+import { WishlistProvider } from './context/WishlistContext'
 import { OrderProvider } from './context/OrderContext'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
@@ -31,6 +32,7 @@ import ProductDetail from './Pages/ProductDetail'
 import Contact from './Pages/Contact'
 import NotFound from './Pages/NotFound'
 import SearchResults from './Pages/SearchResults'
+import Wishlist from './Pages/Wishlist'
 import ForgotPassword from './Pages/ForgotPassword.jsx'
 import ResetPassword from './Pages/ResetPassword.jsx'
 import OrderDetails from './components/OrderDetails';
@@ -79,6 +81,7 @@ const App = () => {
   return (
     <OrderProvider>
       <CartProvider>
+        <WishlistProvider>
         <Router>
           <ScrollToTop />
           <Routes>
@@ -109,6 +112,7 @@ const App = () => {
                   <main className="flex-1">
                     <Routes>
                       <Route path="/" element={<Home />} />
+                      <Route path="/wishlist" element={<Wishlist />} />
                       <Route path="/printing" element={<Printing />} />
                       <Route path="/oldee" element={<Oldee />} />
                       <Route path="/e-market" element={<EMarket />} />
@@ -143,6 +147,7 @@ const App = () => {
             } />
           </Routes>
         </Router>
+        </WishlistProvider>
       </CartProvider>
     </OrderProvider>
   )

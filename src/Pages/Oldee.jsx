@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
+import { useWishlist } from '../context/WishlistContext'
 import { getProductsByCategory } from '../services/productService'
 import { getSubcategoriesByCategory } from '../services/subcategoryService'
+import { calculateDiscountPercent } from '../utils/discount'
 
 // Reuse animations and styles from Printing page
 const customStyles = `
@@ -35,6 +37,7 @@ if (typeof document !== 'undefined') {
 const Oldee = () => {
   const navigate = useNavigate()
   const { addToCart } = useCart()
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist()
   const [selectedCategory, setSelectedCategory] = useState('All Products')
   const [priceRange, setPriceRange] = useState([0, 25000])
   const [showFilters, setShowFilters] = useState(false)
@@ -240,11 +243,34 @@ const Oldee = () => {
                         onError={(e) => { e.currentTarget.src = '/no-image.svg' }}
                         onClick={() => navigate(`/product/${product._id}`)}
                       />
-                      {product.discount > 0 && (
-                        <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs">
-                          {product.discount}% OFF
-                        </div>
-                      )}
+                      {(() => {
+                        const pct = calculateDiscountPercent(product.price, product.offerPrice);
+                        return pct > 0 ? (
+                          <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs">
+                            {pct}% OFF
+                          </div>
+                        ) : null;
+                      })()}
+                      {/* Wishlist Heart Icon */}
+                      {(() => {
+                        const pid = product._id || product.id;
+                        const wished = isWishlisted(pid);
+                        return (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (wished) removeFromWishlist(pid);
+                              else addToWishlist(product);
+                            }}
+                            className="absolute top-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors"
+                            aria-label="Toggle wishlist"
+                          >
+                            <svg className={`w-4 h-4 ${wished ? 'text-red-500' : 'text-gray-400'}`} fill={wished ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                          </button>
+                        );
+                      })()}
                     </div>
                     <div className="p-4">
                       <h3 className="font-medium text-gray-900 mb-2 text-sm line-clamp-2">{product.name}</h3>

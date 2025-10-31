@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ratingState, setRatingState] = useState({}); // { [productId]: { rating, comment, submitting } }
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -117,6 +118,77 @@ const MyOrders = () => {
     } catch (error) {
       console.error("Error cancelling order:", error);
       alert("Error cancelling order.");
+    }
+  };
+
+  const getApiBaseUrl = () => {
+    const API_ROOT = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '').replace('/api', '');
+    return `${API_ROOT}/api`;
+  };
+
+  const setItemRating = (productId, rating) => {
+    setRatingState((prev) => ({
+      ...prev,
+      [productId]: { ...(prev[productId] || {}), rating }
+    }));
+  };
+
+  const setItemComment = (productId, comment) => {
+    setRatingState((prev) => ({
+      ...prev,
+      [productId]: { ...(prev[productId] || {}), comment }
+    }));
+  };
+
+  const submitRating = async (productId, orderId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login to rate products.");
+        navigate('/login');
+        return;
+      }
+
+      const API_BASE_URL = getApiBaseUrl();
+      const rating = Number(ratingState[productId]?.rating || 0);
+      const comment = String(ratingState[productId]?.comment || '').trim();
+
+      if (!rating || rating < 1 || rating > 5) {
+        alert("Please select a star rating between 1 and 5.");
+        return;
+      }
+
+      setRatingState((prev) => ({
+        ...prev,
+        [productId]: { ...(prev[productId] || {}), submitting: true }
+      }));
+
+      const response = await fetch(`${API_BASE_URL}/products/rate/${productId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ rating, orderId, comment }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        alert('Thanks! Your rating has been submitted.');
+        // Optional: refresh orders to reflect any changes
+        // fetchOrders();
+      } else {
+        alert(data.message || 'Failed to submit rating.');
+      }
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+      alert('Error submitting rating.');
+    } finally {
+      setRatingState((prev) => ({
+        ...prev,
+        [productId]: { ...(prev[productId] || {}), submitting: false }
+      }));
     }
   };
 
@@ -274,6 +346,69 @@ const MyOrders = () => {
                       ))}
                     </div>
                   </div>
+
+                  {/* Rating Section: Show only when delivered */}
+                  {String(order.status || '').toLowerCase() === 'delivered' && (
+                    <div className="border-t pt-4 mt-4">
+                      <h4 className="font-semibold text-gray-900 mb-3">Rate Your Products</h4>
+                      <div className="space-y-3">
+                        {order.items?.map((item, idx) => {
+                          const productId = item.productId || item._id || item.id;
+                          const state = ratingState[productId] || {};
+                          const selected = Number(state.rating || 0);
+                          return (
+                            <div key={`rate-${idx}`} className="p-3 bg-white border rounded-lg">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-10 h-10 rounded overflow-hidden border bg-gray-50">
+                                    <img
+                                      src={(item?.image || item?.imageUrl || '').trim() || '/no-image.svg'}
+                                      alt={item?.name || 'Product image'}
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => { e.currentTarget.src = '/no-image.svg'; }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-900">{item.name}</p>
+                                    <div className="flex space-x-1 mt-1">
+                                      {[1,2,3,4,5].map((star) => (
+                                        <button
+                                          key={star}
+                                          type="button"
+                                          onClick={() => setItemRating(productId, star)}
+                                          className={`text-xl ${selected >= star ? 'text-yellow-500' : 'text-gray-300'} hover:text-yellow-500`}
+                                          title={`${star} star${star>1?'s':''}`}
+                                        >
+                                          ★
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="text"
+                                    placeholder="Optional comment"
+                                    value={state.comment || ''}
+                                    onChange={(e) => setItemComment(productId, e.target.value)}
+                                    className="w-48 px-3 py-2 border rounded-md text-sm"
+                                  />
+                                  <button
+                                    onClick={() => submitRating(productId, order.orderId)}
+                                    disabled={!selected || state.submitting}
+                                    className={`px-4 py-2 rounded-md text-white text-sm font-medium ${(!selected || state.submitting) ? 'bg-gray-300 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'}`}
+                                  >
+                                    {state.submitting ? 'Submitting...' : 'Submit Rating'}
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">You can rate delivered items only.</p>
+                    </div>
+                  )}
 
                   {/* Customer Info */}
                   <div className="border-t pt-4 mt-4">

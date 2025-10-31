@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { getProductsByCategory } from "../services/productService";
 import LoginModal from "../components/LoginModal";
 import { getCurrentUser } from "../services/authService";
@@ -9,6 +10,7 @@ const ProductDetail = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
   const { addToCart, items: cart, setSelected } = useCart();
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -649,6 +651,24 @@ const ProductDetail = () => {
               }`}
             >
               Buy Now
+            </button>
+            <button
+              onClick={() => {
+                if (!product) return;
+                const pid = product._id || product.id;
+                if (isWishlisted(pid)) {
+                  removeFromWishlist(pid);
+                } else {
+                  addToWishlist(product);
+                }
+              }}
+              className={`px-4 py-2 rounded-md text-white font-medium transition ${
+                isWishlisted(product?._id || product?.id)
+                  ? "bg-pink-600 hover:bg-pink-700"
+                  : "bg-gray-600 hover:bg-gray-700"
+              }`}
+            >
+              {isWishlisted(product?._id || product?.id) ? "Remove Wishlist" : "Add to Wishlist"}
             </button>
           </div>
         </div>
