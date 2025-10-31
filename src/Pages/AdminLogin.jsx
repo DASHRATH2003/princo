@@ -35,9 +35,15 @@ const AdminLogin = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('adminToken', data.token);
-        localStorage.setItem('adminUser', JSON.stringify(data.user));
-        navigate('/admin/dashboard');
+        const role = String(data?.user?.role || '').toLowerCase();
+        // Only allow admin role to access admin dashboard
+        if (role !== 'admin') {
+          setError('Admin access required. Please login with an admin account.');
+        } else {
+          localStorage.setItem('adminToken', data.token);
+          localStorage.setItem('adminUser', JSON.stringify(data.user));
+          navigate('/admin/dashboard');
+        }
       } else {
         setError(data.message || 'Login failed');
       }

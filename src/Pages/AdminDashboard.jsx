@@ -162,8 +162,26 @@ const subCategories = ['l-mart', 'localmarket', 'printing', 'news', 'oldee'];
     
     // Get admin user data from localStorage
     const userData = localStorage.getItem('adminUser');
-    if (userData) {
-      setAdminUser(JSON.parse(userData));
+    if (!userData) {
+      localStorage.removeItem('adminToken');
+      navigate('/admin/login');
+      return;
+    }
+    try {
+      const parsed = JSON.parse(userData);
+      // Enforce admin role on dashboard access
+      if (String(parsed?.role || '').toLowerCase() !== 'admin') {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        navigate('/admin/login');
+        return;
+      }
+      setAdminUser(parsed);
+    } catch (_) {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminUser');
+      navigate('/admin/login');
+      return;
     }
     
     fetchDashboardData();
