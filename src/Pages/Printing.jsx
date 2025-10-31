@@ -220,8 +220,10 @@ const Printing = () => {
         // Fetch subcategories from backend
         try {
           const subcategories = await getSubcategoriesByCategory('printing')
-          const subcategoryNames = ['All Products', ...subcategories.map(sub => sub.name)]
-          setCategories(subcategoryNames)
+          // Ensure 'All Products' appears only once and remove duplicate/empty names
+          const subcategoryNames = ['All Products', ...subcategories.map(sub => sub.name).filter(Boolean)]
+          const uniqueCategoryNames = Array.from(new Set(subcategoryNames.map(n => n.trim())))
+          setCategories(uniqueCategoryNames)
         } catch (subError) {
           console.error('Error fetching subcategories:', subError)
           // Fallback to extracting from products if subcategory fetch fails

@@ -62,8 +62,10 @@ const EMarket = () => {
         // Fetch subcategories from backend
         try {
           const subcategories = await getSubcategoriesByCategory('l-mart')
-          const subcategoryNames = ['All Products', ...subcategories.map(sub => sub.name)]
-          setCategories(subcategoryNames)
+          // Ensure we do not duplicate 'All Products' or any subcategory names
+          const subcategoryNames = ['All Products', ...subcategories.map(sub => sub.name).filter(Boolean)]
+          const uniqueCategoryNames = Array.from(new Set(subcategoryNames.map(n => n.trim())))
+          setCategories(uniqueCategoryNames)
         } catch (subError) {
           console.error('Error fetching subcategories:', subError)
           // Fallback to extracting from products if subcategory fetch fails
