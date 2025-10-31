@@ -29,30 +29,10 @@ const OrderSuccess = () => {
     }
   }
   
-  // ✅ FIXED: Emergency fallback for testing
+  // If no order data in state or sessionStorage, do NOT inject test data
+  // This prevents saving placeholder orders like "Test User" in Admin Dashboard
   if (!orderData) {
-    console.log('⚠️ No order data found, using test data for debugging');
-    orderData = {
-      paymentId: 'test_pay_' + Date.now(),
-      orderId: 'ORDTEST' + Date.now(),
-      amount: 999,
-      items: [{ 
-        name: 'Test Product', 
-        quantity: 1, 
-        price: 999,
-        size: 'M',
-        color: 'Red'
-      }],
-      customerInfo: { 
-        name: 'Test User', 
-        email: 'test@example.com',
-        phone: '9876543210',
-        address: 'Test Address',
-        city: 'Test City',
-        pincode: '123456'
-      }
-    };
-    console.log('🧪 Using test data:', orderData);
+    console.warn('⚠️ No order data found (state/sessionStorage empty). Skipping save and rendering info only.');
   }
   
   const { paymentId, orderId, amount, items, customerInfo } = orderData || {};
@@ -248,9 +228,16 @@ const OrderSuccess = () => {
         setSaveStatus('success');
         localStorage.removeItem('pendingOrder');
       } else if (checkResponse.status === 404) {
-        // Order doesn't exist, create it as fallback
-        console.log('⚠️ Order not found, creating as fallback...');
-        await createFallbackOrder(API_BASE_URL);
+        // Order doesn't exist. Only create fallback when we have real customer data
+        const hasRealCustomer = !!(customerInfo && customerInfo.name && customerInfo.address);
+        if (hasRealCustomer && !String(paymentId).startsWith('test_')) {
+          console.log('⚠️ Order not found, creating fallback with real customer data...');
+          await createFallbackOrder(API_BASE_URL);
+        } else {
+          console.warn('🚫 Skipping fallback order creation due to missing/placeholder data.');
+          setSaveStatus('error');
+          await savePendingOrderToLocalStorage();
+        }
       } else {
         // Other error occurred
         const errorText = await checkResponse.text();

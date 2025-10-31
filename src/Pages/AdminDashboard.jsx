@@ -1886,37 +1886,47 @@ const categories = ['emart', 'localmarket', 'printing', 'oldee', 'news'];
                   </div>
                   <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">All Orders</h3>
                 </div>
-                <div className="relative w-full max-w-xs">
-                  <input
-                    type="text"
-                    value={orderSearchQuery}
-                    onChange={(e) => { setOrderSearchQuery(e.target.value); setShowOrderSuggestions(true); }}
-                    onFocus={() => setShowOrderSuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowOrderSuggestions(false), 150)}
-                    placeholder="Search customer name..."
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white"
-                  />
-                  {showOrderSuggestions && orderSearchQuery.length >= 1 && (
-                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-40 overflow-y-auto">
-                      {Array.from(new Set(orders.map(o => o.customerName).filter(Boolean)))
-                        .filter(name => name.toLowerCase().startsWith(orderSearchQuery.toLowerCase()))
-                        .slice(0, 8)
-                        .map((name, idx) => (
-                          <button
-                            key={idx}
-                            type="button"
-                            onMouseDown={() => { setOrderSearchQuery(name); setShowOrderSuggestions(false); }}
-                            className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
-                          >
-                            {name}
-                          </button>
-                        ))}
-                      {Array.from(new Set(orders.map(o => o.customerName).filter(Boolean)))
-                        .filter(name => name.toLowerCase().startsWith(orderSearchQuery.toLowerCase())).length === 0 && (
-                        <div className="px-3 py-2 text-xs text-gray-500">No matches</div>
-                      )}
-                    </div>
-                  )}
+                <div className="flex items-center gap-3">
+                  <div className="relative w-full max-w-xs">
+                    <input
+                      type="text"
+                      value={orderSearchQuery}
+                      onChange={(e) => { setOrderSearchQuery(e.target.value); setShowOrderSuggestions(true); }}
+                      onFocus={() => setShowOrderSuggestions(true)}
+                      onBlur={() => setTimeout(() => setShowOrderSuggestions(false), 150)}
+                      placeholder="Search customer name..."
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 bg-white"
+                    />
+                    {showOrderSuggestions && orderSearchQuery.length >= 1 && (
+                      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-40 overflow-y-auto">
+                        {Array.from(new Set(orders.map(o => o.customerName).filter(Boolean)))
+                          .filter(name => name.toLowerCase().startsWith(orderSearchQuery.toLowerCase()))
+                          .slice(0, 8)
+                          .map((name, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onMouseDown={() => { setOrderSearchQuery(name); setShowOrderSuggestions(false); }}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100"
+                            >
+                              {name}
+                            </button>
+                          ))}
+                        {Array.from(new Set(orders.map(o => o.customerName).filter(Boolean)))
+                          .filter(name => name.toLowerCase().startsWith(orderSearchQuery.toLowerCase())).length === 0 && (
+                          <div className="px-3 py-2 text-xs text-gray-500">No matches</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {/* <button
+                    type="button"
+                    onClick={handleDeleteAllOrders}
+                    className="px-3 py-2 text-sm font-semibold rounded-lg bg-red-600 hover:bg-red-700 text-white shadow-sm"
+                    title="Delete all orders from database"
+                  >
+                    Delete All Orders
+                  </button> */}
                 </div>
               </div>
             </div>
